@@ -16,6 +16,22 @@
     <link href="https://fonts.googleapis.com/css?family=Philosopher" rel="stylesheet">
     -->
         <link href="css/style.css" rel="stylesheet">
+        <style>
+          /* cursor: responsive main images (no external CSS fetch required) */
+          img.main-img{
+            width:100vw;
+            height:min(56.25vw, 100vh); /* 16:9 derived height, capped to viewport */
+            display:block;
+            object-fit:contain;
+            object-position:center;
+            background:#000;
+          }
+          img.main-img.portrait{
+            height:100vh;
+            width:100vw;
+            object-fit:contain;
+          }
+        </style>
         <script>
 
                 // 1. 1秒毎に時刻を表示する
