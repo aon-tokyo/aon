@@ -3693,6 +3693,21 @@ function fixAllLinks(){
     var href=links[i].getAttribute("href");
     var fixed=restoreUrl(href);
     if(fixed!==href) links[i].setAttribute("href",fixed);
+    // If Google Translate moved the real URL into data-* attributes, restore it.
+    // Some translations preserve original in dataset while rewriting href.
+    if((!fixed || fixed===href) && links[i].dataset){
+      var ds=links[i].dataset;
+      var candidates=[ds.href, ds.url, ds.originalUrl, ds.originalHref, ds.src, ds.u];
+      for(var ci=0;ci<candidates.length;ci++){
+        var cand=candidates[ci];
+        if(!cand) continue;
+        var fixedCand=restoreUrl(cand);
+        if(fixedCand && fixedCand.indexOf("http")===0){
+          links[i].setAttribute("href",fixedCand);
+          break;
+        }
+      }
+    }
   }
 
   var media=document.querySelectorAll("video[src],source[src],iframe[src],img[src]");
@@ -3702,6 +3717,36 @@ function fixAllLinks(){
     if(fixedSrc!==src) media[j].setAttribute("src",fixedSrc);
   }
 }
+
+// Click-time guard: Google Translate may re-write hrefs right before navigation.
+// Intercept clicks and force navigation to the restored original URL.
+document.addEventListener("click",function(ev){
+  try{
+    var el=ev.target;
+    // walk up to nearest anchor
+    while(el && el !== document.documentElement){
+      if(el.tagName && String(el.tagName).toLowerCase()==="a") break;
+      el=el.parentNode;
+    }
+    if(!el || !el.getAttribute) return;
+    var href=el.getAttribute("href");
+    if(!href) return;
+    // Only intervene when Google Translate rewrote the URL
+    if(href.indexOf(".translate.goog")===-1 && href.indexOf("translate.google.com/website")===-1) return;
+    var restored=restoreUrl(href);
+    if(!restored || restored===href) return;
+    ev.preventDefault();
+    // Respect existing target if present; otherwise open in new tab for external videos.
+    var target=el.getAttribute("target") || "_blank";
+    if(target==="_self"){
+      window.location.href=restored;
+    }else{
+      window.open(restored, target);
+    }
+  }catch(e){
+    // fail open: do nothing
+  }
+}, true);
 
 if(document.readyState==="loading"){
   document.addEventListener("DOMContentLoaded",function(){fixAllLinks();});
