@@ -3718,6 +3718,36 @@ function fixAllLinks(){
   }
 }
 
+// Image hardening: even if translation rewrites src after load, restore on error.
+function hardenImages(){
+  var imgs=document.querySelectorAll("img");
+  for(var i=0;i<imgs.length;i++){
+    (function(img){
+      // Remember the original on first run
+      if(!img.getAttribute("data-orig-src")){
+        var s=img.getAttribute("src");
+        if(s) img.setAttribute("data-orig-src", s);
+      }
+      img.addEventListener("error", function(){
+        try{
+          var cur=img.getAttribute("src") || "";
+          var orig=img.getAttribute("data-orig-src") || "";
+          var fixed=restoreUrl(cur);
+          // Prefer restoring from current (translate wrapper) if possible, otherwise fallback to original
+          if(fixed && fixed!==cur){
+            img.setAttribute("src", fixed);
+            return;
+          }
+          if(orig && orig!==cur){
+            img.setAttribute("src", orig);
+            return;
+          }
+        }catch(e){}
+      }, { passive:true });
+    })(imgs[i]);
+  }
+}
+
 // Click-time guard: Google Translate may re-write hrefs right before navigation.
 // Intercept clicks and force navigation to the restored original URL.
 document.addEventListener("click",function(ev){
@@ -3749,13 +3779,14 @@ document.addEventListener("click",function(ev){
 }, true);
 
 if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded",function(){fixAllLinks();});
+  document.addEventListener("DOMContentLoaded",function(){fixAllLinks(); hardenImages();});
 }else{
-  fixAllLinks();
+  fixAllLinks(); hardenImages();
 }
 
 window.addEventListener("load",function(){
   fixAllLinks();
+  hardenImages();
   setTimeout(fixAllLinks,1000);
   setTimeout(fixAllLinks,3000);
   setTimeout(fixAllLinks,6000);
