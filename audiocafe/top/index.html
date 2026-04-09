@@ -3619,11 +3619,43 @@ function domainToTranslatePattern(d){
 
 function restoreUrl(url){
   if(!url||typeof url!=="string") return url;
-  if(url.indexOf(".translate.goog")===-1) return url;
 
   try{
     var u=new URL(url);
     var host=u.hostname;
+    // Case A: translate.google.com wrapper (commonly used for external sites)
+    // Example:
+    //   https://translate.google.com/website?...&u=https://www.youtube.com/watch?v=...
+    if(host==="translate.google.com" && (u.pathname==="/website" || u.pathname==="/translate")){
+      var wrapped=u.searchParams.get("u");
+      if(!wrapped) return url;
+      // Some URLs are double-encoded; decode safely a few times.
+      var prev=wrapped;
+      for(var di=0; di<3; di++){
+        try{
+          var dec=decodeURIComponent(prev);
+          if(dec===prev) break;
+          prev=dec;
+        }catch(e){
+          break;
+        }
+      }
+      // If the wrapped URL is one of our protected domains, return it.
+      try{
+        var wu=new URL(prev);
+        var wh=wu.hostname.toLowerCase();
+        for(var pi=0; pi<PROTECTED_DOMAINS.length; pi++){
+          var pd=PROTECTED_DOMAINS[pi].toLowerCase();
+          if(wh===pd || wh.endsWith("."+pd)) return prev;
+        }
+      }catch(e){
+        // if URL parsing fails, still return the decoded string
+        return prev;
+      }
+      return prev;
+    }
+
+    // Case B: translate.goog proxy rewrite
     if(host.indexOf(".translate.goog")===-1) return url;
 
     var originalDomain=host.replace(".translate.goog","").replace(/-/g,".");
