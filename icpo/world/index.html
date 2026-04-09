@@ -24,7 +24,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .search::placeholder{color:var(--text-muted)}
 .search:focus{border-color:rgba(34,211,238,.5);box-shadow:0 0 0 3px rgba(34,211,238,.12)}
 .pills{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin-top:1.2rem;padding:0 .5rem}
-.pill{border:none;border-radius:9999px;padding:.35rem .9rem;font-size:.75rem;font-weight:500;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.05);color:var(--text-muted)}
+.pill{border:none;border-radius:9999px;padding:.45rem 1.05rem;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.05);color:#fff}
 .pill:hover{background:rgba(255,255,255,.1);color:var(--text-dim)}
 .pill.active{background:var(--cyan-glow);color:var(--cyan);box-shadow:inset 0 0 0 1px rgba(34,211,238,.4)}
 .main{max-width:76rem;margin:0 auto;padding:1rem 1rem 4rem;width:100%;flex:1}
@@ -334,6 +334,73 @@ function esc(s){var d=document.createElement("div");d.textContent=s;return d.inn
 searchEl.addEventListener("input",function(){render();});
 buildPills();
 render();
+
+/* Google Translate URL repair (images + links)
+   - Fixes translate.goog proxy URLs and translate.google.com/website?u= wrapper URLs
+   - Ensures flag images and external media still load even after translation */
+(function(){
+  function restoreUrl(url){
+    if(!url||typeof url!=="string") return url;
+    try{
+      var u=new URL(url, window.location.href);
+      var host=u.hostname;
+
+      // translate.google.com wrapper
+      if(host==="translate.google.com" && (u.pathname==="/website" || u.pathname==="/translate")){
+        var wrapped=u.searchParams.get("u");
+        if(!wrapped) return url;
+        var prev=wrapped;
+        for(var di=0;di<3;di++){
+          try{
+            var dec=decodeURIComponent(prev);
+            if(dec===prev) break;
+            prev=dec;
+          }catch(e){break;}
+        }
+        return prev;
+      }
+
+      // translate.goog proxy
+      if(host.indexOf(".translate.goog")!==-1){
+        var originalDomain=host.replace(".translate.goog","").replace(/-/g,".");
+        var params=u.searchParams;
+        params.delete("_x_tr_sl");params.delete("_x_tr_tl");params.delete("_x_tr_hl");
+        params.delete("_x_tr_pto");params.delete("_x_tr_hist");
+        var search=params.toString();
+        return "https://"+originalDomain+u.pathname+(search?"?"+search:"")+u.hash;
+      }
+      return url;
+    }catch(e){
+      return url;
+    }
+  }
+
+  function fixAll(){
+    var imgs=document.querySelectorAll("img[src]");
+    for(var i=0;i<imgs.length;i++){
+      var src=imgs[i].getAttribute("src");
+      var fixed=restoreUrl(src);
+      if(fixed!==src) imgs[i].setAttribute("src",fixed);
+    }
+    var links=document.querySelectorAll("a[href]");
+    for(var j=0;j<links.length;j++){
+      var href=links[j].getAttribute("href");
+      var fixedH=restoreUrl(href);
+      if(fixedH!==href) links[j].setAttribute("href",fixedH);
+    }
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",fixAll);
+  }else{
+    fixAll();
+  }
+  window.addEventListener("load",function(){fixAll(); setTimeout(fixAll,1000); setTimeout(fixAll,3000);});
+  try{
+    var mo=new MutationObserver(function(){fixAll();});
+    mo.observe(document.body||document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["href","src"]});
+  }catch(e){}
+})();
 })();
 </script>
 </body>
