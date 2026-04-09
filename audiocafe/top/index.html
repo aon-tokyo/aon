@@ -3577,5 +3577,116 @@ Additionally, audio-focused businesses—such as AUDIO CAFÉ and other audio sho
   </li>
   </li>
 
+<script>
+/*
+ * Google Translate URL repair script
+ * Google Translate rewrites all href/src URLs on the page to route through
+ * translate.goog proxy, breaking external links to YouTube, Facebook, etc.
+ *
+ * This script detects and restores original URLs by:
+ * 1. Converting "www-youtube-com.translate.goog/..." back to "www.youtube.com/..."
+ * 2. Stripping _x_tr_sl, _x_tr_tl, _x_tr_hl, _x_tr_pto parameters
+ * 3. Running on load + periodically (Google Translate rewrites DOM dynamically)
+ */
+(function(){
+"use strict";
+var PROTECTED_DOMAINS=[
+  "youtube.com","www.youtube.com","youtu.be","m.youtube.com",
+  "facebook.com","www.facebook.com","m.facebook.com",
+  "drive.google.com","docs.google.com",
+  "vimeo.com","www.vimeo.com",
+  "dailymotion.com","www.dailymotion.com",
+  "twitch.tv","www.twitch.tv",
+  "tiktok.com","www.tiktok.com",
+  "nicovideo.jp","www.nicovideo.jp",
+  "ameblo.jp","www.ameblo.jp",
+  "twitter.com","x.com",
+  "instagram.com","www.instagram.com",
+  "chatgpt.com",
+  "iijmio.jp","www.iijmio.jp",
+  "townwork.net","www.townwork.net",
+  "daijob.com","www.daijob.com",
+  "atgroup.jp","www.atgroup.jp",
+  "rakuten.co.jp","onboarding.mobile.rakuten.co.jp",
+  "high-performer.jp","www.high-performer.jp",
+  "r-agent.com","www.r-agent.com",
+  "audiocafe.tokyo"
+];
+
+function domainToTranslatePattern(d){
+  return d.replace(/\./g,"-")+".translate.goog";
+}
+
+function restoreUrl(url){
+  if(!url||typeof url!=="string") return url;
+  if(url.indexOf(".translate.goog")===-1) return url;
+
+  try{
+    var u=new URL(url);
+    var host=u.hostname;
+    if(host.indexOf(".translate.goog")===-1) return url;
+
+    var originalDomain=host.replace(".translate.goog","").replace(/-/g,".");
+
+    var matched=false;
+    for(var i=0;i<PROTECTED_DOMAINS.length;i++){
+      if(originalDomain===PROTECTED_DOMAINS[i]||
+         originalDomain.indexOf(PROTECTED_DOMAINS[i])!==-1){
+        matched=true;
+        break;
+      }
+    }
+    if(!matched) return url;
+
+    var params=u.searchParams;
+    params.delete("_x_tr_sl");
+    params.delete("_x_tr_tl");
+    params.delete("_x_tr_hl");
+    params.delete("_x_tr_pto");
+    params.delete("_x_tr_hist");
+
+    var path=u.pathname;
+    var search=params.toString();
+    var hash=u.hash;
+    var restored="https://"+originalDomain+path+(search?"?"+search:"")+hash;
+    return restored;
+  }catch(e){
+    return url;
+  }
+}
+
+function fixAllLinks(){
+  var links=document.querySelectorAll("a[href]");
+  for(var i=0;i<links.length;i++){
+    var href=links[i].getAttribute("href");
+    var fixed=restoreUrl(href);
+    if(fixed!==href) links[i].setAttribute("href",fixed);
+  }
+
+  var media=document.querySelectorAll("video[src],source[src],iframe[src],img[src]");
+  for(var j=0;j<media.length;j++){
+    var src=media[j].getAttribute("src");
+    var fixedSrc=restoreUrl(src);
+    if(fixedSrc!==src) media[j].setAttribute("src",fixedSrc);
+  }
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",function(){fixAllLinks();});
+}else{
+  fixAllLinks();
+}
+
+window.addEventListener("load",function(){
+  fixAllLinks();
+  setTimeout(fixAllLinks,1000);
+  setTimeout(fixAllLinks,3000);
+  setTimeout(fixAllLinks,6000);
+});
+
+var observer=new MutationObserver(function(){fixAllLinks();});
+observer.observe(document.body||document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["href","src"]});
+})();
+</script>
 </body>
 </html>
