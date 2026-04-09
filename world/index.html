@@ -54,6 +54,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .card:hover .card-native{color:#fff}
 .card-en{font-size:.65rem;color:var(--text-muted)}
 .card:hover .card-en{color:var(--text-dim)}
+.card-country{font-size:.6rem;color:var(--text-muted);opacity:.7}
+.card:hover .card-country{opacity:1}
 
 /* Empty */
 .empty{text-align:center;padding:4rem 1rem;color:var(--text-muted);font-size:1rem}
@@ -92,163 +94,158 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 "use strict";
 
 /* ── Language Data ─────────────────────────────────────────────
-   googleCode handles Google Translate irregular codes:
-   Hebrew → iw (not he), Javanese → jw (not jv), Filipino → tl, etc.
+   g = googleCode (handles irregular codes: Hebrew→iw, Javanese→jw, Filipino→tl)
+   n = English name, t = native name, f = flag, r = region, c = country
 */
 var L=[
-// Major
-{g:"en",n:"English",t:"English",f:"\u{1F1FA}\u{1F1F8}",r:"Americas"},
-{g:"en",n:"English (UK)",t:"English (UK)",f:"\u{1F1EC}\u{1F1E7}",r:"Europe"},
-{g:"zh-CN",n:"Chinese (Simplified)",t:"\u7B80\u4F53\u4E2D\u6587",f:"\u{1F1E8}\u{1F1F3}",r:"Asia"},
-{g:"zh-TW",n:"Chinese (Traditional)",t:"\u7E41\u9AD4\u4E2D\u6587",f:"\u{1F1F9}\u{1F1FC}",r:"Asia"},
-{g:"es",n:"Spanish",t:"Espa\u00F1ol",f:"\u{1F1EA}\u{1F1F8}",r:"Europe"},
-{g:"fr",n:"French",t:"Fran\u00E7ais",f:"\u{1F1EB}\u{1F1F7}",r:"Europe"},
-{g:"de",n:"German",t:"Deutsch",f:"\u{1F1E9}\u{1F1EA}",r:"Europe"},
-{g:"it",n:"Italian",t:"Italiano",f:"\u{1F1EE}\u{1F1F9}",r:"Europe"},
-{g:"pt",n:"Portuguese",t:"Portugu\u00EAs",f:"\u{1F1F5}\u{1F1F9}",r:"Europe"},
-{g:"pt",n:"Portuguese (Brazil)",t:"Portugu\u00EAs (Brasil)",f:"\u{1F1E7}\u{1F1F7}",r:"Americas"},
-{g:"ru",n:"Russian",t:"\u0420\u0443\u0441\u0441\u043A\u0438\u0439",f:"\u{1F1F7}\u{1F1FA}",r:"Europe"},
-{g:"ko",n:"Korean",t:"\uD55C\uAD6D\uC5B4",f:"\u{1F1F0}\u{1F1F7}",r:"Asia"},
-{g:"ar",n:"Arabic",t:"\u0627\u0644\u0639\u0631\u0628\u064A\u0629",f:"\u{1F1F8}\u{1F1E6}",r:"Middle East"},
-{g:"hi",n:"Hindi",t:"\u0939\u093F\u0928\u094D\u0926\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"ja",n:"Japanese",t:"\u65E5\u672C\u8A9E",f:"\u{1F1EF}\u{1F1F5}",r:"Asia"},
-// European
-{g:"nl",n:"Dutch",t:"Nederlands",f:"\u{1F1F3}\u{1F1F1}",r:"Europe"},
-{g:"pl",n:"Polish",t:"Polski",f:"\u{1F1F5}\u{1F1F1}",r:"Europe"},
-{g:"sv",n:"Swedish",t:"Svenska",f:"\u{1F1F8}\u{1F1EA}",r:"Europe"},
-{g:"da",n:"Danish",t:"Dansk",f:"\u{1F1E9}\u{1F1F0}",r:"Europe"},
-{g:"fi",n:"Finnish",t:"Suomi",f:"\u{1F1EB}\u{1F1EE}",r:"Europe"},
-{g:"no",n:"Norwegian",t:"Norsk",f:"\u{1F1F3}\u{1F1F4}",r:"Europe"},
-{g:"cs",n:"Czech",t:"\u010Ce\u0161tina",f:"\u{1F1E8}\u{1F1FF}",r:"Europe"},
-{g:"sk",n:"Slovak",t:"Sloven\u010Dina",f:"\u{1F1F8}\u{1F1F0}",r:"Europe"},
-{g:"hu",n:"Hungarian",t:"Magyar",f:"\u{1F1ED}\u{1F1FA}",r:"Europe"},
-{g:"ro",n:"Romanian",t:"Rom\u00E2n\u0103",f:"\u{1F1F7}\u{1F1F4}",r:"Europe"},
-{g:"bg",n:"Bulgarian",t:"\u0411\u044A\u043B\u0433\u0430\u0440\u0441\u043A\u0438",f:"\u{1F1E7}\u{1F1EC}",r:"Europe"},
-{g:"el",n:"Greek",t:"\u0395\u03BB\u03BB\u03B7\u03BD\u03B9\u03BA\u03AC",f:"\u{1F1EC}\u{1F1F7}",r:"Europe"},
-{g:"hr",n:"Croatian",t:"Hrvatski",f:"\u{1F1ED}\u{1F1F7}",r:"Europe"},
-{g:"sr",n:"Serbian",t:"\u0421\u0440\u043F\u0441\u043A\u0438",f:"\u{1F1F7}\u{1F1F8}",r:"Europe"},
-{g:"sl",n:"Slovenian",t:"Sloven\u0161\u010Dina",f:"\u{1F1F8}\u{1F1EE}",r:"Europe"},
-{g:"et",n:"Estonian",t:"Eesti",f:"\u{1F1EA}\u{1F1EA}",r:"Europe"},
-{g:"lv",n:"Latvian",t:"Latvie\u0161u",f:"\u{1F1F1}\u{1F1FB}",r:"Europe"},
-{g:"lt",n:"Lithuanian",t:"Lietuvi\u0173",f:"\u{1F1F1}\u{1F1F9}",r:"Europe"},
-{g:"uk",n:"Ukrainian",t:"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430",f:"\u{1F1FA}\u{1F1E6}",r:"Europe"},
-{g:"be",n:"Belarusian",t:"\u0411\u0435\u043B\u0430\u0440\u0443\u0441\u043A\u0430\u044F",f:"\u{1F1E7}\u{1F1FE}",r:"Europe"},
-{g:"is",n:"Icelandic",t:"\u00CDslenska",f:"\u{1F1EE}\u{1F1F8}",r:"Europe"},
-{g:"ga",n:"Irish",t:"Gaeilge",f:"\u{1F1EE}\u{1F1EA}",r:"Europe"},
-{g:"cy",n:"Welsh",t:"Cymraeg",f:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}",r:"Europe"},
-{g:"gd",n:"Scots Gaelic",t:"G\u00E0idhlig",f:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",r:"Europe"},
-{g:"mt",n:"Maltese",t:"Malti",f:"\u{1F1F2}\u{1F1F9}",r:"Europe"},
-{g:"sq",n:"Albanian",t:"Shqip",f:"\u{1F1E6}\u{1F1F1}",r:"Europe"},
-{g:"mk",n:"Macedonian",t:"\u041C\u0430\u043A\u0435\u0434\u043E\u043D\u0441\u043A\u0438",f:"\u{1F1F2}\u{1F1F0}",r:"Europe"},
-{g:"bs",n:"Bosnian",t:"Bosanski",f:"\u{1F1E7}\u{1F1E6}",r:"Europe"},
-{g:"lb",n:"Luxembourgish",t:"L\u00EBtzebuergesch",f:"\u{1F1F1}\u{1F1FA}",r:"Europe"},
-{g:"ca",n:"Catalan",t:"Catal\u00E0",f:"\u{1F1EA}\u{1F1F8}",r:"Europe"},
-{g:"gl",n:"Galician",t:"Galego",f:"\u{1F1EA}\u{1F1F8}",r:"Europe"},
-{g:"eu",n:"Basque",t:"Euskara",f:"\u{1F1EA}\u{1F1F8}",r:"Europe"},
-{g:"fy",n:"Frisian",t:"Frysk",f:"\u{1F1F3}\u{1F1F1}",r:"Europe"},
-{g:"co",n:"Corsican",t:"Corsu",f:"\u{1F1EB}\u{1F1F7}",r:"Europe"},
-{g:"eo",n:"Esperanto",t:"Esperanto",f:"\u{1F30D}",r:"Europe"},
-{g:"la",n:"Latin",t:"Latina",f:"\u{1F3DB}\u{FE0F}",r:"Europe"},
-{g:"oc",n:"Occitan",t:"Occitan",f:"\u{1F1EB}\u{1F1F7}",r:"Europe"},
-{g:"br",n:"Breton",t:"Brezhoneg",f:"\u{1F1EB}\u{1F1F7}",r:"Europe"},
-{g:"ka",n:"Georgian",t:"\u10E5\u10D0\u10E0\u10D7\u10E3\u10DA\u10D8",f:"\u{1F1EC}\u{1F1EA}",r:"Europe"},
-{g:"hy",n:"Armenian",t:"\u0540\u0561\u0575\u0565\u0580\u0565\u0576",f:"\u{1F1E6}\u{1F1F2}",r:"Europe"},
-{g:"az",n:"Azerbaijani",t:"Az\u0259rbaycan",f:"\u{1F1E6}\u{1F1FF}",r:"Europe"},
-{g:"tt",n:"Tatar",t:"\u0422\u0430\u0442\u0430\u0440\u0447\u0430",f:"\u{1F1F7}\u{1F1FA}",r:"Europe"},
-{g:"ba",n:"Bashkir",t:"\u0411\u0430\u0448\u04A1\u043E\u0440\u0442",f:"\u{1F1F7}\u{1F1FA}",r:"Europe"},
-{g:"cv",n:"Chuvash",t:"\u0427\u04D1\u0432\u0430\u0448",f:"\u{1F1F7}\u{1F1FA}",r:"Europe"},
-{g:"yi",n:"Yiddish",t:"\u05D9\u05D9\u05B4\u05D3\u05D9\u05E9",f:"\u{1F1EE}\u{1F1F1}",r:"Europe"},
-// Middle East & Central Asia
-{g:"tr",n:"Turkish",t:"T\u00FCrk\u00E7e",f:"\u{1F1F9}\u{1F1F7}",r:"Middle East"},
-{g:"fa",n:"Persian",t:"\u0641\u0627\u0631\u0633\u06CC",f:"\u{1F1EE}\u{1F1F7}",r:"Middle East"},
-{g:"iw",n:"Hebrew",t:"\u05E2\u05D1\u05E8\u05D9\u05EA",f:"\u{1F1EE}\u{1F1F1}",r:"Middle East"},
-{g:"ur",n:"Urdu",t:"\u0627\u0631\u062F\u0648",f:"\u{1F1F5}\u{1F1F0}",r:"Middle East"},
-{g:"ps",n:"Pashto",t:"\u067E\u069A\u062A\u0648",f:"\u{1F1E6}\u{1F1EB}",r:"Middle East"},
-{g:"ku",n:"Kurdish (Kurmanji)",t:"Kurd\u00EE",f:"\u{1F1EE}\u{1F1F6}",r:"Middle East"},
-{g:"ckb",n:"Kurdish (Sorani)",t:"\u0633\u06C6\u0631\u0627\u0646\u06CC",f:"\u{1F1EE}\u{1F1F6}",r:"Middle East"},
-{g:"kk",n:"Kazakh",t:"\u049A\u0430\u0437\u0430\u049B",f:"\u{1F1F0}\u{1F1FF}",r:"Middle East"},
-{g:"ky",n:"Kyrgyz",t:"\u041A\u044B\u0440\u0433\u044B\u0437\u0447\u0430",f:"\u{1F1F0}\u{1F1EC}",r:"Middle East"},
-{g:"uz",n:"Uzbek",t:"O\u02BBzbek",f:"\u{1F1FA}\u{1F1FF}",r:"Middle East"},
-{g:"tg",n:"Tajik",t:"\u0422\u043E\u04B7\u0438\u043A\u04E3",f:"\u{1F1F9}\u{1F1EF}",r:"Middle East"},
-{g:"tk",n:"Turkmen",t:"T\u00FCrkmen",f:"\u{1F1F9}\u{1F1F2}",r:"Middle East"},
-// Asia
-{g:"bn",n:"Bengali",t:"\u09AC\u09BE\u0982\u09B2\u09BE",f:"\u{1F1E7}\u{1F1E9}",r:"Asia"},
-{g:"ta",n:"Tamil",t:"\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"te",n:"Telugu",t:"\u0C24\u0C46\u0C32\u0C41\u0C17\u0C41",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"ml",n:"Malayalam",t:"\u0D2E\u0D32\u0D2F\u0D3E\u0D33\u0D02",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"kn",n:"Kannada",t:"\u0C95\u0CA8\u0CCD\u0CA8\u0CA1",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"gu",n:"Gujarati",t:"\u0A97\u0AC1\u0A9C\u0AB0\u0ABE\u0AA4\u0AC0",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"mr",n:"Marathi",t:"\u092E\u0930\u093E\u0920\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"pa",n:"Punjabi",t:"\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"or",n:"Odia",t:"\u0B13\u0B21\u0B3C\u0B3F\u0B06",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"ne",n:"Nepali",t:"\u0928\u0947\u092A\u093E\u0932\u0940",f:"\u{1F1F3}\u{1F1F5}",r:"Asia"},
-{g:"si",n:"Sinhala",t:"\u0DC3\u0DD2\u0D82\u0DC4\u0DBD",f:"\u{1F1F1}\u{1F1F0}",r:"Asia"},
-{g:"as",n:"Assamese",t:"\u0985\u09B8\u09AE\u09C0\u09AF\u09BC\u09BE",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"sd",n:"Sindhi",t:"\u0633\u0646\u068C\u064A",f:"\u{1F1F5}\u{1F1F0}",r:"Asia"},
-{g:"doi",n:"Dogri",t:"\u0921\u094B\u0917\u0930\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"bho",n:"Bhojpuri",t:"\u092D\u094B\u091C\u092A\u0941\u0930\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"mai",n:"Maithili",t:"\u092E\u0948\u0925\u093F\u0932\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"gom",n:"Konkani",t:"\u0915\u094B\u0902\u0915\u0923\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"sa",n:"Sanskrit",t:"\u0938\u0902\u0938\u094D\u0915\u0943\u0924\u092E\u094D",f:"\u{1F1EE}\u{1F1F3}",r:"Asia"},
-{g:"dv",n:"Divehi",t:"\u078B\u07A8\u0788\u07AC\u0780\u07A8",f:"\u{1F1F2}\u{1F1FB}",r:"Asia"},
-{g:"th",n:"Thai",t:"\u0E44\u0E17\u0E22",f:"\u{1F1F9}\u{1F1ED}",r:"Asia"},
-{g:"vi",n:"Vietnamese",t:"Ti\u1EBFng Vi\u1EC7t",f:"\u{1F1FB}\u{1F1F3}",r:"Asia"},
-{g:"id",n:"Indonesian",t:"Bahasa Indonesia",f:"\u{1F1EE}\u{1F1E9}",r:"Asia"},
-{g:"ms",n:"Malay",t:"Bahasa Melayu",f:"\u{1F1F2}\u{1F1FE}",r:"Asia"},
-{g:"tl",n:"Filipino",t:"Filipino",f:"\u{1F1F5}\u{1F1ED}",r:"Asia"},
-{g:"km",n:"Khmer",t:"\u1781\u17D2\u1798\u17C2\u179A",f:"\u{1F1F0}\u{1F1ED}",r:"Asia"},
-{g:"lo",n:"Lao",t:"\u0EA5\u0EB2\u0EA7",f:"\u{1F1F1}\u{1F1E6}",r:"Asia"},
-{g:"my",n:"Myanmar (Burmese)",t:"\u1017\u1019\u102C",f:"\u{1F1F2}\u{1F1F2}",r:"Asia"},
-{g:"jw",n:"Javanese",t:"Jawa",f:"\u{1F1EE}\u{1F1E9}",r:"Asia"},
-{g:"su",n:"Sundanese",t:"Basa Sunda",f:"\u{1F1EE}\u{1F1E9}",r:"Asia"},
-{g:"ceb",n:"Cebuano",t:"Cebuano",f:"\u{1F1F5}\u{1F1ED}",r:"Asia"},
-{g:"ilo",n:"Iloko",t:"Iloko",f:"\u{1F1F5}\u{1F1ED}",r:"Asia"},
-{g:"hil",n:"Hiligaynon",t:"Hiligaynon",f:"\u{1F1F5}\u{1F1ED}",r:"Asia"},
-{g:"hmn",n:"Hmong",t:"Hmoob",f:"\u{1F1F1}\u{1F1E6}",r:"Asia"},
-{g:"yue",n:"Cantonese",t:"\u7CB5\u8A9E",f:"\u{1F1ED}\u{1F1F0}",r:"Asia"},
-{g:"mn",n:"Mongolian",t:"\u041C\u043E\u043D\u0433\u043E\u043B",f:"\u{1F1F2}\u{1F1F3}",r:"Asia"},
-{g:"ug",n:"Uyghur",t:"\u0626\u06C7\u064A\u063A\u06C7\u0631\u0686\u06D5",f:"\u{1F1E8}\u{1F1F3}",r:"Asia"},
-// Africa
-{g:"sw",n:"Swahili",t:"Kiswahili",f:"\u{1F1F9}\u{1F1FF}",r:"Africa"},
-{g:"am",n:"Amharic",t:"\u12A0\u121B\u122D\u129B",f:"\u{1F1EA}\u{1F1F9}",r:"Africa"},
-{g:"ha",n:"Hausa",t:"Hausa",f:"\u{1F1F3}\u{1F1EC}",r:"Africa"},
-{g:"ig",n:"Igbo",t:"Igbo",f:"\u{1F1F3}\u{1F1EC}",r:"Africa"},
-{g:"yo",n:"Yoruba",t:"Yor\u00F9b\u00E1",f:"\u{1F1F3}\u{1F1EC}",r:"Africa"},
-{g:"zu",n:"Zulu",t:"isiZulu",f:"\u{1F1FF}\u{1F1E6}",r:"Africa"},
-{g:"xh",n:"Xhosa",t:"isiXhosa",f:"\u{1F1FF}\u{1F1E6}",r:"Africa"},
-{g:"af",n:"Afrikaans",t:"Afrikaans",f:"\u{1F1FF}\u{1F1E6}",r:"Africa"},
-{g:"sn",n:"Shona",t:"chiShona",f:"\u{1F1FF}\u{1F1FC}",r:"Africa"},
-{g:"ny",n:"Chichewa",t:"Chichewa",f:"\u{1F1F2}\u{1F1FC}",r:"Africa"},
-{g:"so",n:"Somali",t:"Soomaaliga",f:"\u{1F1F8}\u{1F1F4}",r:"Africa"},
-{g:"mg",n:"Malagasy",t:"Malagasy",f:"\u{1F1F2}\u{1F1EC}",r:"Africa"},
-{g:"rw",n:"Kinyarwanda",t:"Kinyarwanda",f:"\u{1F1F7}\u{1F1FC}",r:"Africa"},
-{g:"st",n:"Sesotho",t:"Sesotho",f:"\u{1F1F1}\u{1F1F8}",r:"Africa"},
-{g:"lg",n:"Luganda",t:"Oluganda",f:"\u{1F1FA}\u{1F1EC}",r:"Africa"},
-{g:"om",n:"Oromo",t:"Afaan Oromoo",f:"\u{1F1EA}\u{1F1F9}",r:"Africa"},
-{g:"ti",n:"Tigrinya",t:"\u1275\u130D\u122D\u129B",f:"\u{1F1EA}\u{1F1F7}",r:"Africa"},
-{g:"ln",n:"Lingala",t:"Ling\u00E1la",f:"\u{1F1E8}\u{1F1E9}",r:"Africa"},
-{g:"bm",n:"Bambara",t:"Bamanankan",f:"\u{1F1F2}\u{1F1F1}",r:"Africa"},
-{g:"ee",n:"Ewe",t:"E\u028Begbe",f:"\u{1F1EC}\u{1F1ED}",r:"Africa"},
-{g:"ak",n:"Twi (Akan)",t:"Twi",f:"\u{1F1EC}\u{1F1ED}",r:"Africa"},
-{g:"nso",n:"Northern Sotho",t:"Sepedi",f:"\u{1F1FF}\u{1F1E6}",r:"Africa"},
-{g:"ts",n:"Tsonga",t:"Xitsonga",f:"\u{1F1FF}\u{1F1E6}",r:"Africa"},
-{g:"tn",n:"Tswana",t:"Setswana",f:"\u{1F1E7}\u{1F1FC}",r:"Africa"},
-{g:"ss",n:"Swati",t:"siSwati",f:"\u{1F1F8}\u{1F1FF}",r:"Africa"},
-{g:"nr",n:"Ndebele (South)",t:"isiNdebele",f:"\u{1F1FF}\u{1F1E6}",r:"Africa"},
-// Americas
-{g:"ht",n:"Haitian Creole",t:"Kreyòl ayisyen",f:"\u{1F1ED}\u{1F1F9}",r:"Americas"},
-{g:"gn",n:"Guarani",t:"Avañe\u02BCẽ",f:"\u{1F1F5}\u{1F1FE}",r:"Americas"},
-{g:"qu",n:"Quechua",t:"Runasimi",f:"\u{1F1F5}\u{1F1EA}",r:"Americas"},
-{g:"ay",n:"Aymara",t:"Aymar aru",f:"\u{1F1E7}\u{1F1F4}",r:"Americas"},
-{g:"haw",n:"Hawaiian",t:"\u02BBŌlelo Hawai\u02BBi",f:"\u{1F1FA}\u{1F1F8}",r:"Americas"},
-// Pacific
-{g:"mi",n:"Maori",t:"Te Reo M\u0101ori",f:"\u{1F1F3}\u{1F1FF}",r:"Pacific"},
-{g:"sm",n:"Samoan",t:"Gagana Samoa",f:"\u{1F1FC}\u{1F1F8}",r:"Pacific"},
-{g:"fj",n:"Fijian",t:"Na Vosa Vakaviti",f:"\u{1F1EB}\u{1F1EF}",r:"Pacific"}
+{g:"en",n:"English",t:"English",f:"\u{1F1FA}\u{1F1F8}",r:"Americas",c:"United States of America"},
+{g:"en",n:"English (UK)",t:"English (UK)",f:"\u{1F1EC}\u{1F1E7}",r:"Europe",c:"United Kingdom"},
+{g:"zh-CN",n:"Chinese (Simplified)",t:"\u7B80\u4F53\u4E2D\u6587",f:"\u{1F1E8}\u{1F1F3}",r:"Asia",c:"China"},
+{g:"zh-TW",n:"Chinese (Traditional)",t:"\u7E41\u9AD4\u4E2D\u6587",f:"\u{1F1F9}\u{1F1FC}",r:"Asia",c:"Taiwan"},
+{g:"es",n:"Spanish",t:"Espa\u00F1ol",f:"\u{1F1EA}\u{1F1F8}",r:"Europe",c:"Spain"},
+{g:"fr",n:"French",t:"Fran\u00E7ais",f:"\u{1F1EB}\u{1F1F7}",r:"Europe",c:"France"},
+{g:"de",n:"German",t:"Deutsch",f:"\u{1F1E9}\u{1F1EA}",r:"Europe",c:"Germany"},
+{g:"it",n:"Italian",t:"Italiano",f:"\u{1F1EE}\u{1F1F9}",r:"Europe",c:"Italy"},
+{g:"pt",n:"Portuguese",t:"Portugu\u00EAs",f:"\u{1F1F5}\u{1F1F9}",r:"Europe",c:"Portugal"},
+{g:"pt",n:"Portuguese (Brazil)",t:"Portugu\u00EAs (Brasil)",f:"\u{1F1E7}\u{1F1F7}",r:"Americas",c:"Brazil"},
+{g:"ru",n:"Russian",t:"\u0420\u0443\u0441\u0441\u043A\u0438\u0439",f:"\u{1F1F7}\u{1F1FA}",r:"Europe",c:"Russia"},
+{g:"ko",n:"Korean",t:"\uD55C\uAD6D\uC5B4",f:"\u{1F1F0}\u{1F1F7}",r:"Asia",c:"South Korea"},
+{g:"ar",n:"Arabic",t:"\u0627\u0644\u0639\u0631\u0628\u064A\u0629",f:"\u{1F1F8}\u{1F1E6}",r:"Middle East",c:"Saudi Arabia"},
+{g:"hi",n:"Hindi",t:"\u0939\u093F\u0928\u094D\u0926\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India"},
+{g:"ja",n:"Japanese",t:"\u65E5\u672C\u8A9E",f:"\u{1F1EF}\u{1F1F5}",r:"Asia",c:"Japan"},
+{g:"nl",n:"Dutch",t:"Nederlands",f:"\u{1F1F3}\u{1F1F1}",r:"Europe",c:"Netherlands"},
+{g:"pl",n:"Polish",t:"Polski",f:"\u{1F1F5}\u{1F1F1}",r:"Europe",c:"Poland"},
+{g:"sv",n:"Swedish",t:"Svenska",f:"\u{1F1F8}\u{1F1EA}",r:"Europe",c:"Sweden"},
+{g:"da",n:"Danish",t:"Dansk",f:"\u{1F1E9}\u{1F1F0}",r:"Europe",c:"Denmark"},
+{g:"fi",n:"Finnish",t:"Suomi",f:"\u{1F1EB}\u{1F1EE}",r:"Europe",c:"Finland"},
+{g:"no",n:"Norwegian",t:"Norsk",f:"\u{1F1F3}\u{1F1F4}",r:"Europe",c:"Norway"},
+{g:"cs",n:"Czech",t:"\u010Ce\u0161tina",f:"\u{1F1E8}\u{1F1FF}",r:"Europe",c:"Czech Republic"},
+{g:"sk",n:"Slovak",t:"Sloven\u010Dina",f:"\u{1F1F8}\u{1F1F0}",r:"Europe",c:"Slovakia"},
+{g:"hu",n:"Hungarian",t:"Magyar",f:"\u{1F1ED}\u{1F1FA}",r:"Europe",c:"Hungary"},
+{g:"ro",n:"Romanian",t:"Rom\u00E2n\u0103",f:"\u{1F1F7}\u{1F1F4}",r:"Europe",c:"Romania"},
+{g:"bg",n:"Bulgarian",t:"\u0411\u044A\u043B\u0433\u0430\u0440\u0441\u043A\u0438",f:"\u{1F1E7}\u{1F1EC}",r:"Europe",c:"Bulgaria"},
+{g:"el",n:"Greek",t:"\u0395\u03BB\u03BB\u03B7\u03BD\u03B9\u03BA\u03AC",f:"\u{1F1EC}\u{1F1F7}",r:"Europe",c:"Greece"},
+{g:"hr",n:"Croatian",t:"Hrvatski",f:"\u{1F1ED}\u{1F1F7}",r:"Europe",c:"Croatia"},
+{g:"sr",n:"Serbian",t:"\u0421\u0440\u043F\u0441\u043A\u0438",f:"\u{1F1F7}\u{1F1F8}",r:"Europe",c:"Serbia"},
+{g:"sl",n:"Slovenian",t:"Sloven\u0161\u010Dina",f:"\u{1F1F8}\u{1F1EE}",r:"Europe",c:"Slovenia"},
+{g:"et",n:"Estonian",t:"Eesti",f:"\u{1F1EA}\u{1F1EA}",r:"Europe",c:"Estonia"},
+{g:"lv",n:"Latvian",t:"Latvie\u0161u",f:"\u{1F1F1}\u{1F1FB}",r:"Europe",c:"Latvia"},
+{g:"lt",n:"Lithuanian",t:"Lietuvi\u0173",f:"\u{1F1F1}\u{1F1F9}",r:"Europe",c:"Lithuania"},
+{g:"uk",n:"Ukrainian",t:"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430",f:"\u{1F1FA}\u{1F1E6}",r:"Europe",c:"Ukraine"},
+{g:"be",n:"Belarusian",t:"\u0411\u0435\u043B\u0430\u0440\u0443\u0441\u043A\u0430\u044F",f:"\u{1F1E7}\u{1F1FE}",r:"Europe",c:"Belarus"},
+{g:"is",n:"Icelandic",t:"\u00CDslenska",f:"\u{1F1EE}\u{1F1F8}",r:"Europe",c:"Iceland"},
+{g:"ga",n:"Irish",t:"Gaeilge",f:"\u{1F1EE}\u{1F1EA}",r:"Europe",c:"Ireland"},
+{g:"cy",n:"Welsh",t:"Cymraeg",f:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}",r:"Europe",c:"Wales"},
+{g:"gd",n:"Scots Gaelic",t:"G\u00E0idhlig",f:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",r:"Europe",c:"Scotland"},
+{g:"mt",n:"Maltese",t:"Malti",f:"\u{1F1F2}\u{1F1F9}",r:"Europe",c:"Malta"},
+{g:"sq",n:"Albanian",t:"Shqip",f:"\u{1F1E6}\u{1F1F1}",r:"Europe",c:"Albania"},
+{g:"mk",n:"Macedonian",t:"\u041C\u0430\u043A\u0435\u0434\u043E\u043D\u0441\u043A\u0438",f:"\u{1F1F2}\u{1F1F0}",r:"Europe",c:"North Macedonia"},
+{g:"bs",n:"Bosnian",t:"Bosanski",f:"\u{1F1E7}\u{1F1E6}",r:"Europe",c:"Bosnia and Herzegovina"},
+{g:"lb",n:"Luxembourgish",t:"L\u00EBtzebuergesch",f:"\u{1F1F1}\u{1F1FA}",r:"Europe",c:"Luxembourg"},
+{g:"ca",n:"Catalan",t:"Catal\u00E0",f:"\u{1F1EA}\u{1F1F8}",r:"Europe",c:"Spain (Catalonia)"},
+{g:"gl",n:"Galician",t:"Galego",f:"\u{1F1EA}\u{1F1F8}",r:"Europe",c:"Spain (Galicia)"},
+{g:"eu",n:"Basque",t:"Euskara",f:"\u{1F1EA}\u{1F1F8}",r:"Europe",c:"Spain (Basque Country)"},
+{g:"fy",n:"Frisian",t:"Frysk",f:"\u{1F1F3}\u{1F1F1}",r:"Europe",c:"Netherlands (Friesland)"},
+{g:"co",n:"Corsican",t:"Corsu",f:"\u{1F1EB}\u{1F1F7}",r:"Europe",c:"France (Corsica)"},
+{g:"eo",n:"Esperanto",t:"Esperanto",f:"\u{1F30D}",r:"Europe",c:"International"},
+{g:"la",n:"Latin",t:"Latina",f:"\u{1F3DB}\u{FE0F}",r:"Europe",c:"Vatican City"},
+{g:"oc",n:"Occitan",t:"Occitan",f:"\u{1F1EB}\u{1F1F7}",r:"Europe",c:"France (Occitania)"},
+{g:"br",n:"Breton",t:"Brezhoneg",f:"\u{1F1EB}\u{1F1F7}",r:"Europe",c:"France (Brittany)"},
+{g:"ka",n:"Georgian",t:"\u10E5\u10D0\u10E0\u10D7\u10E3\u10DA\u10D8",f:"\u{1F1EC}\u{1F1EA}",r:"Europe",c:"Georgia"},
+{g:"hy",n:"Armenian",t:"\u0540\u0561\u0575\u0565\u0580\u0565\u0576",f:"\u{1F1E6}\u{1F1F2}",r:"Europe",c:"Armenia"},
+{g:"az",n:"Azerbaijani",t:"Az\u0259rbaycan",f:"\u{1F1E6}\u{1F1FF}",r:"Europe",c:"Azerbaijan"},
+{g:"tt",n:"Tatar",t:"\u0422\u0430\u0442\u0430\u0440\u0447\u0430",f:"\u{1F1F7}\u{1F1FA}",r:"Europe",c:"Russia (Tatarstan)"},
+{g:"ba",n:"Bashkir",t:"\u0411\u0430\u0448\u04A1\u043E\u0440\u0442",f:"\u{1F1F7}\u{1F1FA}",r:"Europe",c:"Russia (Bashkortostan)"},
+{g:"cv",n:"Chuvash",t:"\u0427\u04D1\u0432\u0430\u0448",f:"\u{1F1F7}\u{1F1FA}",r:"Europe",c:"Russia (Chuvashia)"},
+{g:"yi",n:"Yiddish",t:"\u05D9\u05D9\u05B4\u05D3\u05D9\u05E9",f:"\u{1F1EE}\u{1F1F1}",r:"Europe",c:"Israel"},
+{g:"tr",n:"Turkish",t:"T\u00FCrk\u00E7e",f:"\u{1F1F9}\u{1F1F7}",r:"Middle East",c:"Turkey"},
+{g:"fa",n:"Persian",t:"\u0641\u0627\u0631\u0633\u06CC",f:"\u{1F1EE}\u{1F1F7}",r:"Middle East",c:"Iran"},
+{g:"iw",n:"Hebrew",t:"\u05E2\u05D1\u05E8\u05D9\u05EA",f:"\u{1F1EE}\u{1F1F1}",r:"Middle East",c:"Israel"},
+{g:"ur",n:"Urdu",t:"\u0627\u0631\u062F\u0648",f:"\u{1F1F5}\u{1F1F0}",r:"Middle East",c:"Pakistan"},
+{g:"ps",n:"Pashto",t:"\u067E\u069A\u062A\u0648",f:"\u{1F1E6}\u{1F1EB}",r:"Middle East",c:"Afghanistan"},
+{g:"ku",n:"Kurdish (Kurmanji)",t:"Kurd\u00EE",f:"\u{1F1EE}\u{1F1F6}",r:"Middle East",c:"Iraq / Turkey"},
+{g:"ckb",n:"Kurdish (Sorani)",t:"\u0633\u06C6\u0631\u0627\u0646\u06CC",f:"\u{1F1EE}\u{1F1F6}",r:"Middle East",c:"Iraq"},
+{g:"kk",n:"Kazakh",t:"\u049A\u0430\u0437\u0430\u049B",f:"\u{1F1F0}\u{1F1FF}",r:"Middle East",c:"Kazakhstan"},
+{g:"ky",n:"Kyrgyz",t:"\u041A\u044B\u0440\u0433\u044B\u0437\u0447\u0430",f:"\u{1F1F0}\u{1F1EC}",r:"Middle East",c:"Kyrgyzstan"},
+{g:"uz",n:"Uzbek",t:"O\u02BBzbek",f:"\u{1F1FA}\u{1F1FF}",r:"Middle East",c:"Uzbekistan"},
+{g:"tg",n:"Tajik",t:"\u0422\u043E\u04B7\u0438\u043A\u04E3",f:"\u{1F1F9}\u{1F1EF}",r:"Middle East",c:"Tajikistan"},
+{g:"tk",n:"Turkmen",t:"T\u00FCrkmen",f:"\u{1F1F9}\u{1F1F2}",r:"Middle East",c:"Turkmenistan"},
+{g:"bn",n:"Bengali",t:"\u09AC\u09BE\u0982\u09B2\u09BE",f:"\u{1F1E7}\u{1F1E9}",r:"Asia",c:"Bangladesh"},
+{g:"ta",n:"Tamil",t:"\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Tamil Nadu)"},
+{g:"te",n:"Telugu",t:"\u0C24\u0C46\u0C32\u0C41\u0C17\u0C41",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Andhra Pradesh)"},
+{g:"ml",n:"Malayalam",t:"\u0D2E\u0D32\u0D2F\u0D3E\u0D33\u0D02",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Kerala)"},
+{g:"kn",n:"Kannada",t:"\u0C95\u0CA8\u0CCD\u0CA8\u0CA1",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Karnataka)"},
+{g:"gu",n:"Gujarati",t:"\u0A97\u0AC1\u0A9C\u0AB0\u0ABE\u0AA4\u0AC0",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Gujarat)"},
+{g:"mr",n:"Marathi",t:"\u092E\u0930\u093E\u0920\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Maharashtra)"},
+{g:"pa",n:"Punjabi",t:"\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Punjab)"},
+{g:"or",n:"Odia",t:"\u0B13\u0B21\u0B3C\u0B3F\u0B06",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Odisha)"},
+{g:"ne",n:"Nepali",t:"\u0928\u0947\u092A\u093E\u0932\u0940",f:"\u{1F1F3}\u{1F1F5}",r:"Asia",c:"Nepal"},
+{g:"si",n:"Sinhala",t:"\u0DC3\u0DD2\u0D82\u0DC4\u0DBD",f:"\u{1F1F1}\u{1F1F0}",r:"Asia",c:"Sri Lanka"},
+{g:"as",n:"Assamese",t:"\u0985\u09B8\u09AE\u09C0\u09AF\u09BC\u09BE",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Assam)"},
+{g:"sd",n:"Sindhi",t:"\u0633\u0646\u068C\u064A",f:"\u{1F1F5}\u{1F1F0}",r:"Asia",c:"Pakistan (Sindh)"},
+{g:"doi",n:"Dogri",t:"\u0921\u094B\u0917\u0930\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Jammu)"},
+{g:"bho",n:"Bhojpuri",t:"\u092D\u094B\u091C\u092A\u0941\u0930\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Bihar)"},
+{g:"mai",n:"Maithili",t:"\u092E\u0948\u0925\u093F\u0932\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Bihar)"},
+{g:"gom",n:"Konkani",t:"\u0915\u094B\u0902\u0915\u0923\u0940",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India (Goa)"},
+{g:"sa",n:"Sanskrit",t:"\u0938\u0902\u0938\u094D\u0915\u0943\u0924\u092E\u094D",f:"\u{1F1EE}\u{1F1F3}",r:"Asia",c:"India"},
+{g:"dv",n:"Divehi",t:"\u078B\u07A8\u0788\u07AC\u0780\u07A8",f:"\u{1F1F2}\u{1F1FB}",r:"Asia",c:"Maldives"},
+{g:"th",n:"Thai",t:"\u0E44\u0E17\u0E22",f:"\u{1F1F9}\u{1F1ED}",r:"Asia",c:"Thailand"},
+{g:"vi",n:"Vietnamese",t:"Ti\u1EBFng Vi\u1EC7t",f:"\u{1F1FB}\u{1F1F3}",r:"Asia",c:"Vietnam"},
+{g:"id",n:"Indonesian",t:"Bahasa Indonesia",f:"\u{1F1EE}\u{1F1E9}",r:"Asia",c:"Indonesia"},
+{g:"ms",n:"Malay",t:"Bahasa Melayu",f:"\u{1F1F2}\u{1F1FE}",r:"Asia",c:"Malaysia"},
+{g:"tl",n:"Filipino",t:"Filipino",f:"\u{1F1F5}\u{1F1ED}",r:"Asia",c:"Philippines"},
+{g:"km",n:"Khmer",t:"\u1781\u17D2\u1798\u17C2\u179A",f:"\u{1F1F0}\u{1F1ED}",r:"Asia",c:"Cambodia"},
+{g:"lo",n:"Lao",t:"\u0EA5\u0EB2\u0EA7",f:"\u{1F1F1}\u{1F1E6}",r:"Asia",c:"Laos"},
+{g:"my",n:"Myanmar (Burmese)",t:"\u1017\u1019\u102C",f:"\u{1F1F2}\u{1F1F2}",r:"Asia",c:"Myanmar"},
+{g:"jw",n:"Javanese",t:"Jawa",f:"\u{1F1EE}\u{1F1E9}",r:"Asia",c:"Indonesia (Java)"},
+{g:"su",n:"Sundanese",t:"Basa Sunda",f:"\u{1F1EE}\u{1F1E9}",r:"Asia",c:"Indonesia (Sunda)"},
+{g:"ceb",n:"Cebuano",t:"Cebuano",f:"\u{1F1F5}\u{1F1ED}",r:"Asia",c:"Philippines (Cebu)"},
+{g:"ilo",n:"Iloko",t:"Iloko",f:"\u{1F1F5}\u{1F1ED}",r:"Asia",c:"Philippines (Ilocos)"},
+{g:"hil",n:"Hiligaynon",t:"Hiligaynon",f:"\u{1F1F5}\u{1F1ED}",r:"Asia",c:"Philippines (Visayas)"},
+{g:"hmn",n:"Hmong",t:"Hmoob",f:"\u{1F1F1}\u{1F1E6}",r:"Asia",c:"Laos / Vietnam"},
+{g:"yue",n:"Cantonese",t:"\u7CB5\u8A9E",f:"\u{1F1ED}\u{1F1F0}",r:"Asia",c:"Hong Kong"},
+{g:"mn",n:"Mongolian",t:"\u041C\u043E\u043D\u0433\u043E\u043B",f:"\u{1F1F2}\u{1F1F3}",r:"Asia",c:"Mongolia"},
+{g:"ug",n:"Uyghur",t:"\u0626\u06C7\u064A\u063A\u06C7\u0631\u0686\u06D5",f:"\u{1F1E8}\u{1F1F3}",r:"Asia",c:"China (Xinjiang)"},
+{g:"sw",n:"Swahili",t:"Kiswahili",f:"\u{1F1F9}\u{1F1FF}",r:"Africa",c:"Tanzania / Kenya"},
+{g:"am",n:"Amharic",t:"\u12A0\u121B\u122D\u129B",f:"\u{1F1EA}\u{1F1F9}",r:"Africa",c:"Ethiopia"},
+{g:"ha",n:"Hausa",t:"Hausa",f:"\u{1F1F3}\u{1F1EC}",r:"Africa",c:"Nigeria"},
+{g:"ig",n:"Igbo",t:"Igbo",f:"\u{1F1F3}\u{1F1EC}",r:"Africa",c:"Nigeria"},
+{g:"yo",n:"Yoruba",t:"Yor\u00F9b\u00E1",f:"\u{1F1F3}\u{1F1EC}",r:"Africa",c:"Nigeria"},
+{g:"zu",n:"Zulu",t:"isiZulu",f:"\u{1F1FF}\u{1F1E6}",r:"Africa",c:"South Africa"},
+{g:"xh",n:"Xhosa",t:"isiXhosa",f:"\u{1F1FF}\u{1F1E6}",r:"Africa",c:"South Africa"},
+{g:"af",n:"Afrikaans",t:"Afrikaans",f:"\u{1F1FF}\u{1F1E6}",r:"Africa",c:"South Africa"},
+{g:"sn",n:"Shona",t:"chiShona",f:"\u{1F1FF}\u{1F1FC}",r:"Africa",c:"Zimbabwe"},
+{g:"ny",n:"Chichewa",t:"Chichewa",f:"\u{1F1F2}\u{1F1FC}",r:"Africa",c:"Malawi"},
+{g:"so",n:"Somali",t:"Soomaaliga",f:"\u{1F1F8}\u{1F1F4}",r:"Africa",c:"Somalia"},
+{g:"mg",n:"Malagasy",t:"Malagasy",f:"\u{1F1F2}\u{1F1EC}",r:"Africa",c:"Madagascar"},
+{g:"rw",n:"Kinyarwanda",t:"Kinyarwanda",f:"\u{1F1F7}\u{1F1FC}",r:"Africa",c:"Rwanda"},
+{g:"st",n:"Sesotho",t:"Sesotho",f:"\u{1F1F1}\u{1F1F8}",r:"Africa",c:"Lesotho"},
+{g:"lg",n:"Luganda",t:"Oluganda",f:"\u{1F1FA}\u{1F1EC}",r:"Africa",c:"Uganda"},
+{g:"om",n:"Oromo",t:"Afaan Oromoo",f:"\u{1F1EA}\u{1F1F9}",r:"Africa",c:"Ethiopia"},
+{g:"ti",n:"Tigrinya",t:"\u1275\u130D\u122D\u129B",f:"\u{1F1EA}\u{1F1F7}",r:"Africa",c:"Eritrea"},
+{g:"ln",n:"Lingala",t:"Ling\u00E1la",f:"\u{1F1E8}\u{1F1E9}",r:"Africa",c:"DR Congo"},
+{g:"bm",n:"Bambara",t:"Bamanankan",f:"\u{1F1F2}\u{1F1F1}",r:"Africa",c:"Mali"},
+{g:"ee",n:"Ewe",t:"E\u028Begbe",f:"\u{1F1EC}\u{1F1ED}",r:"Africa",c:"Ghana"},
+{g:"ak",n:"Twi (Akan)",t:"Twi",f:"\u{1F1EC}\u{1F1ED}",r:"Africa",c:"Ghana"},
+{g:"nso",n:"Northern Sotho",t:"Sepedi",f:"\u{1F1FF}\u{1F1E6}",r:"Africa",c:"South Africa"},
+{g:"ts",n:"Tsonga",t:"Xitsonga",f:"\u{1F1FF}\u{1F1E6}",r:"Africa",c:"South Africa"},
+{g:"tn",n:"Tswana",t:"Setswana",f:"\u{1F1E7}\u{1F1FC}",r:"Africa",c:"Botswana"},
+{g:"ss",n:"Swati",t:"siSwati",f:"\u{1F1F8}\u{1F1FF}",r:"Africa",c:"Eswatini"},
+{g:"nr",n:"Ndebele (South)",t:"isiNdebele",f:"\u{1F1FF}\u{1F1E6}",r:"Africa",c:"South Africa"},
+{g:"ht",n:"Haitian Creole",t:"Kreyòl ayisyen",f:"\u{1F1ED}\u{1F1F9}",r:"Americas",c:"Haiti"},
+{g:"gn",n:"Guarani",t:"Avañe\u02BCẽ",f:"\u{1F1F5}\u{1F1FE}",r:"Americas",c:"Paraguay"},
+{g:"qu",n:"Quechua",t:"Runasimi",f:"\u{1F1F5}\u{1F1EA}",r:"Americas",c:"Peru"},
+{g:"ay",n:"Aymara",t:"Aymar aru",f:"\u{1F1E7}\u{1F1F4}",r:"Americas",c:"Bolivia"},
+{g:"haw",n:"Hawaiian",t:"\u02BBŌlelo Hawai\u02BBi",f:"\u{1F1FA}\u{1F1F8}",r:"Americas",c:"USA (Hawaii)"},
+{g:"mi",n:"Maori",t:"Te Reo M\u0101ori",f:"\u{1F1F3}\u{1F1FF}",r:"Pacific",c:"New Zealand"},
+{g:"sm",n:"Samoan",t:"Gagana Samoa",f:"\u{1F1FC}\u{1F1F8}",r:"Pacific",c:"Samoa"},
+{g:"fj",n:"Fijian",t:"Na Vosa Vakaviti",f:"\u{1F1EB}\u{1F1EF}",r:"Pacific",c:"Fiji"}
 ];
 
 var REGIONS=["Asia","Europe","Americas","Middle East","Africa","Pacific"];
 var REGION_LABELS={"Asia":"\u{1F30F} Asia","Europe":"\u{1F30D} Europe","Americas":"\u{1F30E} Americas","Middle East":"\u{1F54C} Middle East & Central Asia","Africa":"\u{1F30D} Africa","Pacific":"\u{1F30A} Pacific"};
+var ABC_KEY="ABC";
+var ABC_LABEL="\u{1F524} ABC (A\u2013Z)";
 
 function url(gc){
   return "https://aon-tokyo.translate.goog/top/?_x_tr_sl=ja&_x_tr_tl="+encodeURIComponent(gc)+"&_x_tr_hl=ja&_x_tr_pto=wapp";
@@ -261,6 +258,7 @@ var activeRegion="all";
 
 function buildPills(){
   var html='<button class="pill active" data-r="all">\u{1F310} All</button>';
+  html+='<button class="pill" data-r="'+ABC_KEY+'">'+ABC_LABEL+'</button>';
   REGIONS.forEach(function(r){html+='<button class="pill" data-r="'+r+'">'+REGION_LABELS[r]+'</button>';});
   pillsEl.innerHTML=html;
   pillsEl.querySelectorAll(".pill").forEach(function(b){
@@ -275,30 +273,57 @@ function buildPills(){
 
 function render(){
   var q=(searchEl.value||"").toLowerCase().trim();
-  var items=L.filter(function(c){
-    if(activeRegion!=="all"&&c.r!==activeRegion)return false;
+  var base=L;
+  if(activeRegion!=="all"&&activeRegion!==ABC_KEY){
+    base=L.filter(function(c){return c.r===activeRegion;});
+  }
+  var items=base.filter(function(c){
     if(!q)return true;
-    return c.n.toLowerCase().indexOf(q)!==-1||c.t.toLowerCase().indexOf(q)!==-1||c.g.toLowerCase().indexOf(q)!==-1;
+    return c.n.toLowerCase().indexOf(q)!==-1||c.t.toLowerCase().indexOf(q)!==-1||c.g.toLowerCase().indexOf(q)!==-1||c.c.toLowerCase().indexOf(q)!==-1;
   });
 
   if(!items.length){mainEl.innerHTML='<p class="empty">No languages found.</p>';return;}
 
-  var grouped={};
-  var order=activeRegion==="all"?REGIONS:[activeRegion];
-  order.forEach(function(r){grouped[r]=[];});
-  items.forEach(function(c){if(!grouped[c.r])grouped[c.r]=[];grouped[c.r].push(c);});
-
   var html="";
-  order.forEach(function(r){
-    var arr=grouped[r];
-    if(!arr||!arr.length)return;
-    html+='<section class="region-section"><h2 class="region-title">'+REGION_LABELS[r]+'<span class="region-count">('+arr.length+')</span></h2><div class="grid">';
-    arr.forEach(function(c){
-      html+='<a class="card" href="'+url(c.g)+'" target="_blank" rel="noopener noreferrer"><span class="card-flag">'+c.f+'</span><span class="card-native">'+esc(c.t)+'</span><span class="card-en">'+esc(c.n)+'</span></a>';
+
+  if(activeRegion===ABC_KEY){
+    var sorted=items.slice().sort(function(a,b){return a.n.localeCompare(b.n,"en");});
+    var groups={};
+    sorted.forEach(function(c){
+      var letter=c.n.charAt(0).toUpperCase();
+      if(!groups[letter])groups[letter]=[];
+      groups[letter].push(c);
     });
-    html+='</div></section>';
-  });
+    var letters=Object.keys(groups).sort();
+    letters.forEach(function(letter){
+      var arr=groups[letter];
+      html+='<section class="region-section"><h2 class="region-title">'+esc(letter)+'<span class="region-count">('+arr.length+')</span></h2><div class="grid">';
+      arr.forEach(function(c){html+=cardHtml(c);});
+      html+='</div></section>';
+    });
+  }else{
+    var grouped={};
+    var order=activeRegion==="all"?REGIONS:[activeRegion];
+    order.forEach(function(r){grouped[r]=[];});
+    items.forEach(function(c){if(!grouped[c.r])grouped[c.r]=[];grouped[c.r].push(c);});
+    order.forEach(function(r){
+      var arr=grouped[r];
+      if(!arr||!arr.length)return;
+      html+='<section class="region-section"><h2 class="region-title">'+REGION_LABELS[r]+'<span class="region-count">('+arr.length+')</span></h2><div class="grid">';
+      arr.forEach(function(c){html+=cardHtml(c);});
+      html+='</div></section>';
+    });
+  }
   mainEl.innerHTML=html;
+}
+
+function cardHtml(c){
+  return '<a class="card" href="'+url(c.g)+'" target="_blank" rel="noopener noreferrer">'
+    +'<span class="card-flag">'+c.f+'</span>'
+    +'<span class="card-native">'+esc(c.t)+'</span>'
+    +'<span class="card-en">'+esc(c.n)+'</span>'
+    +'<span class="card-country">'+esc(c.c)+'</span>'
+    +'</a>';
 }
 
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
