@@ -50,10 +50,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:1.5rem 1rem;text-align:center;font-size:.7rem;color:var(--text-muted);line-height:1.7}
 .footer a{color:var(--text-dim);text-decoration:none;transition:color .2s}
 .footer a:hover{color:#fff}
-.footer-tools{margin-top:.65rem}
-.btn-view-source{display:inline-block;padding:.4rem .95rem;border-radius:9999px;border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);color:var(--cyan);font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s,color .2s,border-color .2s}
-.btn-view-source:hover{background:rgba(34,211,238,.16);color:#67e8f9;border-color:rgba(34,211,238,.55)}
-
 .site-nav-wrap{max-width:76rem;margin:0 auto;padding:.85rem 1rem 0;font-size:.68rem;color:var(--text-muted);line-height:1.65;border-bottom:1px solid rgba(255,255,255,.06)}
 .site-nav-wrap .sn-title{display:block;font-weight:700;color:var(--text-dim);margin-bottom:.4rem;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase}
 .site-nav-rows{display:flex;flex-direction:column;gap:.35rem;align-items:center}
@@ -85,7 +81,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 <footer class="footer">
   <p>Copyright &copy; 2025 <a href="https://nasa.tokyo/top/">nasa.tokyo</a>, Akiru Akiruno-City Tokyo Japan. All Rights Reserved.</p>
   <p>Powered by Google Translate</p>
-  <p class="footer-tools"><button type="button" class="btn-view-source" id="viewPageSourceBtn">このページのHTMLソースを表示（認証不要）</button></p>
 </footer>
 
 <script>
@@ -417,34 +412,6 @@ render();
     mo.observe(document.body||document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["href","src"]});
   }catch(e){}
 })();
-})();
-</script>
-<script>
-(function(){
-  var btn=document.getElementById("viewPageSourceBtn");
-  if(!btn) return;
-  btn.addEventListener("click", function(){
-    var path=window.location.pathname||"/";
-    if(!/\/index\.html$/i.test(path)){
-      if(path.slice(-1)!=="/") path+="/";
-      path+="index.html";
-    }
-    var fetchUrl=window.location.origin+path;
-    fetch(fetchUrl,{cache:"no-store",credentials:"same-origin"}).then(function(r){
-      if(!r.ok) throw new Error("fetch failed");
-      return r.text();
-    }).then(function(html){
-      var esc=html.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      var title=fetchUrl.replace(/&/g,"&amp;").replace(/</g,"&lt;");
-      var w=window.open("","_blank","noopener,noreferrer");
-      if(!w){ window.alert("ポップアップがブロックされています。許可してから再度お試しください。"); return; }
-      w.document.open();
-      w.document.write("<!DOCTYPE html><html lang=\"ja\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>HTML source — "+title+"</title><style>body{margin:0;background:#0f172a;color:#e2e8f0;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;padding:1rem 1.25rem 2rem}h1{font-size:12px;font-weight:600;color:#94a3b8;margin:0 0 1rem;font-family:system-ui,sans-serif}pre{margin:0}</style></head><body><h1>"+title+"</h1><pre>"+esc+"</pre></body></html>");
-      w.document.close();
-    }).catch(function(){
-      window.alert("ソースを取得できませんでした。同じサイト上の /world/index.html として公開されている場合に利用できます。");
-    });
-  });
 })();
 </script>
 </body>
