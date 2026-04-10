@@ -14,7 +14,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 ::selection{background:var(--cyan-glow);color:#fff}
 .header{position:relative;overflow:hidden;text-align:center;padding:3.5rem 1rem 2rem}
 .header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120,119,198,.3),transparent);pointer-events:none}
-.logo{display:inline-block;font-size:clamp(2.5rem,6vw,3.8rem);font-weight:900;letter-spacing:-.02em;background:linear-gradient(135deg,#22d3ee,#818cf8,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;transition:opacity .2s}
+@keyframes logoGradientLR{0%{background-position:0% 50%}100%{background-position:100% 50%}}.logo{display:inline-block;font-size:clamp(2.5rem,6vw,3.8rem);font-weight:900;letter-spacing:-.02em;background:linear-gradient(90deg,#6366f1 0%,#2563eb 10%,#22c55e 20%,#84cc16 30%,#facc15 40%,#f97316 50%,#ff1493 60%,#ef4444 70%,#c026d3 80%,#7c3aed 90%,#6366f1 100%);background-size:400% 100%;animation:logoGradientLR 20s ease-in-out infinite;-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;transition:opacity .2s}
 .logo:hover{opacity:.85}
 .subtitle{margin-top:.5rem;font-size:clamp(.95rem,2vw,1.25rem);color:var(--text-dim);font-weight:500}
 .note{margin-top:.5rem;font-size:.8rem;color:var(--text-muted);max-width:36rem;margin-left:auto;margin-right:auto;line-height:1.6}
@@ -50,12 +50,23 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:1.5rem 1rem;text-align:center;font-size:.7rem;color:var(--text-muted);line-height:1.7}
 .footer a{color:var(--text-dim);text-decoration:none;transition:color .2s}
 .footer a:hover{color:#fff}
+.site-nav-wrap{max-width:76rem;margin:0 auto;padding:.85rem 1rem 0;font-size:.68rem;color:var(--text-muted);line-height:1.65;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav-wrap .sn-title{display:block;font-weight:700;color:var(--text-dim);margin-bottom:.4rem;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase}
+.site-nav-rows{display:flex;flex-direction:column;gap:.35rem;align-items:center}
+.site-nav-row{display:flex;flex-wrap:wrap;gap:.35rem .6rem;justify-content:center;align-items:center}
+.site-nav-row .sn-d{font-weight:600;color:rgba(255,255,255,.85);font-size:.72rem}
+.site-nav-row a{color:var(--cyan);text-decoration:none}
+.site-nav-row a:hover{text-decoration:underline}
+.site-nav-row .sn-sep{color:var(--text-muted);opacity:.45}
+
 </style>
 </head>
 <body>
+<nav class="site-nav-wrap" aria-label="All domains"><span class="sn-title">Domains — home / world / top</span><div class="site-nav-rows"><div class="site-nav-row"><span class="sn-d">aon.tokyo</span><span class="sn-sep">·</span><a href="https://aon.tokyo/">/</a><span class="sn-sep">·</span><a href="https://aon.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://aon.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">audiocafe.tokyo</span><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/">/</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">nasa.tokyo</span><span class="sn-sep">·</span><a href="https://nasa.tokyo/">/</a><span class="sn-sep">·</span><a href="https://nasa.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://nasa.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">icpo.tokyo</span><span class="sn-sep">·</span><a href="https://icpo.tokyo/">/</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">ion.tokyo</span><span class="sn-sep">·</span><a href="https://ion.tokyo/">/</a><span class="sn-sep">·</span><a href="https://ion.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://ion.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">raysoft.jp</span><span class="sn-sep">·</span><a href="https://raysoft.jp/">/</a><span class="sn-sep">·</span><a href="https://raysoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://raysoft.jp/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">nanosoft.jp</span><span class="sn-sep">·</span><a href="https://nanosoft.jp/">/</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/top/">/top</a></div></div></nav>
+
 
 <header class="header">
-  <a href="https://icpo.tokyo/top/" class="logo">ICPO</a>
+  <a href="https://icpo.tokyo/top/" class="logo">icpo.tokyo</a>
   <p class="subtitle">Please select your native language.</p>
   <p class="note">あなたの母国語を選択してください。2回目の選択時はブラウザを閉じて再度開いてください。<br>動画を視聴するには日本語を選択してください。</p>
   <div class="search-wrap">
@@ -68,7 +79,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 <main class="main" id="main"></main>
 
 <footer class="footer">
-  <p>Copyright &copy; 2025 <a href="https://icpo.tokyo/top/">ICPO</a>, Akiru Akiruno-City Tokyo Japan. All Rights Reserved.</p>
+  <p>Copyright &copy; 2025 <a href="https://icpo.tokyo/top/">icpo.tokyo</a>, Akiru Akiruno-City Tokyo Japan. All Rights Reserved.</p>
   <p>Powered by Google Translate</p>
 </footer>
 
