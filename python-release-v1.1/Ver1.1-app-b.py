@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Python utility — Ver 1.1"""
+"""Python Ver 1.1 — app B"""
 
 VERSION = "1.1"
 
 
 def main() -> None:
-    print("Python Ver %s" % VERSION)
+    print("Python Ver %s — app B" % VERSION)
 
 
 if __name__ == "__main__":

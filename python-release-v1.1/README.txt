@@ -1,7 +1,8 @@
-Python release Ver 1.1
-========================
+Python Ver 1.1 — two .py apps (each distributed as its own .zip)
 
-Ver1.1.py   — run with: python Ver1.1.py
-Ver1.1.exe  — Windows launcher (information dialog; use Ver1.1.py for Python code)
+  Ver1.1-app-a.py  →  packaged as ../downloads/ver1.1-app-a.zip
+  Ver1.1-app-b.py  →  packaged as ../downloads/ver1.1-app-b.zip
 
-The distributable ZIP (python-ver1.1.zip) is built in ../downloads/ from these files.
+Run:  python Ver1.1-app-a.py   or   python Ver1.1-app-b.py
+
+(No .exe — Python source only.)
