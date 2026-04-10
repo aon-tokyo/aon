@@ -1,8 +1,9 @@
-Python Ver 1.1 — two .py apps (each distributed as its own .zip)
+ultimate_backup_replacer — V1.1
+================================
 
-  Ver1.1-app-a.py  →  packaged as ../downloads/ver1.1-app-a.zip
-  Ver1.1-app-b.py  →  packaged as ../downloads/ver1.1-app-b.zip
+Distributed as two ZIPs in ../downloads/:
 
-Run:  python Ver1.1-app-a.py   or   python Ver1.1-app-b.py
+  ultimate_backup_replacer.V1.1(exe).zip  —  ultimate_backup_replacer.exe (Windows)
+  ultimate_backup_replacer.V1.1(py).zip   —  ultimate_backup_replacer.py  (Python 3)
 
-(No .exe — Python source only.)
+Run the .py:  python ultimate_backup_replacer.py
