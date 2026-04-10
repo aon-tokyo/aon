@@ -3622,22 +3622,6 @@ Additionally, audio-focused businesses—such as AUDIO CAFÉ and other audio sho
  */
 (function(){
 "use strict";
-var PROTECTED_DOMAINS=[
-  "youtube.com","www.youtube.com","youtu.be","m.youtube.com",
-  "facebook.com","www.facebook.com","m.facebook.com",
-  "drive.google.com","docs.google.com",
-  "vimeo.com","www.vimeo.com",
-  "dailymotion.com","www.dailymotion.com",
-  "twitch.tv","www.twitch.tv",
-  "tiktok.com","www.tiktok.com",
-  "nicovideo.jp","www.nicovideo.jp",
-  "ameblo.jp","www.ameblo.jp",
-  "twitter.com","x.com",
-  "instagram.com","www.instagram.com",
-  "nanosoft.jp",
-  "raysoft.jp"
-];
-
 function restoreUrl(url){
   if(!url||typeof url!=="string") return url;
   try{
@@ -3659,16 +3643,9 @@ function restoreUrl(url){
       return prev;
     }
 
-    // Case B: translate.goog proxy
+    // Case B: translate.goog proxy (restore any external host — not only a fixed list)
     if(host.indexOf(".translate.goog")!==-1){
       var originalDomain=host.replace(".translate.goog","").replace(/-/g,".");
-      // Only restore for protected domains
-      var ok=false;
-      for(var i=0;i<PROTECTED_DOMAINS.length;i++){
-        var pd=PROTECTED_DOMAINS[i].toLowerCase();
-        if(originalDomain===pd || originalDomain.endsWith("."+pd)){ ok=true; break; }
-      }
-      if(!ok) return url;
       var params=u.searchParams;
       params.delete("_x_tr_sl");params.delete("_x_tr_tl");params.delete("_x_tr_hl");
       params.delete("_x_tr_pto");params.delete("_x_tr_hist");

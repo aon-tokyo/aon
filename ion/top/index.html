@@ -3492,6 +3492,8 @@
 /*
  * Google Translate URL repair script
  * Fixes Google Translate rewriting href/src (translate.goog and translate.google.com/website?u=)
+ * - Restores external video links (YouTube/Facebook/Drive/etc.)
+ * - Restores images even if src is rewritten after translation
  */
 (function(){
 "use strict";
@@ -3500,6 +3502,7 @@ function restoreUrl(url){
   try{
     var u=new URL(url, window.location.href);
     var host=(u.hostname||"").toLowerCase();
+
     if(host==="translate.google.com" && (u.pathname==="/website" || u.pathname==="/translate")){
       var wrapped=u.searchParams.get("u");
       if(!wrapped) return url;
@@ -3513,6 +3516,7 @@ function restoreUrl(url){
       }
       return prev;
     }
+
     if(host.indexOf(".translate.goog")!==-1){
       var originalDomain=host.replace(".translate.goog","").replace(/-/g,".");
       var params=u.searchParams;
@@ -3521,24 +3525,36 @@ function restoreUrl(url){
       var search=params.toString();
       return "https://"+originalDomain+u.pathname+(search?"?"+search:"")+u.hash;
     }
+
     return url;
-  }catch(e){return url;}
-}
-function fixAll(){
-  var media=document.querySelectorAll("img[src],video[src],source[src],iframe[src],a[href]");
-  for(var i=0;i<media.length;i++){
-    var attr=media[i].tagName.toLowerCase()==='a'?'href':'src';
-    var val=media[i].getAttribute(attr);
-    var fixed=restoreUrl(val);
-    if(fixed && fixed!==val) media[i].setAttribute(attr,fixed);
+  }catch(e){
+    return url;
   }
 }
+
+function fixAllLinks(){
+  var links=document.querySelectorAll("a[href]");
+  for(var i=0;i<links.length;i++){
+    var href=links[i].getAttribute("href");
+    var fixed=restoreUrl(href);
+    if(fixed && fixed!==href) links[i].setAttribute("href", fixed);
+  }
+
+  var media=document.querySelectorAll("video[src],source[src],iframe[src],img[src]");
+  for(var j=0;j<media.length;j++){
+    var src=media[j].getAttribute("src");
+    var fixedSrc=restoreUrl(src);
+    if(fixedSrc && fixedSrc!==src) media[j].setAttribute("src", fixedSrc);
+  }
+}
+
 function hardenImages(){
   var imgs=document.querySelectorAll("img");
   for(var i=0;i<imgs.length;i++){
     (function(img){
       if(!img.getAttribute("data-orig-src")){
-        var s=img.getAttribute("src"); if(s) img.setAttribute("data-orig-src", s);
+        var s=img.getAttribute("src");
+        if(s) img.setAttribute("data-orig-src", s);
       }
       img.addEventListener("error", function(){
         try{
@@ -3548,18 +3564,45 @@ function hardenImages(){
           if(fixed && fixed!==cur){ img.setAttribute("src", fixed); return; }
           if(orig && orig!==cur){ img.setAttribute("src", orig); return; }
         }catch(e){}
-      }, {passive:true});
+      }, { passive:true });
     })(imgs[i]);
   }
 }
+
+document.addEventListener("click", function(ev){
+  try{
+    var el=ev.target;
+    while(el && el!==document.documentElement){
+      if(el.tagName && String(el.tagName).toLowerCase()==="a") break;
+      el=el.parentNode;
+    }
+    if(!el || !el.getAttribute) return;
+    var href=el.getAttribute("href");
+    if(!href) return;
+    if(href.indexOf(".translate.goog")===-1 && href.indexOf("translate.google.com/website")===-1) return;
+    var restored=restoreUrl(href);
+    if(!restored || restored===href) return;
+    ev.preventDefault();
+    var target=el.getAttribute("target") || "_blank";
+    if(target==="_self") window.location.href=restored;
+    else window.open(restored, target);
+  }catch(e){}
+}, true);
+
 if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded", function(){fixAll(); hardenImages();});
-}else{fixAll(); hardenImages();}
-window.addEventListener("load", function(){fixAll(); hardenImages(); setTimeout(fixAll,1000); setTimeout(fixAll,3000);});
+  document.addEventListener("DOMContentLoaded", function(){ fixAllLinks(); hardenImages(); });
+}else{
+  fixAllLinks(); hardenImages();
+}
+window.addEventListener("load", function(){
+  fixAllLinks(); hardenImages();
+  setTimeout(fixAllLinks,1000); setTimeout(fixAllLinks,3000); setTimeout(fixAllLinks,6000);
+});
 try{
-  var mo=new MutationObserver(function(){fixAll();});
+  var mo=new MutationObserver(function(){ fixAllLinks(); });
   mo.observe(document.body||document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["href","src"]});
 }catch(e){}
 })();
 </script>
-</html>ml>
+</body>
+</html>
