@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AON | World — Select Your Language</title>
-<meta name="description" content="Translate aon.tokyo into any of the world's languages via Google Translate.">
-<link rel="icon" href="https://aon.tokyo/favicon.ico">
+<title>Raysoft | World — Select Your Language</title>
+<meta name="description" content="Translate raysoft.jp into any of the world's languages via Google Translate.">
+<link rel="icon" href="https://raysoft.jp/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#020617;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15)}
@@ -67,7 +67,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 
 
 <header class="header">
-  <a href="https://aon.tokyo/top/" class="logo">AON</a>
+  <a href="https://raysoft.jp/top/" class="logo">raysoft.jp</a>
   <p class="subtitle">Please select your native language.</p>
   <p class="note">あなたの母国語を選択してください。2回目の選択時はブラウザを閉じて再度開いてください。<br>動画を視聴するには日本語を選択してください。</p>
   <div class="search-wrap">
@@ -80,9 +80,9 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 <main class="main" id="main"></main>
 
 <footer class="footer">
-  <p>Copyright &copy; 2025 <a href="https://aon.tokyo/top/">AON</a>, Akiru Akiruno-City Tokyo Japan. All Rights Reserved.</p>
+  <p>Copyright &copy; 2025 <a href="https://raysoft.jp/top/">Raysoft</a>, Akiru Akiruno-City Tokyo Japan. All Rights Reserved.</p>
   <p>Powered by Google Translate</p>
-  <p style="margin-top:.75rem;font-size:.72rem;color:var(--text-muted)"><a href="https://raw.githubusercontent.com/aon-tokyo/aon/cursor/top-logo-gradient-4d1a/aon/top/index.html" download="index.html" style="color:var(--cyan)">Download aon.tokyo /top/index.html (raw)</a></p>
+  <p style="margin-top:.75rem;font-size:.72rem;color:var(--text-muted)"><a href="https://raw.githubusercontent.com/aon-tokyo/aon/cursor/top-logo-gradient-4d1a/raysoft/top/index.html" download="index.html" style="color:var(--cyan)">Download raysoft.jp /top/index.html (raw)</a></p>
 </footer>
 
 <script>
@@ -247,9 +247,9 @@ var ABC_LABEL="ABC (A-Z)";
 
 function makeUrl(gc){
   // Japanese: show the original /top/ page as-is (no translation)
-  if(gc==="ja") return "https://aon.tokyo/top/";
+  if(gc==="ja") return "https://raysoft.jp/top/";
   // Other languages: go through Google Translate proxy so text is translated
-  return "https://aon-tokyo.translate.goog/top/?_x_tr_sl=ja&_x_tr_tl="+encodeURIComponent(gc)+"&_x_tr_hl=ja&_x_tr_pto=wapp";
+  return "https://raysoft-jp.translate.goog/top/?_x_tr_sl=ja&_x_tr_tl="+encodeURIComponent(gc)+"&_x_tr_hl=ja&_x_tr_pto=wapp";
 }
 
 var searchEl=document.getElementById("search");
