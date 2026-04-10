@@ -31,6 +31,45 @@
             width:100vw;
             object-fit:contain;
           }
+          @keyframes ionLogoShine {
+            0% { background-position: 120% 0; }
+            50% { background-position: -20% 0; }
+            100% { background-position: 120% 0; }
+          }
+          img.main-img:first-of-type {
+            width: 80vw;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          a.logo-link {
+            display: inline-block;
+            line-height: 0;
+          }
+          .logo-shimmer {
+            display: inline-block;
+            position: relative;
+            line-height: 0;
+            overflow: hidden;
+            border-radius: 4px;
+          }
+          .logo-shimmer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.42) 50%, transparent 62%);
+            background-size: 220% 100%;
+            animation: ionLogoShine 4.2s ease-in-out infinite;
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+          }
+          a.logo-link img.logo-img {
+            display: block;
+            width: min(432px, 92vw);
+            height: auto;
+            vertical-align: top;
+          }
+
         </style>
         <script>
 
@@ -100,7 +139,7 @@
                                 <br>
                                 <input type="text" name="wrdTime" value="" size="30">
                                 </form>
-                        <a href="/top/"><img class="logo" src="https://ion.tokyo/images/.tokyo.png" alt="AEON"></a>
+                        <a href="/top/" class="logo-link"><span class="logo-shimmer"><img class="logo-img" src="https://ion.tokyo/images/.tokyo.png" alt="AEON"></span></a>
                         <BR>
                         <p>光量子コンピューターの高速化に向けた高速検出技術の研究者たち</p>
                         <li><a href="/NTT/">NTT の光量子コンピューター　＆　量子コンピューターでLLMを扱う技術。</a></li>

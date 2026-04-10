@@ -32,6 +32,12 @@
   object-position:center;
   background:#000;
 }
+        img.fullscreen-image:first-of-type {
+            width: 80vw;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
 .fullscreen-image.portrait{
   height:100vh;
   width:100vw;
@@ -56,7 +62,26 @@
 
         /* ヘッダー */
         header { background-color: var(--white); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--navy); }
-        .logo { font-size: 24px; font-weight: bold; color: var(--navy); }
+        @keyframes logoGradientLR {
+            0% { background-position: 100% 50%; }
+            50% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .logo {
+            font-size: 96px;
+            font-weight: bold;
+            line-height: 1.12;
+            padding: 0.08em 0;
+        }
+        .logo .logo-text {
+            display: inline-block;
+            background: linear-gradient(90deg, #003366 0%, #0056b3 32%, #0ea5e9 55%, #003366 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGradientLR 5s ease-in-out infinite;
+        }
         nav ul { display: flex; gap: 20px; }
         nav a { font-weight: bold; color: var(--navy); }
         nav a:hover { color: var(--blue); }
@@ -90,7 +115,7 @@
 
     <!-- ヘッダー -->
     <header>
-        <div class="logo">Aon Inc.</div>
+        <div class="logo"><span class="logo-text">Aon Inc.</span></div>
         <nav>
             <ul>
                 <li><a href="#about">会社概要</a>></li>
