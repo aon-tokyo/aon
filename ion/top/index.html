@@ -31,45 +31,36 @@
             width:100vw;
             object-fit:contain;
           }
-          @keyframes ionLogoShine {
-            0% { background-position: 120% 0; }
-            50% { background-position: -20% 0; }
-            100% { background-position: 120% 0; }
+          @keyframes logoGradientLR {
+            0% { background-position: 100% 50%; }
+            50% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+          }
+          a.logo {
+            text-decoration: none;
+          }
+          .logo {
+            font-size: clamp(1.85rem, 4.5vw, 4.5rem);
+            font-weight: bold;
+            line-height: 1.12;
+            padding: 0.08em 0;
+          }
+          .logo .logo-text {
+            display: inline-block;
+            background: linear-gradient(90deg, #003366 0%, #0056b3 32%, #0ea5e9 55%, #003366 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGradientLR 8s linear infinite;
+            animation-iteration-count: infinite;
+            animation-play-state: running;
           }
           img.main-img:first-of-type {
             width: 80vw;
             max-width: 100%;
             margin-left: auto;
             margin-right: auto;
-          }
-          a.logo-link {
-            display: inline-block;
-            line-height: 0;
-          }
-          .logo-shimmer {
-            display: inline-block;
-            position: relative;
-            line-height: 0;
-            overflow: hidden;
-            border-radius: 4px;
-          }
-          .logo-shimmer::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.42) 50%, transparent 62%);
-            background-size: 220% 100%;
-            animation: ionLogoShine 6s linear infinite;
-            animation-iteration-count: infinite;
-            animation-play-state: running;
-            mix-blend-mode: soft-light;
-            pointer-events: none;
-          }
-          a.logo-link img.logo-img {
-            display: block;
-            width: min(432px, 92vw);
-            height: auto;
-            vertical-align: top;
           }
 
         </style>
@@ -141,7 +132,7 @@
                                 <br>
                                 <input type="text" name="wrdTime" value="" size="30">
                                 </form>
-                        <a href="/top/" class="logo-link"><span class="logo-shimmer"><img class="logo-img" src="https://ion.tokyo/images/.tokyo.png" alt="AEON"></span></a>
+                        <a href="/top/" class="logo"><span class="logo-text">ion.tokyo</span></a>
                         <BR>
                         <p>光量子コンピューターの高速化に向けた高速検出技術の研究者たち</p>
                         <li><a href="/NTT/">NTT の光量子コンピューター　＆　量子コンピューターでLLMを扱う技術。</a></li>
