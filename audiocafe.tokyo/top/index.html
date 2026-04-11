@@ -115,12 +115,13 @@
     </style>
 
 <style>
-/* background: YouTube (top half) + Google AI Mode (bottom half) */
+/* 背景専用: 上=YouTube / 下=Google AI モード（前面コンテンツの下・操作不可） */
 .yt-bg-outer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
 .yt-bg-stack{position:absolute;inset:0;display:flex;flex-direction:column}
 .yt-bg-pane-yt{flex:0 0 50vh;height:50vh;min-height:0;position:relative;overflow:hidden}
-.yt-bg-pane-google{flex:1 1 50vh;min-height:0;position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.12);background:#0a0a0a}
-.bg-google-ai-frame{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:.88;pointer-events:none;background:#fff}
+.yt-bg-pane-google{flex:1 1 50vh;min-height:0;position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.1);background:#050508}
+.yt-bg-pane-google::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(15,23,42,.52) 45%,rgba(0,0,0,.45) 100%)}
+.bg-google-ai-frame{position:absolute;inset:0;z-index:0;width:100%;height:100%;border:0;opacity:.42;pointer-events:none;background:#0f172a;filter:saturate(.88) contrast(.95)}
 .bg-google-ai-fallback{position:absolute;bottom:.45rem;left:50%;transform:translateX(-50%);z-index:2;font-size:.62rem;color:rgba(226,232,240,.75);text-shadow:0 1px 4px #000;text-align:center;max-width:96%;pointer-events:auto}
 .bg-google-ai-fallback a{color:#7dd3fc;text-decoration:underline}
 #yt-bg-player-host{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:50vh;min-width:88.89vh;transform:translate(-50%,-50%)}
@@ -180,7 +181,7 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   <div class="yt-bg-stack">
     <div class="yt-bg-pane yt-bg-pane-yt"><div id="yt-bg-player-host"></div></div>
     <div class="yt-bg-pane yt-bg-pane-google">
-      <iframe id="bgGoogleAiFrame" class="bg-google-ai-frame" title="Google AI Mode (背景)" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe>
+      <iframe id="bgGoogleAiFrame" class="bg-google-ai-frame" title="背景: Google AI モード検索" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe>
       <p id="bgGoogleAiFallback" class="bg-google-ai-fallback" hidden><a id="bgGoogleAiLink" href="#" target="_blank" rel="noopener noreferrer">Google AI モードで開く</a></p>
     </div>
   </div>
