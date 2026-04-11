@@ -486,6 +486,13 @@ function applyYtSearch() {
   }
 }
 
+function syncQueryFromInput() {
+  var inp = document.getElementById("ytBgSearch");
+  var q = inp ? String(inp.value || "").trim() : "";
+  if (!q) q = SEARCH_LIST;
+  currentSearchQuery = q;
+}
+
 function bindYtControlsOnce() {
   if (ytControlsBound) return;
   ytControlsBound = true;
@@ -605,7 +612,9 @@ function onPlayerStateChange(ev) {
 function onPlayerReady(ev) {
   var p = ev.target;
   bindYtControlsOnce();
+  syncQueryFromInput();
   safeBgRotate = 0;
+  loadSearchPlaylist(p, currentSearchQuery);
   try {
     p.mute();
     p.setVolume(0);
