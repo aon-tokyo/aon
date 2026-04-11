@@ -117,11 +117,12 @@
 <style>
 /* 背景: 上段 YouTube（100vh）→ 下へスクロールで Google AI（本文の下に重なる） */
 body{position:relative}
-.yt-bg-outer{position:absolute;top:0;left:0;width:100%;min-height:calc(100vh + min(140vh,980px));z-index:0;pointer-events:none;overflow:hidden;background:#000}
+.yt-bg-outer{position:absolute;top:0;left:0;width:100%;min-height:100vh;height:100vh;z-index:0;pointer-events:none;overflow:hidden;background:#000}
 .yt-bg-pane-yt.ac-yt-hero{position:relative;height:100vh;min-height:100vh;overflow:hidden}
-.bg-google-scroll-wrap{position:relative;z-index:0;width:100%;min-height:min(140vh,980px);background:#050508;border-top:1px solid rgba(255,255,255,.1)}
+.bg-google-scroll-wrap{position:absolute;top:100vh;left:0;width:100%;min-height:min(140vh,980px);z-index:2;pointer-events:none;background:#050508;border-top:1px solid rgba(255,255,255,.1)}
 .bg-google-scroll-wrap::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(15,23,42,.52) 45%,rgba(0,0,0,.45) 100%)}
-.bg-google-ai-controls{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.45rem .5rem;padding:.5rem .75rem;background:linear-gradient(180deg,transparent,rgba(5,5,8,.92));pointer-events:auto}
+.bg-google-scroll-wrap .bg-google-ai-copy,.bg-google-scroll-wrap .bg-google-ai-controls,.bg-google-scroll-wrap .bg-google-ai-fallback{pointer-events:auto}
+.bg-google-ai-controls{position:sticky;bottom:0;z-index:3;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.45rem .5rem;padding:.5rem .75rem;background:linear-gradient(180deg,transparent,rgba(5,5,8,.92));pointer-events:auto}
 .bg-google-pause-btn{font-size:.72rem;font-weight:700;padding:.45rem 1rem;border-radius:9999px;border:1px solid rgba(34,211,238,.45);background:rgba(15,23,42,.88);color:#e0f2fe;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.45)}
 .bg-google-pause-btn:hover{border-color:rgba(34,211,238,.85);background:rgba(34,211,238,.18)}
 .bg-google-mini-btn{font-size:.72rem;font-weight:700;padding:.4rem .72rem;border-radius:9px;border:1px solid rgba(34,211,238,.42);background:rgba(15,23,42,.55);color:#e0f2fe;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
@@ -130,9 +131,9 @@ body{position:relative}
 body.bg-google-bg-paused .bg-google-scroll-wrap .bg-google-ai-stack,body.bg-google-bg-paused .bg-google-scroll-wrap::after{opacity:.06;filter:grayscale(1)}
 body.bg-google-bg-paused .bg-google-scroll-wrap .bg-google-ai-copy{opacity:.08}
 .bg-google-ai-stack{position:relative;z-index:0;display:flex;flex-direction:column;min-height:min(120vh,840px)}
-.bg-google-ai-cell{flex:1 1 0;min-height:0;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.06)}
+.bg-google-ai-cell{flex:1 1 0;min-height:0;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;align-items:stretch;padding:0 .35rem 0 0;box-sizing:border-box}
 .bg-google-ai-cell:last-child{border-bottom:none}
-.bg-google-ai-copy{position:absolute;inset:0;overflow:auto;padding:.55rem .65rem .65rem;opacity:.5;pointer-events:none;background:rgba(15,23,42,.72);box-sizing:border-box;border:0;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}.bg-google-ai-head{font-size:.58rem;font-weight:700;color:#94a3b8;margin:0 0 .35rem;letter-spacing:.04em;text-transform:uppercase}.bg-google-ai-pre{margin:0;font-size:.62rem;line-height:1.45;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;max-height:100%;overflow:auto}.bg-google-ai-err{font-size:.58rem;color:#fca5a5;line-height:1.4}
+.bg-google-ai-copy{position:relative;width:min(100%,min(92vw,26rem));flex:0 0 auto;align-self:stretch;max-height:100%;min-height:6rem;margin-left:auto;overflow:auto;padding:.65rem .75rem .75rem;opacity:.72;pointer-events:auto;background:rgba(15,23,42,.78);box-sizing:border-box;border-radius:10px;border:1px solid rgba(255,255,255,.12);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);scrollbar-width:thin;scrollbar-color:#fff rgba(255,255,255,.12)}.bg-google-ai-copy::-webkit-scrollbar{width:10px}.bg-google-ai-copy::-webkit-scrollbar-track{background:rgba(255,255,255,.08);border-radius:8px}.bg-google-ai-copy::-webkit-scrollbar-thumb{background:#fff;border-radius:8px;border:2px solid rgba(15,23,42,.5)}.bg-google-ai-head{font-size:1.16rem;font-weight:700;color:#fff;margin:0 0 .45rem;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.85)}.bg-google-ai-pre{margin:0;font-size:1.24rem;line-height:1.45;color:#fff;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;max-height:100%;overflow:visible}.bg-google-ai-err{font-size:.58rem;color:#fca5a5;line-height:1.4}
 .bg-google-ai-fallback{position:relative;z-index:3;padding:.5rem;font-size:.62rem;color:rgba(226,232,240,.75);text-align:center;pointer-events:auto}
 .bg-google-ai-fallback a{color:#7dd3fc;text-decoration:underline}
 #yt-bg-player-host{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%)}
@@ -170,7 +171,8 @@ body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
 .yt-bg-ctx-menu button:hover{background:rgba(34,211,238,.15);color:#fff}
 .yt-bg-ctx-menu .yt-ctx-h{padding:.25rem .85rem .15rem;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#64748b;font-weight:700}
 /* stack page above background video */
-body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu):not(#bgGoogleAiFallback){position:relative;z-index:1}
+body.ac-gcopy-focus nav#acSiteNavDomains,body.ac-gcopy-focus>header,body.ac-gcopy-focus>main,body.ac-gcopy-focus>footer{visibility:hidden!important;pointer-events:none!important}
+body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu):not(#bgGoogleAiFallback):not(#bgGoogleScrollWrap){position:relative;z-index:1}
 /* After language selection (Google Translate blog view): hide domain hub + top logo */
 body.ac-tg-blog-mode nav#acSiteNavDomains{display:none!important}
 body.ac-tg-blog-mode>header>.logo{display:none!important}
@@ -189,7 +191,8 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
 </script>
 <div class="yt-bg-outer" aria-hidden="true">
   <div class="yt-bg-pane-yt ac-yt-hero"><div id="yt-bg-player-host"></div></div>
-  <div class="bg-google-scroll-wrap" title="Google検索はiframeで表示できないため、同じキーワードの検索スニペットをテキストで表示しています">
+</div>
+  <div class="bg-google-scroll-wrap" id="bgGoogleScrollWrap" title="Google検索はiframeで表示できないため、同じキーワードの検索スニペットをテキストで表示しています">
     <div class="bg-google-ai-stack">
       <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="0"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
       <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="1"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
@@ -206,7 +209,6 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
     </div>
     <p id="bgGoogleAiFallback" class="bg-google-ai-fallback" hidden><a id="bgGoogleAiLink" href="#" target="_blank" rel="noopener noreferrer">Google AI モードで開く</a></p>
   </div>
-</div>
 <script>
 (function () {
   var queries = [
@@ -327,6 +329,38 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   refreshGooglePanels();
   if (bgGoogleLoop) startGoogleLoop();
   window.addEventListener("pagehide", stopGoogleLoop, false);
+  var gcopyFocus = false;
+  function bgGcopyClear() {
+    if (!gcopyFocus) return;
+    gcopyFocus = false;
+    document.body.classList.remove("ac-gcopy-focus");
+  }
+  function bgGcopySet() {
+    gcopyFocus = true;
+    document.body.classList.add("ac-gcopy-focus");
+  }
+  document.addEventListener(
+    "click",
+    function (ev) {
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      if (t.closest(".bg-google-ai-copy")) {
+        bgGcopySet();
+        return;
+      }
+      if (t.closest(".yt-bg-outer") || t.closest("#ytBgVolumeWrap") || t.closest("#ytBgCtxMenu")) {
+        bgGcopyClear();
+      }
+    },
+    true
+  );
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (window.scrollY < 48) bgGcopyClear();
+    },
+    { passive: true }
+  );
 })();
 </script>
 <div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
