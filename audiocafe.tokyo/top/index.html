@@ -4536,6 +4536,8 @@ function bindYtBgInteractionOnce() {
     if (menu && !menu.hidden && menu.contains(ev.target)) return;
     if (menu && !menu.hidden) hideYtCtxMenu();
     if (ev.button !== 0) return;
+    if (location.hostname.indexOf(".translate.goog") !== -1) return;
+    if (document.body.classList && document.body.classList.contains("ac-tg-blog-mode")) return;
     var el = ev.target;
     if (el && el.closest && el.closest("a.card")) return;
     if (el && el.closest && el.closest("button,input,textarea,select,label,.yt-bg-vol-wrap,.yt-bg-ctx-menu")) return;
