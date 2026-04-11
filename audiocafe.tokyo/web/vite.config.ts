@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = dirname(fileURLToPath(import.meta.url));
 
-/** Static output for LOLIPOP: upload contents of `audiocafe/` (parent of this folder). */
+/** Static output for LOLIPOP: upload contents of `audiocafe.tokyo/` (parent of this folder). */
 export default defineConfig({
   root: rootDir,
   base: "./",

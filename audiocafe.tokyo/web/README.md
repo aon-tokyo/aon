@@ -5,12 +5,12 @@ This folder builds the language-selection page at `https://audiocafe.tokyo/` (pa
 ## Commands
 
 ```bash
-cd audiocafe/web
+cd audiocafe.tokyo/web
 npm install
 npm run build
 ```
 
-Output goes to `../` (the `audiocafe/` directory that maps to the site root). `audiocafe/top/` and `audiocafe/world/` are not removed by the build (`emptyOutDir: false`).
+Output goes to `../` (the `audiocafe.tokyo/` directory that maps to the site root). `audiocafe.tokyo/top/` and `audiocafe.tokyo/world/` are not removed by the build (`emptyOutDir: false`).
 
 ## Develop locally
 
