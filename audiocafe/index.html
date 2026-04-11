@@ -103,7 +103,7 @@ body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
     <label for="ytBgSearch">YouTube検索</label>
     <input type="search" id="ytBgSearch" placeholder="検索ワードを入力" autocomplete="off" enterkeyhint="search" />
     <button type="button" class="yt-bg-btn" id="ytBgSearchApply">検索を適用</button>
-    <button type="button" class="yt-bg-btn" id="ytBgOnlyToggle" aria-pressed="false">YouTubeのみ表示</button>
+    <button type="button" class="yt-bg-btn" id="ytBgOnlyToggle" aria-pressed="false">Youtubeに移動</button>
   </div>
 </div>
 
@@ -496,7 +496,7 @@ function bindYtControlsOnce() {
   if (onlyBtn) onlyBtn.addEventListener("click", function() {
     var on = document.body.classList.toggle("yt-only-mode");
     onlyBtn.setAttribute("aria-pressed", on ? "true" : "false");
-    onlyBtn.textContent = on ? "\u30b5\u30a4\u30c8\u306b\u623b\u308b" : "YouTube\u306e\u307f\u8868\u793a";
+    onlyBtn.textContent = on ? "\u30b5\u30a4\u30c8\u306b\u623b\u308b" : "Youtube\u306b\u79fb\u52d5";
   }, false);
 }
 
