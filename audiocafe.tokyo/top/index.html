@@ -121,9 +121,12 @@ body{position:relative}
 .yt-bg-pane-yt.ac-yt-hero{position:relative;height:100vh;min-height:100vh;overflow:hidden}
 .bg-google-scroll-wrap{position:relative;z-index:0;width:100%;min-height:min(140vh,980px);background:#050508;border-top:1px solid rgba(255,255,255,.1)}
 .bg-google-scroll-wrap::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(15,23,42,.52) 45%,rgba(0,0,0,.45) 100%)}
-.bg-google-ai-controls{position:sticky;bottom:0;z-index:2;display:flex;justify-content:center;padding:.5rem .75rem;background:linear-gradient(180deg,transparent,rgba(5,5,8,.92));pointer-events:auto}
+.bg-google-ai-controls{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.45rem .5rem;padding:.5rem .75rem;background:linear-gradient(180deg,transparent,rgba(5,5,8,.92));pointer-events:auto}
 .bg-google-pause-btn{font-size:.72rem;font-weight:700;padding:.45rem 1rem;border-radius:9999px;border:1px solid rgba(34,211,238,.45);background:rgba(15,23,42,.88);color:#e0f2fe;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.45)}
 .bg-google-pause-btn:hover{border-color:rgba(34,211,238,.85);background:rgba(34,211,238,.18)}
+.bg-google-mini-btn{font-size:.72rem;font-weight:700;padding:.4rem .72rem;border-radius:9px;border:1px solid rgba(34,211,238,.42);background:rgba(15,23,42,.55);color:#e0f2fe;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.bg-google-mini-btn:hover{border-color:rgba(34,211,238,.75);background:rgba(34,211,238,.18);color:#fff}
+.bg-google-mini-btn[aria-pressed="true"]{border-color:rgba(34,211,238,.9);background:rgba(34,211,238,.28);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 body.bg-google-bg-paused .bg-google-scroll-wrap .bg-google-ai-stack,body.bg-google-bg-paused .bg-google-scroll-wrap::after{opacity:.06;filter:grayscale(1)}
 body.bg-google-bg-paused .bg-google-scroll-wrap iframe{opacity:.05}
 .bg-google-ai-stack{position:relative;z-index:0;display:flex;flex-direction:column;min-height:min(120vh,840px)}
@@ -198,6 +201,8 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
     </div>
     <div class="bg-google-ai-controls">
       <button type="button" class="bg-google-pause-btn" id="bgGoogleBgPauseBtn" aria-pressed="false">Google背景 一時停止</button>
+      <button type="button" class="bg-google-mini-btn" id="bgGoogleBgLoopOn" aria-pressed="true">ループ中</button>
+      <button type="button" class="bg-google-mini-btn" id="bgGoogleBgLoopOff" aria-pressed="false">ループ解除</button>
     </div>
     <p id="bgGoogleAiFallback" class="bg-google-ai-fallback" hidden><a id="bgGoogleAiLink" href="#" target="_blank" rel="noopener noreferrer">Google AI モードで開く</a></p>
   </div>
@@ -213,20 +218,18 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
     "\u5343\u8449\u770c\u3067\u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b\u59cb\u307e\u308b",
     "\u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b \u30c7\u30e1\u30ea\u30c3\u30c8"
   ];
+  function googleSearchUrl(q, tick) {
+    var u = "https://www.google.com/search?q=" + encodeURIComponent(q) + "&udm=50&hl=ja";
+    return tick != null ? u + "&t=" + tick : u;
+  }
   var frames = document.querySelectorAll(".bg-google-ai-frame");
   var i;
   for (i = 0; i < frames.length && i < queries.length; i++) {
-    frames[i].setAttribute(
-      "src",
-      "https://www.google.com/search?q=" + encodeURIComponent(queries[i]) + "&udm=50&hl=ja"
-    );
+    frames[i].setAttribute("src", googleSearchUrl(queries[i]));
   }
   var a = document.getElementById("bgGoogleAiLink");
   if (a) {
-    a.setAttribute(
-      "href",
-      "https://www.google.com/search?q=" + encodeURIComponent(queries[0]) + "&udm=50&hl=ja"
-    );
+    a.setAttribute("href", googleSearchUrl(queries[0]));
   }
   var fb = document.getElementById("bgGoogleAiFallback");
   if (fb) fb.hidden = true;
@@ -238,6 +241,49 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
       btn.textContent = on ? "Google背景 再開" : "Google背景 一時停止";
     }, false);
   }
+  var bgGoogleLoop = true;
+  var bgGoogleLoopTimer = null;
+  var loopOnEl = document.getElementById("bgGoogleBgLoopOn");
+  var loopOffEl = document.getElementById("bgGoogleBgLoopOff");
+  function refreshGoogleIframes() {
+    var list = document.querySelectorAll(".bg-google-ai-frame");
+    var tick = Date.now();
+    var j;
+    for (j = 0; j < list.length && j < queries.length; j++) {
+      list[j].setAttribute("src", googleSearchUrl(queries[j], tick + "-" + j));
+    }
+  }
+  function syncGoogleLoopUi() {
+    if (loopOnEl) loopOnEl.setAttribute("aria-pressed", bgGoogleLoop ? "true" : "false");
+    if (loopOffEl) loopOffEl.setAttribute("aria-pressed", !bgGoogleLoop ? "true" : "false");
+  }
+  function startGoogleLoop() {
+    if (bgGoogleLoopTimer) return;
+    bgGoogleLoopTimer = setInterval(refreshGoogleIframes, 90000);
+  }
+  function stopGoogleLoop() {
+    if (bgGoogleLoopTimer) {
+      clearInterval(bgGoogleLoopTimer);
+      bgGoogleLoopTimer = null;
+    }
+  }
+  if (loopOnEl) {
+    loopOnEl.addEventListener("click", function () {
+      bgGoogleLoop = true;
+      syncGoogleLoopUi();
+      startGoogleLoop();
+    }, false);
+  }
+  if (loopOffEl) {
+    loopOffEl.addEventListener("click", function () {
+      bgGoogleLoop = false;
+      syncGoogleLoopUi();
+      stopGoogleLoop();
+    }, false);
+  }
+  syncGoogleLoopUi();
+  if (bgGoogleLoop) startGoogleLoop();
+  window.addEventListener("pagehide", stopGoogleLoop, false);
 })();
 </script>
 <div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
