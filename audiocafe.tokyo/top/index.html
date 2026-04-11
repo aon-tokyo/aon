@@ -158,8 +158,8 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
   <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
   <label for="ytBgVolume">音量</label>
   <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
+  <button type="button" class="yt-bg-mini-btn" id="ytBgPauseToggle" aria-pressed="false">一時停止</button>
   <div class="yt-bg-ctrl-row">
-    <button type="button" class="yt-bg-mini-btn" id="ytBgPauseToggle" aria-pressed="false">一時停止</button>
     <span class="yt-bg-ctrl-sep" aria-hidden="true">|</span>
     <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOn" aria-pressed="true">ループ中</button>
     <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOff" aria-pressed="false">ループ解除</button>
@@ -3950,6 +3950,17 @@ function parseYtHandoffFromLocation() {
 
 function consumeYtHandoffHash() {
   var params = parseYtHandoffFromLocation();
+  if (!params) {
+    try {
+      var ss = sessionStorage.getItem("ytbgHandoff");
+      if (ss) {
+        var j = JSON.parse(ss);
+        if (j && j.ytbg === "1" && j.v && /^[a-zA-Z0-9_-]{11}$/.test(j.v)) {
+          params = j;
+        }
+      }
+    } catch (e2) {}
+  }
   if (!params) return null;
   try {
     if (window.history && window.history.replaceState) {
@@ -3957,6 +3968,9 @@ function consumeYtHandoffHash() {
       window.history.replaceState(null, "", clean);
     }
   } catch (e) {}
+  try {
+    sessionStorage.removeItem("ytbgHandoff");
+  } catch (e3) {}
   return params;
 }
 
@@ -3999,6 +4013,19 @@ function bindYtCardHandoffOnce() {
       }
     } catch (e) {}
     var frag = buildYtHandoffHashString(vid, vol, ytBgLoop, currentSearchQuery, paused);
+    try {
+      sessionStorage.setItem(
+        "ytbgHandoff",
+        JSON.stringify({
+          ytbg: "1",
+          v: vid,
+          vol: vol,
+          lp: ytBgLoop ? "1" : "0",
+          ps: paused ? "1" : "0",
+          q: currentSearchQuery
+        })
+      );
+    } catch (e0) {}
     if (!frag) return;
     try {
       var u = new URL(a.getAttribute("href"), window.location.href);
