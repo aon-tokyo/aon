@@ -115,9 +115,19 @@
     </style>
 
 <style>
-/* background YouTube search playlist */
+/* background: YouTube (top half) + Google AI Mode (bottom half) */
 .yt-bg-outer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
-.yt-bg-outer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
+.yt-bg-stack{position:absolute;inset:0;display:flex;flex-direction:column}
+.yt-bg-pane-yt{flex:0 0 50vh;height:50vh;min-height:0;position:relative;overflow:hidden}
+.yt-bg-pane-google{flex:1 1 50vh;min-height:0;position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.12);background:#0a0a0a}
+.bg-google-ai-frame{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:.88;pointer-events:none;background:#fff}
+.bg-google-ai-fallback{position:absolute;bottom:.45rem;left:50%;transform:translateX(-50%);z-index:2;font-size:.62rem;color:rgba(226,232,240,.75);text-shadow:0 1px 4px #000;text-align:center;max-width:96%;pointer-events:auto}
+.bg-google-ai-fallback a{color:#7dd3fc;text-decoration:underline}
+#yt-bg-player-host{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:50vh;min-width:88.89vh;transform:translate(-50%,-50%)}
+.yt-bg-pane-yt iframe{position:absolute!important;top:50%!important;left:50%!important;width:100vw!important;height:56.25vw!important;min-height:50vh!important;min-width:88.89vh!important;transform:translate(-50%,-50%)!important;border:0!important;opacity:1}
+body.yt-only-mode .yt-bg-stack{flex-direction:column}
+body.yt-only-mode .yt-bg-pane-yt{flex:1 1 100%;height:100vh;min-height:100vh}
+body.yt-only-mode .yt-bg-pane-google{display:none}
 body:not(.yt-bg-ready) .yt-bg-outer{opacity:1;visibility:visible}
 body.yt-bg-ready .yt-bg-outer{opacity:1;visibility:visible;transition:opacity .35s ease}
 body>.site-nav-wrap{position:relative;z-index:1;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -149,7 +159,7 @@ body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
 .yt-bg-ctx-menu button:hover{background:rgba(34,211,238,.15);color:#fff}
 .yt-bg-ctx-menu .yt-ctx-h{padding:.25rem .85rem .15rem;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#64748b;font-weight:700}
 /* stack page above background video */
-body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative;z-index:1}
+body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu):not(#bgGoogleAiFallback){position:relative;z-index:1}
 /* After language selection (Google Translate blog view): hide domain hub + top logo */
 body.ac-tg-blog-mode nav#acSiteNavDomains{display:none!important}
 body.ac-tg-blog-mode>header>.logo{display:none!important}
@@ -166,7 +176,31 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   else if(fromStorage())activate();
 })();
 </script>
-<div class="yt-bg-outer" aria-hidden="true"><div id="yt-bg-player-host"></div></div>
+<div class="yt-bg-outer" aria-hidden="true">
+  <div class="yt-bg-stack">
+    <div class="yt-bg-pane yt-bg-pane-yt"><div id="yt-bg-player-host"></div></div>
+    <div class="yt-bg-pane yt-bg-pane-google">
+      <iframe id="bgGoogleAiFrame" class="bg-google-ai-frame" title="Google AI Mode (背景)" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe>
+      <p id="bgGoogleAiFallback" class="bg-google-ai-fallback" hidden><a id="bgGoogleAiLink" href="#" target="_blank" rel="noopener noreferrer">Google AI モードで開く</a></p>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var queries = ["\u7c73\u306e\u6c34\u8015\u683d\u57f9", "\u95a2\u6771 \u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b"];
+  var q = queries[Math.floor(Math.random() * queries.length)];
+  var url = "https://www.google.com/search?q=" + encodeURIComponent(q) + "&udm=50&hl=ja";
+  var fr = document.getElementById("bgGoogleAiFrame");
+  var fb = document.getElementById("bgGoogleAiFallback");
+  var a = document.getElementById("bgGoogleAiLink");
+  if (fr) fr.setAttribute("src", url);
+  if (a) {
+    a.setAttribute("href", url);
+    a.textContent = "Google AI\u30e2\u30fc\u30c9\uff08" + q + "\uff09";
+  }
+  if (fb) fb.hidden = true;
+})();
+</script>
 <div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
   <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
   <div class="yt-bg-inline-transport" style="display:flex;align-items:center;flex-wrap:wrap;gap:.5rem .65rem;width:100%">
