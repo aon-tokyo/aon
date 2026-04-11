@@ -69,8 +69,10 @@ body{padding-top:0}
 
 
 /* background YouTube search playlist */
-.yt-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.yt-bg-layer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
+.yt-bg-outer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.yt-bg-outer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
+body:not(.yt-bg-ready) .yt-bg-outer{opacity:0;visibility:hidden}
+body.yt-bg-ready .yt-bg-outer{opacity:1;visibility:visible;transition:opacity .45s ease}
 body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:1}
 .yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
 .yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
@@ -84,7 +86,7 @@ body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:
 </head>
 <body>
 
-<div id="yt-bg-player-host" class="yt-bg-layer" aria-hidden="true"></div>
+<div class="yt-bg-outer" aria-hidden="true"><div id="yt-bg-player-host"></div></div>
 <div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
   <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
   <label for="ytBgVolume">音量</label>
@@ -446,8 +448,14 @@ render();
 (function(){
 "use strict";
 var SEARCH_LIST = '\u6b4c\u5fc3\u308a\u3048\u0020\u97d3\u56fd\u0054\u0056\u0020\u65e5\u97d3\u6b4c\u738b\u6226\u0020\u6700\u521d\u304b\u3089\u4eca\u307e\u3067\u0020\u9053\u5316\u5e2b\u306e\u30bd\u30cd\u30c3\u30c8\u0020\u5ddd\u306e\u6d41\u308c\u306e\u3088\u3046\u306b\u0020\u30c7\u30e5\u30a8\u30c3\u30c8\u0020\u7460\u7483\u8272\u306e\u5730\u7403';
+var FALLBACK_SEARCH = '\u6b4c\u5fc3\u308a\u3048';
 var ytBgPlayer = null;
 var adCheckTimer = null;
+var ytBgFallbackUsed = false;
+
+function markBgReady() {
+  try { document.body.classList.add("yt-bg-ready"); } catch (e) {}
+}
 
 function isLikelyAdTitle(t) {
   if (!t || typeof t !== "string") return false;
@@ -473,11 +481,32 @@ function clearAdTimer() {
   }
 }
 
-function onPlayerError(ev) {
+function loadSearchPlaylist(player, query) {
   try {
-    var p = ev.target;
-    if (p && p.nextVideo) p.nextVideo();
+    if (player && player.loadPlaylist) {
+      player.loadPlaylist({
+        listType: "search",
+        list: query,
+        index: 0,
+        startSeconds: 0,
+        suggestedQuality: "default"
+      });
+    }
   } catch (e) {}
+}
+
+function onPlayerError(ev) {
+  var p = ev.target;
+  try {
+    if (!ytBgFallbackUsed) {
+      ytBgFallbackUsed = true;
+      loadSearchPlaylist(p, FALLBACK_SEARCH);
+      return;
+    }
+    if (p && p.nextVideo) p.nextVideo();
+  } catch (e) {
+    try { if (p && p.nextVideo) p.nextVideo(); } catch (e2) {}
+  }
 }
 
 function onPlayerStateChange(ev) {
@@ -485,22 +514,25 @@ function onPlayerStateChange(ev) {
   var YT = window.YT;
   if (!YT) return;
   clearAdTimer();
-  if (ev.data === YT.PlayerState.ENDED) {
-    try { if (p.nextVideo) p.nextVideo(); } catch (e) {}
-    return;
-  }
   if (ev.data === YT.PlayerState.PLAYING) {
+    markBgReady();
     setTimeout(function() { skipIfAd(p); }, 500);
     setTimeout(function() { skipIfAd(p); }, 2000);
     adCheckTimer = setInterval(function() { skipIfAd(p); }, 3500);
+    return;
+  }
+  if (ev.data === YT.PlayerState.ENDED) {
+    try { if (p.nextVideo) p.nextVideo(); } catch (e) {}
   }
 }
 
 function onPlayerReady(ev) {
   var p = ev.target;
+  loadSearchPlaylist(p, SEARCH_LIST);
   try {
     p.mute();
     p.setVolume(0);
+    if (p.playVideo) p.playVideo();
   } catch (e) {}
   var volEl = document.getElementById("ytBgVolume");
   if (!volEl) return;
@@ -527,11 +559,8 @@ window.onYouTubeIframeAPIReady = function() {
     width: "100%",
     height: "100%",
     playerVars: {
-      listType: "search",
-      list: SEARCH_LIST,
       autoplay: 1,
       controls: 0,
-      showinfo: 0,
       rel: 0,
       modestbranding: 1,
       playsinline: 1,
