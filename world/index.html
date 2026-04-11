@@ -8,7 +8,7 @@
 <link rel="icon" href="https://aon.tokyo/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#000;--surface:rgba(15,23,42,.52);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(255,255,255,.07);--card-border:rgba(255,255,255,.18);--card-border-hover:rgba(34,211,238,.42);--card-bg-hover:rgba(255,255,255,.14)}
+:root{--bg:#000;--surface:rgba(15,23,42,.52);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(255,255,255,.13);--card-border:rgba(255,255,255,.28);--card-border-hover:rgba(34,211,238,.5);--card-bg-hover:rgba(255,255,255,.24)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
@@ -34,8 +34,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
 @media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
-.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:var(--card-bg);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s,backdrop-filter .18s;cursor:pointer}
-.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:var(--card-bg-hover);box-shadow:0 10px 28px rgba(34,211,238,.09),inset 0 1px 0 rgba(255,255,255,.28)}
+.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:linear-gradient(165deg,rgba(255,255,255,.16),rgba(255,255,255,.06));-webkit-backdrop-filter:blur(10px) saturate(1.15);backdrop-filter:blur(10px) saturate(1.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.35);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s,backdrop-filter .18s;cursor:pointer}
+.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:linear-gradient(165deg,rgba(255,255,255,.26),rgba(255,255,255,.12));box-shadow:0 10px 28px rgba(34,211,238,.1),inset 0 1px 0 rgba(255,255,255,.4)}
 .card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:.35;transition:transform .18s,opacity .22s}
 @media(hover:hover){.card-flag:hover{transform:scale(1.08);opacity:1}}
 @media(hover:none){.card-flag:active{transform:scale(1.08);opacity:1}}
@@ -84,6 +84,11 @@ body>header,body>main,body>footer{position:relative;z-index:1;background:transpa
 .yt-bg-search-row input[type=search]{flex:1 1 min(200px,100%);min-width:0;padding:.45rem .65rem;border-radius:10px;border:1px solid rgba(34,211,238,.35);background:rgba(15,23,42,.85);color:#f1f5f9;font-size:.82rem}
 .yt-bg-search-row .yt-bg-btn{font-size:.78rem;font-weight:700;padding:.45rem .85rem;border-radius:10px;border:1px solid rgba(34,211,238,.45);background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(15,23,42,.9));color:#e0f2fe;cursor:pointer}
 .yt-bg-search-row .yt-bg-btn:hover{border-color:rgba(34,211,238,.75);background:linear-gradient(180deg,rgba(34,211,238,.35),rgba(15,23,42,.95))}
+.yt-bg-ctrl-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-left:.15rem}
+.yt-bg-mini-btn{font-size:.72rem;font-weight:700;padding:.4rem .72rem;border-radius:9px;border:1px solid rgba(34,211,238,.42);background:rgba(15,23,42,.55);color:#e0f2fe;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.yt-bg-mini-btn:hover{border-color:rgba(34,211,238,.75);background:rgba(34,211,238,.18);color:#fff}
+.yt-bg-mini-btn[aria-pressed="true"]{border-color:rgba(34,211,238,.9);background:rgba(34,211,238,.28);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.yt-bg-ctrl-sep{opacity:.4;color:#64748b;font-size:.7rem;user-select:none}
 body.yt-only-mode>.site-nav-wrap,body.yt-only-mode>header,body.yt-only-mode>main,body.yt-only-mode>footer{display:none!important}
 body.yt-only-mode .yt-bg-outer{z-index:100;pointer-events:auto}
 body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
@@ -103,6 +108,12 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
   <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
   <label for="ytBgVolume">音量</label>
   <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
+  <div class="yt-bg-ctrl-row">
+    <button type="button" class="yt-bg-mini-btn" id="ytBgPauseToggle" aria-pressed="false">一時停止</button>
+    <span class="yt-bg-ctrl-sep" aria-hidden="true">|</span>
+    <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOn" aria-pressed="true">ループ中</button>
+    <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOff" aria-pressed="false">ループ解除</button>
+  </div>
   <div class="yt-bg-search-row">
     <label for="ytBgSearch">YouTube検索</label>
     <input type="search" id="ytBgSearch" placeholder="検索ワードを入力" autocomplete="off" enterkeyhint="search" />
@@ -519,6 +530,26 @@ function syncVolumeFromSlider() {
   } catch (e) {}
 }
 
+function updateYtTransportUi() {
+  var pauseBtn = document.getElementById("ytBgPauseToggle");
+  var loopOn = document.getElementById("ytBgLoopOn");
+  var loopOff = document.getElementById("ytBgLoopOff");
+  var p = ytBgPlayer;
+  var YT = window.YT;
+  if (pauseBtn && YT && p && p.getPlayerState) {
+    try {
+      var st = p.getPlayerState();
+      var playing = st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING;
+      pauseBtn.textContent = playing ? "\u4e00\u6642\u505c\u6b62" : "\u518d\u751f";
+      pauseBtn.setAttribute("aria-pressed", playing ? "true" : "false");
+    } catch (e) {}
+  }
+  if (loopOn && loopOff) {
+    loopOn.setAttribute("aria-pressed", ytBgLoop ? "true" : "false");
+    loopOff.setAttribute("aria-pressed", !ytBgLoop ? "true" : "false");
+  }
+}
+
 function destroyYtBgPlayer() {
   ytSearchFetchToken++;
   try {
@@ -598,6 +629,32 @@ function bindYtControlsOnce() {
     if (!ev.target || ev.target.id !== "ytBgVolume") return;
     syncVolumeFromSlider();
   }, false);
+  var pauseTog = document.getElementById("ytBgPauseToggle");
+  var loopOnBtn = document.getElementById("ytBgLoopOn");
+  var loopOffBtn = document.getElementById("ytBgLoopOff");
+  if (pauseTog) pauseTog.addEventListener("click", function() {
+    var p = ytBgPlayer;
+    var YT = window.YT;
+    if (!p || !YT || !p.getPlayerState) return;
+    try {
+      var st = p.getPlayerState();
+      if (st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING) {
+        if (p.pauseVideo) p.pauseVideo();
+      } else {
+        if (p.playVideo) p.playVideo();
+        syncVolumeFromSlider();
+      }
+      updateYtTransportUi();
+    } catch (e) {}
+  }, false);
+  if (loopOnBtn) loopOnBtn.addEventListener("click", function() {
+    ytBgLoop = true;
+    updateYtTransportUi();
+  }, false);
+  if (loopOffBtn) loopOffBtn.addEventListener("click", function() {
+    ytBgLoop = false;
+    updateYtTransportUi();
+  }, false);
   bindYtBgInteractionOnce();
 }
 
@@ -641,6 +698,7 @@ function bindYtBgInteractionOnce() {
         if (p.playVideo) p.playVideo();
         syncVolumeFromSlider();
       }
+      updateYtTransportUi();
     } catch (e) {}
   }
   document.addEventListener("click", function(ev) {
@@ -679,6 +737,7 @@ function bindYtBgInteractionOnce() {
           }
           if (act === "loop") {
             ytBgLoop = !ytBgLoop;
+            updateYtTransportUi();
             return;
           }
           if (act === "mute") {
@@ -794,6 +853,7 @@ function onPlayerStateChange(ev) {
   if (ev.data === YT.PlayerState.PLAYING || ev.data === YT.PlayerState.BUFFERING) {
     markBgReady();
   }
+  updateYtTransportUi();
   if (ev.data === YT.PlayerState.PLAYING) {
     setTimeout(function() { skipIfAd(p); }, 500);
     setTimeout(function() { skipIfAd(p); }, 2000);
@@ -819,6 +879,7 @@ function onPlayerReady(ev) {
   try {
     syncVolumeFromSlider();
     if (p.playVideo) p.playVideo();
+    updateYtTransportUi();
   } catch (e) {}
 }
 

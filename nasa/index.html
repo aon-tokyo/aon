@@ -83,9 +83,18 @@ body>header,body>main,body>footer{position:relative;z-index:1;background:transpa
 .yt-bg-search-row input[type=search]{flex:1 1 min(200px,100%);min-width:0;padding:.45rem .65rem;border-radius:10px;border:1px solid rgba(34,211,238,.35);background:rgba(15,23,42,.85);color:#f1f5f9;font-size:.82rem}
 .yt-bg-search-row .yt-bg-btn{font-size:.78rem;font-weight:700;padding:.45rem .85rem;border-radius:10px;border:1px solid rgba(34,211,238,.45);background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(15,23,42,.9));color:#e0f2fe;cursor:pointer}
 .yt-bg-search-row .yt-bg-btn:hover{border-color:rgba(34,211,238,.75);background:linear-gradient(180deg,rgba(34,211,238,.35),rgba(15,23,42,.95))}
+.yt-bg-ctrl-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-left:.15rem}
+.yt-bg-mini-btn{font-size:.72rem;font-weight:700;padding:.4rem .72rem;border-radius:9px;border:1px solid rgba(34,211,238,.42);background:rgba(15,23,42,.55);color:#e0f2fe;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.yt-bg-mini-btn:hover{border-color:rgba(34,211,238,.75);background:rgba(34,211,238,.18);color:#fff}
+.yt-bg-mini-btn[aria-pressed="true"]{border-color:rgba(34,211,238,.9);background:rgba(34,211,238,.28);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.yt-bg-ctrl-sep{opacity:.4;color:#64748b;font-size:.7rem;user-select:none}
 body.yt-only-mode>.site-nav-wrap,body.yt-only-mode>header,body.yt-only-mode>main,body.yt-only-mode>footer{display:none!important}
 body.yt-only-mode .yt-bg-outer{z-index:100;pointer-events:auto}
 body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
+.yt-bg-ctx-menu{position:fixed;z-index:200;min-width:11rem;padding:.35rem 0;background:rgba(15,23,42,.96);border:1px solid rgba(34,211,238,.35);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.45);display:none;font-size:.78rem}
+.yt-bg-ctx-menu button{display:block;width:100%;text-align:left;padding:.45rem .85rem;border:none;background:transparent;color:#e2e8f0;cursor:pointer;font:inherit}
+.yt-bg-ctx-menu button:hover{background:rgba(34,211,238,.15);color:#fff}
+.yt-bg-ctx-menu .yt-ctx-h{padding:.25rem .85rem .15rem;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#64748b;font-weight:700}
 /* stack page above background video */
 body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative;z-index:1}
 
@@ -98,6 +107,12 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
   <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
   <label for="ytBgVolume">音量</label>
   <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
+  <div class="yt-bg-ctrl-row">
+    <button type="button" class="yt-bg-mini-btn" id="ytBgPauseToggle" aria-pressed="false">一時停止</button>
+    <span class="yt-bg-ctrl-sep" aria-hidden="true">|</span>
+    <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOn" aria-pressed="true">ループ中</button>
+    <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOff" aria-pressed="false">ループ解除</button>
+  </div>
   <div class="yt-bg-search-row">
     <label for="ytBgSearch">YouTube検索</label>
     <input type="search" id="ytBgSearch" placeholder="検索ワードを入力" autocomplete="off" enterkeyhint="search" />
@@ -502,6 +517,26 @@ function syncVolumeFromSlider() {
   } catch (e) {}
 }
 
+function updateYtTransportUi() {
+  var pauseBtn = document.getElementById("ytBgPauseToggle");
+  var loopOn = document.getElementById("ytBgLoopOn");
+  var loopOff = document.getElementById("ytBgLoopOff");
+  var p = ytBgPlayer;
+  var YT = window.YT;
+  if (pauseBtn && YT && p && p.getPlayerState) {
+    try {
+      var st = p.getPlayerState();
+      var playing = st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING;
+      pauseBtn.textContent = playing ? "\u4e00\u6642\u505c\u6b62" : "\u518d\u751f";
+      pauseBtn.setAttribute("aria-pressed", playing ? "true" : "false");
+    } catch (e) {}
+  }
+  if (loopOn && loopOff) {
+    loopOn.setAttribute("aria-pressed", ytBgLoop ? "true" : "false");
+    loopOff.setAttribute("aria-pressed", !ytBgLoop ? "true" : "false");
+  }
+}
+
 function destroyYtBgPlayer() {
   ytSearchFetchToken++;
   try {
@@ -581,6 +616,32 @@ function bindYtControlsOnce() {
     if (!ev.target || ev.target.id !== "ytBgVolume") return;
     syncVolumeFromSlider();
   }, false);
+  var pauseTog = document.getElementById("ytBgPauseToggle");
+  var loopOnBtn = document.getElementById("ytBgLoopOn");
+  var loopOffBtn = document.getElementById("ytBgLoopOff");
+  if (pauseTog) pauseTog.addEventListener("click", function() {
+    var p = ytBgPlayer;
+    var YT = window.YT;
+    if (!p || !YT || !p.getPlayerState) return;
+    try {
+      var st = p.getPlayerState();
+      if (st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING) {
+        if (p.pauseVideo) p.pauseVideo();
+      } else {
+        if (p.playVideo) p.playVideo();
+        syncVolumeFromSlider();
+      }
+      updateYtTransportUi();
+    } catch (e) {}
+  }, false);
+  if (loopOnBtn) loopOnBtn.addEventListener("click", function() {
+    ytBgLoop = true;
+    updateYtTransportUi();
+  }, false);
+  if (loopOffBtn) loopOffBtn.addEventListener("click", function() {
+    ytBgLoop = false;
+    updateYtTransportUi();
+  }, false);
   bindYtBgInteractionOnce();
 }
 
@@ -624,6 +685,7 @@ function bindYtBgInteractionOnce() {
         if (p.playVideo) p.playVideo();
         syncVolumeFromSlider();
       }
+      updateYtTransportUi();
     } catch (e) {}
   }
   document.addEventListener("click", function(ev) {
@@ -662,6 +724,7 @@ function bindYtBgInteractionOnce() {
           }
           if (act === "loop") {
             ytBgLoop = !ytBgLoop;
+            updateYtTransportUi();
             return;
           }
           if (act === "mute") {
@@ -777,6 +840,7 @@ function onPlayerStateChange(ev) {
   if (ev.data === YT.PlayerState.PLAYING || ev.data === YT.PlayerState.BUFFERING) {
     markBgReady();
   }
+  updateYtTransportUi();
   if (ev.data === YT.PlayerState.PLAYING) {
     setTimeout(function() { skipIfAd(p); }, 500);
     setTimeout(function() { skipIfAd(p); }, 2000);
@@ -802,6 +866,7 @@ function onPlayerReady(ev) {
   try {
     syncVolumeFromSlider();
     if (p.playVideo) p.playVideo();
+    updateYtTransportUi();
   } catch (e) {}
 }
 
