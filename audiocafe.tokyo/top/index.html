@@ -128,11 +128,11 @@ body{position:relative}
 .bg-google-mini-btn:hover{border-color:rgba(34,211,238,.75);background:rgba(34,211,238,.18);color:#fff}
 .bg-google-mini-btn[aria-pressed="true"]{border-color:rgba(34,211,238,.9);background:rgba(34,211,238,.28);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 body.bg-google-bg-paused .bg-google-scroll-wrap .bg-google-ai-stack,body.bg-google-bg-paused .bg-google-scroll-wrap::after{opacity:.06;filter:grayscale(1)}
-body.bg-google-bg-paused .bg-google-scroll-wrap iframe{opacity:.05}
+body.bg-google-bg-paused .bg-google-scroll-wrap .bg-google-ai-copy{opacity:.08}
 .bg-google-ai-stack{position:relative;z-index:0;display:flex;flex-direction:column;min-height:min(120vh,840px)}
 .bg-google-ai-cell{flex:1 1 0;min-height:0;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.06)}
 .bg-google-ai-cell:last-child{border-bottom:none}
-.bg-google-ai-frame{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:.42;pointer-events:none;background:#0f172a;filter:saturate(.88) contrast(.95)}
+.bg-google-ai-copy{position:absolute;inset:0;overflow:auto;padding:.55rem .65rem .65rem;opacity:.5;pointer-events:none;background:rgba(15,23,42,.72);box-sizing:border-box;border:0;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}.bg-google-ai-head{font-size:.58rem;font-weight:700;color:#94a3b8;margin:0 0 .35rem;letter-spacing:.04em;text-transform:uppercase}.bg-google-ai-pre{margin:0;font-size:.62rem;line-height:1.45;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;max-height:100%;overflow:auto}.bg-google-ai-err{font-size:.58rem;color:#fca5a5;line-height:1.4}
 .bg-google-ai-fallback{position:relative;z-index:3;padding:.5rem;font-size:.62rem;color:rgba(226,232,240,.75);text-align:center;pointer-events:auto}
 .bg-google-ai-fallback a{color:#7dd3fc;text-decoration:underline}
 #yt-bg-player-host{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%)}
@@ -189,15 +189,15 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
 </script>
 <div class="yt-bg-outer" aria-hidden="true">
   <div class="yt-bg-pane-yt ac-yt-hero"><div id="yt-bg-player-host"></div></div>
-  <div class="bg-google-scroll-wrap">
+  <div class="bg-google-scroll-wrap" title="Google検索はiframeで表示できないため、同じキーワードの検索スニペットをテキストで表示しています">
     <div class="bg-google-ai-stack">
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 日本の米 外国人による買い占め" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 減反政策 メリット デメリット" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米と日本酒などお酒の輸出増加" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米の水耕栽培" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米の水耕栽培 デメリット" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 千葉県で米の年二回収穫始まる" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
-      <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米の年二回収穫 デメリット" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="0"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="1"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="2"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="3"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="4"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="5"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
+      <div class="bg-google-ai-cell"><div class="bg-google-ai-copy" data-bg-google-idx="6"><p class="bg-google-ai-head">検索スニペット（読み取り）</p><pre class="bg-google-ai-pre" aria-live="polite">読み込み中…</pre></div></div>
     </div>
     <div class="bg-google-ai-controls">
       <button type="button" class="bg-google-pause-btn" id="bgGoogleBgPauseBtn" aria-pressed="false">Google背景 一時停止</button>
@@ -222,15 +222,62 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
     var u = "https://www.google.com/search?q=" + encodeURIComponent(q) + "&udm=50&hl=ja";
     return tick != null ? u + "&t=" + tick : u;
   }
-  var frames = document.querySelectorAll(".bg-google-ai-frame");
-  var i;
-  for (i = 0; i < frames.length && i < queries.length; i++) {
-    frames[i].setAttribute("src", googleSearchUrl(queries[i]));
+  function ddgHtmlUrl(q, tick, idx) {
+    var u = "https://html.duckduckgo.com/html/?q=" + encodeURIComponent(q);
+    return tick != null ? u + "&bg=" + encodeURIComponent(String(tick) + "-" + idx) : u;
+  }
+  function jinaReaderUrl(pageUrl) {
+    return "https://r.jina.ai/" + encodeURIComponent(pageUrl);
+  }
+  function parseJinaBody(raw) {
+    if (!raw || typeof raw !== "string") return "";
+    if (raw.charCodeAt(0) === 123) {
+      try {
+        var jo = JSON.parse(raw);
+        if (jo && jo.message) return "（取得エラー） " + jo.message;
+      } catch (e1) {}
+    }
+    var marker = "Markdown Content:";
+    var i = raw.indexOf(marker);
+    var body = i >= 0 ? raw.slice(i + marker.length) : raw;
+    body = body.replace(/^\s+/, "").replace(/\r\n/g, "\n");
+    body = body.replace(/^#[^\n]+\n+/, "");
+    body = body.trim();
+    if (body.length > 5200) body = body.slice(0, 5200) + "\n…";
+    return body;
+  }
+  function fetchSnippet(idx, tick) {
+    var q = queries[idx];
+    if (q == null) return;
+    var wrap = document.querySelector('[data-bg-google-idx="' + idx + '"]');
+    if (!wrap) return;
+    var pre = wrap.querySelector(".bg-google-ai-pre");
+    if (!pre) return;
+    pre.style.display = "";
+    var prevErr = wrap.querySelector(".bg-google-ai-err");
+    if (prevErr) prevErr.remove();
+    pre.textContent = "\u8aad\u307f\u8fbc\u307f\u4e2d\u2026";
+    var pageUrl = ddgHtmlUrl(q, tick, idx);
+    fetch(jinaReaderUrl(pageUrl), { credentials: "omit", mode: "cors" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.text();
+      })
+      .then(function (txt) {
+        var parsed = parseJinaBody(txt);
+        pre.textContent = parsed || "\uff08\u8868\u793a\u3067\u304d\u308b\u30c6\u30ad\u30b9\u30c8\u304c\u3042\u308a\u307e\u305b\u3093\uff09";
+      })
+      .catch(function () {
+        pre.textContent =
+          "\u53d6\u5f97\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002\u4e0b\u306e\u30ea\u30f3\u30af\u304b\u3089 Google AI \u30e2\u30fc\u30c9\u3092\u958b\u3044\u3066\u304f\u3060\u3055\u3044\u3002";
+      });
+  }
+  function refreshAllSnippets(tick) {
+    var n;
+    for (n = 0; n < queries.length; n++) fetchSnippet(n, tick);
   }
   var a = document.getElementById("bgGoogleAiLink");
-  if (a) {
-    a.setAttribute("href", googleSearchUrl(queries[0]));
-  }
+  if (a) a.setAttribute("href", googleSearchUrl(queries[0]));
   var fb = document.getElementById("bgGoogleAiFallback");
   if (fb) fb.hidden = true;
   var btn = document.getElementById("bgGoogleBgPauseBtn");
@@ -245,13 +292,8 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   var bgGoogleLoopTimer = null;
   var loopOnEl = document.getElementById("bgGoogleBgLoopOn");
   var loopOffEl = document.getElementById("bgGoogleBgLoopOff");
-  function refreshGoogleIframes() {
-    var list = document.querySelectorAll(".bg-google-ai-frame");
-    var tick = Date.now();
-    var j;
-    for (j = 0; j < list.length && j < queries.length; j++) {
-      list[j].setAttribute("src", googleSearchUrl(queries[j], tick + "-" + j));
-    }
+  function refreshGooglePanels() {
+    refreshAllSnippets(Date.now());
   }
   function syncGoogleLoopUi() {
     if (loopOnEl) loopOnEl.setAttribute("aria-pressed", bgGoogleLoop ? "true" : "false");
@@ -259,7 +301,7 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   }
   function startGoogleLoop() {
     if (bgGoogleLoopTimer) return;
-    bgGoogleLoopTimer = setInterval(refreshGoogleIframes, 90000);
+    bgGoogleLoopTimer = setInterval(refreshGooglePanels, 90000);
   }
   function stopGoogleLoop() {
     if (bgGoogleLoopTimer) {
@@ -282,6 +324,7 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
     }, false);
   }
   syncGoogleLoopUi();
+  refreshGooglePanels();
   if (bgGoogleLoop) startGoogleLoop();
   window.addEventListener("pagehide", stopGoogleLoop, false);
 })();
