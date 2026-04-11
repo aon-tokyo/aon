@@ -493,6 +493,109 @@ var YT_SAMPLE_VIDEO_IDS = { "M7lc1UVf-VE": 1, "jNQXAC9IVRw": 1 };
 var ytBgLoop = true;
 var ytCtxMenuBound = false;
 var ytBgLastToggleMs = 0;
+var ytCardNavBound = false;
+var ytHandoffStartPaused = false;
+
+function getCurrentYtBgVideoId() {
+  try {
+    if (ytBgPlayer && ytBgPlayer.getVideoData) {
+      var vd = ytBgPlayer.getVideoData();
+      if (vd && vd.video_id && /^[a-zA-Z0-9_-]{11}$/.test(vd.video_id)) return vd.video_id;
+    }
+  } catch (e) {}
+  return null;
+}
+
+function buildYtHandoffHashString(vid, vol, loop, q, paused) {
+  if (!vid || !/^[a-zA-Z0-9_-]{11}$/.test(vid)) return "";
+  var v = vol | 0;
+  if (v < 0) v = 0;
+  if (v > 100) v = 100;
+  var qs = q != null ? String(q) : "";
+  return "ytbg=1&v=" + encodeURIComponent(vid) + "&vol=" + v + "&lp=" + (loop ? "1" : "0") + "&ps=" + (paused ? "1" : "0") + "&q=" + encodeURIComponent(qs);
+}
+
+function parseYtHandoffFromLocation() {
+  var raw = window.location.hash;
+  if (!raw || raw.length < 8) return null;
+  var seg = raw.charAt(0) === "#" ? raw.slice(1) : raw;
+  if (seg.indexOf("ytbg=1") === -1) return null;
+  var params = {};
+  seg.split("&").forEach(function(part) {
+    var i = part.indexOf("=");
+    if (i === -1) return;
+    var k = decodeURIComponent(part.slice(0, i));
+    var v = decodeURIComponent(part.slice(i + 1).replace(/\+/g, " "));
+    params[k] = v;
+  });
+  if (params.ytbg !== "1" || !params.v) return null;
+  if (!/^[a-zA-Z0-9_-]{11}$/.test(params.v)) return null;
+  return params;
+}
+
+function consumeYtHandoffHash() {
+  var params = parseYtHandoffFromLocation();
+  if (!params) return null;
+  try {
+    if (window.history && window.history.replaceState) {
+      var clean = window.location.pathname + window.location.search;
+      window.history.replaceState(null, "", clean);
+    }
+  } catch (e) {}
+  return params;
+}
+
+function applyYtHandoffParams(ho) {
+  if (!ho || !ho.v || !/^[a-zA-Z0-9_-]{11}$/.test(ho.v)) return false;
+  if (ho.q != null && ho.q !== "") {
+    currentSearchQuery = ho.q;
+    var si = document.getElementById("ytBgSearch");
+    if (si) si.value = ho.q;
+  }
+  ytBgLoop = ho.lp !== "0";
+  ytHandoffStartPaused = ho.ps === "1";
+  var vel = document.getElementById("ytBgVolume");
+  if (vel && ho.vol != null && ho.vol !== "") {
+    var vv = parseInt(ho.vol, 10);
+    if (!isNaN(vv) && vv >= 0 && vv <= 100) vel.value = String(vv);
+  }
+  updateYtTransportUi();
+  return true;
+}
+
+function bindYtCardHandoffOnce() {
+  if (ytCardNavBound) return;
+  ytCardNavBound = true;
+  document.addEventListener("click", function(ev) {
+    var t = ev.target;
+    if (!t || !t.closest) return;
+    var a = t.closest("a.card");
+    if (!a || !a.getAttribute("href")) return;
+    var vid = getCurrentYtBgVideoId();
+    if (!vid) return;
+    var vel = document.getElementById("ytBgVolume");
+    var vol = vel ? (parseInt(vel.value, 10) || 0) : 0;
+    syncQueryFromInput();
+    var paused = false;
+    try {
+      if (ytBgPlayer && ytBgPlayer.getPlayerState && window.YT) {
+        var st = ytBgPlayer.getPlayerState();
+        paused = st === YT.PlayerState.PAUSED || st === YT.PlayerState.CUED;
+      }
+    } catch (e) {}
+    var frag = buildYtHandoffHashString(vid, vol, ytBgLoop, currentSearchQuery, paused);
+    if (!frag) return;
+    try {
+      var u = new URL(a.getAttribute("href"), window.location.href);
+      u.hash = frag;
+      a.setAttribute("href", u.toString());
+    } catch (e) {
+      try {
+        a.href = a.href.split("#")[0] + "#" + frag;
+      } catch (e2) {}
+    }
+  }, true);
+}
 
 function syncQueryFromInput() {
   var inp = document.getElementById("ytBgSearch");
@@ -643,6 +746,7 @@ function bindYtControlsOnce() {
     updateYtTransportUi();
   }, false);
   bindYtBgInteractionOnce();
+  bindYtCardHandoffOnce();
 }
 
 function hideYtCtxMenu() {
@@ -865,7 +969,12 @@ function onPlayerReady(ev) {
   safeBgRotate = 0;
   try {
     syncVolumeFromSlider();
-    if (p.playVideo) p.playVideo();
+    if (ytHandoffStartPaused) {
+      ytHandoffStartPaused = false;
+      if (p.pauseVideo) p.pauseVideo();
+    } else {
+      if (p.playVideo) p.playVideo();
+    }
     updateYtTransportUi();
   } catch (e) {}
 }
@@ -902,6 +1011,11 @@ function createYtBgPlayer() {
   if (ytBgPlayer) return;
   var host = document.getElementById("yt-bg-player-host");
   if (!host) return;
+  var ho = consumeYtHandoffHash();
+  if (ho && applyYtHandoffParams(ho)) {
+    instantiateYtBgPlayer(ho.v);
+    return;
+  }
   syncQueryFromInput();
   var q = currentSearchQuery;
   var myToken = ytSearchFetchToken;
@@ -945,6 +1059,11 @@ window.onYouTubeIframeAPIReady = initYtBgPlayer;
     if (tryInit() || n > 300) clearInterval(tick);
   }, 50);
 })();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", function() { bindYtCardHandoffOnce(); }, false);
+} else {
+  bindYtCardHandoffOnce();
+}
 })();
 </script>
 
