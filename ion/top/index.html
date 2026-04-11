@@ -46,6 +46,7 @@
           }
           .logo .logo-text {
             display: inline-block;
+            opacity: 0.62;
             background: linear-gradient(90deg,#6366f1 0%,#2563eb 10%,#22c55e 20%,#84cc16 30%,#facc15 40%,#f97316 50%,#ff1493 60%,#ef4444 70%,#c026d3 80%,#7c3aed 90%,#6366f1 100%);
             background-size: 400% 100%;
             -webkit-background-clip: text;
@@ -54,7 +55,9 @@
             animation: logoGradientLR 20s ease-in-out infinite;
             animation-iteration-count: infinite;
             animation-play-state: running;
+            transition: opacity 0.2s;
           }
+          .logo:hover .logo-text { opacity: 0.82; }
           img.main-img:first-of-type {
             width: 80vw;
             max-width: 100%;
