@@ -63,7 +63,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 
 /* background YouTube search playlist */
 .yt-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.yt-bg-layer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:.32;filter:saturate(1.08) contrast(1.05)}
+.yt-bg-layer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
 body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:1}
 .yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
 .yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
@@ -469,11 +469,22 @@ function clearAdTimer() {
   }
 }
 
+function onPlayerError(ev) {
+  try {
+    var p = ev.target;
+    if (p && p.nextVideo) p.nextVideo();
+  } catch (e) {}
+}
+
 function onPlayerStateChange(ev) {
   var p = ev.target;
   var YT = window.YT;
   if (!YT) return;
   clearAdTimer();
+  if (ev.data === YT.PlayerState.ENDED) {
+    try { if (p.nextVideo) p.nextVideo(); } catch (e) {}
+    return;
+  }
   if (ev.data === YT.PlayerState.PLAYING) {
     setTimeout(function() { skipIfAd(p); }, 500);
     setTimeout(function() { skipIfAd(p); }, 2000);
@@ -521,12 +532,12 @@ window.onYouTubeIframeAPIReady = function() {
       modestbranding: 1,
       playsinline: 1,
       enablejsapi: 1,
-      iv_load_policy: 3,
-      origin: window.location.origin || undefined
+      iv_load_policy: 3
     },
     events: {
       onReady: onPlayerReady,
-      onStateChange: onPlayerStateChange
+      onStateChange: onPlayerStateChange,
+      onError: onPlayerError
     }
   });
 };
