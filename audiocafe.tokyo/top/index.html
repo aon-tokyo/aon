@@ -4069,6 +4069,14 @@ function syncVolumeFromSlider() {
     if (v > 0) {
       p.unMute();
       p.setVolume(v);
+      // Mobile: unmute alone may not start audio until playback resumes from a user gesture.
+      var YT = window.YT;
+      if (YT && p.getPlayerState) {
+        var st = p.getPlayerState();
+        if (st === YT.PlayerState.CUED || st === YT.PlayerState.PAUSED) {
+          if (p.playVideo) p.playVideo();
+        }
+      }
     } else {
       p.setVolume(0);
       p.mute();
@@ -4206,6 +4214,18 @@ function bindYtControlsOnce() {
     if (!ev.target || ev.target.id !== "ytBgVolume") return;
     syncVolumeFromSlider();
   }, false);
+  if (volWrap) volWrap.addEventListener("change", function(ev) {
+    if (!ev.target || ev.target.id !== "ytBgVolume") return;
+    syncVolumeFromSlider();
+  }, false);
+  if (volWrap) volWrap.addEventListener("pointerup", function(ev) {
+    if (!ev.target || ev.target.id !== "ytBgVolume") return;
+    syncVolumeFromSlider();
+  }, false);
+  if (volWrap) volWrap.addEventListener("touchend", function(ev) {
+    if (!ev.target || ev.target.id !== "ytBgVolume") return;
+    syncVolumeFromSlider();
+  }, { passive: true });
   if (volWrap) {
     volWrap.addEventListener("pointerdown", function(ev) {
       if (ev.target && ev.target.id === "ytBgVolume") ytVolInteracting = true;
