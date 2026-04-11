@@ -8,7 +8,7 @@
 <link rel="icon" href="https://audiocafe.tokyo/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:transparent;--surface:rgba(15,23,42,.52);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15)}
+:root{--bg:#000;--surface:rgba(15,23,42,.52);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
@@ -69,10 +69,10 @@ body{padding-top:0}
 
 
 /* background YouTube search playlist */
-.yt-bg-outer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.yt-bg-outer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
 .yt-bg-outer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
-body:not(.yt-bg-ready) .yt-bg-outer{opacity:0;visibility:hidden}
-body.yt-bg-ready .yt-bg-outer{opacity:1;visibility:visible;transition:opacity .45s ease}
+body:not(.yt-bg-ready) .yt-bg-outer{opacity:1;visibility:visible}
+body.yt-bg-ready .yt-bg-outer{opacity:1;visibility:visible;transition:opacity .35s ease}
 body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:1;background:rgba(15,23,42,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
 .yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
@@ -564,8 +564,10 @@ function onPlayerStateChange(ev) {
   var YT = window.YT;
   if (!YT) return;
   clearAdTimer();
-  if (ev.data === YT.PlayerState.PLAYING) {
+  if (ev.data === YT.PlayerState.PLAYING || ev.data === YT.PlayerState.BUFFERING) {
     markBgReady();
+  }
+  if (ev.data === YT.PlayerState.PLAYING) {
     setTimeout(function() { skipIfAd(p); }, 500);
     setTimeout(function() { skipIfAd(p); }, 2000);
     adCheckTimer = setInterval(function() { skipIfAd(p); }, 3500);
@@ -601,8 +603,9 @@ function onPlayerReady(ev) {
   }, false);
 }
 
-window.onYouTubeIframeAPIReady = function() {
+function createYtBgPlayer() {
   if (!window.YT || !YT.Player) return;
+  if (ytBgPlayer) return;
   var host = document.getElementById("yt-bg-player-host");
   if (!host) return;
   ytBgPlayer = new YT.Player("yt-bg-player-host", {
@@ -624,7 +627,33 @@ window.onYouTubeIframeAPIReady = function() {
       onError: onPlayerError
     }
   });
-};
+}
+
+function initYtBgPlayer() {
+  if (!window.YT || !window.YT.Player) return;
+  createYtBgPlayer();
+}
+
+window.onYouTubeIframeAPIReady = initYtBgPlayer;
+
+(function scheduleYtBgInit() {
+  function tryInit() {
+    if (window.YT && window.YT.Player) {
+      initYtBgPlayer();
+      return true;
+    }
+    return false;
+  }
+  if (tryInit()) return;
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function() { tryInit(); }, false);
+  }
+  var n = 0;
+  var tick = setInterval(function() {
+    n++;
+    if (tryInit() || n > 300) clearInterval(tick);
+  }, 50);
+})();
 })();
 </script>
 
