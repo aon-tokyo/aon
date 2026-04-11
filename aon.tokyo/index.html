@@ -72,16 +72,16 @@ body>.site-nav-wrap{position:relative;z-index:1;background:transparent!important
 body>header,body>main,body>footer{position:relative;z-index:1;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .header .subtitle,.header .note,.region-title,.region-count{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 24px rgba(0,0,0,.55)}
 .footer,.footer a{text-shadow:0 1px 2px rgba(0,0,0,.75)}
-.yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
+.yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;box-sizing:border-box;width:min(50vw,calc(100vw - 2rem));max-width:100%;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
 .yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
-.yt-bg-vol-wrap input[type=range]{width:min(240px,46vw);height:12px;accent-color:#22d3ee;cursor:pointer}
+.yt-bg-vol-wrap input[type=range]{width:min(100%,min(200px,35vw));height:12px;accent-color:#22d3ee;cursor:pointer}
 .yt-bg-vol-wrap{flex-wrap:wrap}
-.yt-bg-theme{font-size:.82rem;font-weight:700;color:#94a3b8;letter-spacing:.02em;margin-right:.15rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;max-width:min(92vw,28rem)}
+.yt-bg-theme{font-size:.82rem;font-weight:700;color:#94a3b8;letter-spacing:.02em;margin-right:.15rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;max-width:100%}
 .yt-bg-name-en{font-weight:600;color:#cbd5e1;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem}
 .yt-bg-name-sep{opacity:.45;font-weight:400}
 .yt-bg-search-row{width:100%;flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .65rem;margin-top:.35rem;padding-top:.55rem;border-top:1px solid rgba(148,163,184,.25)}
 .yt-bg-search-row label{font-size:.78rem;font-weight:700;color:#cbd5e1;white-space:nowrap}
-.yt-bg-search-row input[type=search]{flex:1 1 min(200px,100%);min-width:0;padding:.45rem .65rem;border-radius:10px;border:1px solid rgba(34,211,238,.35);background:rgba(15,23,42,.85);color:#f1f5f9;font-size:.82rem}
+.yt-bg-search-row input[type=search]{flex:1 1 0;min-width:0;max-width:100%;padding:.45rem .65rem;border-radius:10px;border:1px solid rgba(34,211,238,.35);background:rgba(15,23,42,.85);color:#f1f5f9;font-size:.82rem}
 .yt-bg-search-row .yt-bg-btn{font-size:.78rem;font-weight:700;padding:.45rem .85rem;border-radius:10px;border:1px solid rgba(34,211,238,.45);background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(15,23,42,.9));color:#e0f2fe;cursor:pointer}
 .yt-bg-search-row .yt-bg-btn:hover{border-color:rgba(34,211,238,.75);background:linear-gradient(180deg,rgba(34,211,238,.35),rgba(15,23,42,.95))}
 .yt-bg-ctrl-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-left:.15rem}
@@ -116,7 +116,7 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
   </div>
   <div class="yt-bg-search-row">
     <label for="ytBgSearch">YouTube検索</label>
-    <input type="search" id="ytBgSearch" placeholder="検索ワードを入力" autocomplete="off" enterkeyhint="search" />
+    <input type="search" id="ytBgSearch" value="歌心りえ" placeholder="歌心りえ" autocomplete="off" enterkeyhint="search" />
     <button type="button" class="yt-bg-btn" id="ytBgSearchApply">検索を適用</button>
     <button type="button" class="yt-bg-btn" id="ytBgOnlyToggle" aria-pressed="false">Youtubeに移動</button>
   </div>
@@ -491,7 +491,7 @@ render();
 <script>
 (function(){
 "use strict";
-var SEARCH_LIST = '\u6b4c\u5fc3\u308a\u3048\u0020\u97d3\u56fd\u0054\u0056\u0020\u65e5\u97d3\u6b4c\u738b\u6226\u0020\u6700\u521d\u304b\u3089\u4eca\u307e\u3067\u0020\u9053\u5316\u5e2b\u306e\u30bd\u30cd\u30c3\u30c8\u0020\u5ddd\u306e\u6d41\u308c\u306e\u3088\u3046\u306b\u0020\u30c7\u30e5\u30a8\u30c3\u30c8\u0020\u7460\u7483\u8272\u306e\u5730\u7403';
+var SEARCH_LIST = '\u6b4c\u5fc3\u308a\u3048';
 var FALLBACK_SEARCH = '\u6b4c\u5fc3\u308a\u3048';
 var DEFAULT_BG_VIDEO_ID = 'O2IMOiSCLi8';
 var SAFE_BG_VIDEO_IDS = ['O2IMOiSCLi8', 'NDWleweBx_I', 'qsYPw-VNekQ'];
