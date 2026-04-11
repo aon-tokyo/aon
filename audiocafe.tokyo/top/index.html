@@ -121,8 +121,11 @@
 .yt-bg-pane-yt{flex:0 0 50vh;height:50vh;min-height:0;position:relative;overflow:hidden}
 .yt-bg-pane-google{flex:1 1 50vh;min-height:0;position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.1);background:#050508}
 .yt-bg-pane-google::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(15,23,42,.52) 45%,rgba(0,0,0,.45) 100%)}
-.bg-google-ai-frame{position:absolute;inset:0;z-index:0;width:100%;height:100%;border:0;opacity:.42;pointer-events:none;background:#0f172a;filter:saturate(.88) contrast(.95)}
-.bg-google-ai-fallback{position:absolute;bottom:.45rem;left:50%;transform:translateX(-50%);z-index:2;font-size:.62rem;color:rgba(226,232,240,.75);text-shadow:0 1px 4px #000;text-align:center;max-width:96%;pointer-events:auto}
+.bg-google-ai-stack{position:absolute;inset:0;z-index:0;display:flex;flex-direction:column}
+.bg-google-ai-cell{flex:1 1 0;min-height:0;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.06)}
+.bg-google-ai-cell:last-child{border-bottom:none}
+.bg-google-ai-frame{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:.42;pointer-events:none;background:#0f172a;filter:saturate(.88) contrast(.95)}
+.bg-google-ai-fallback{position:absolute;bottom:.45rem;left:50%;transform:translateX(-50%);z-index:3;font-size:.62rem;color:rgba(226,232,240,.75);text-shadow:0 1px 4px #000;text-align:center;max-width:96%;pointer-events:auto}
 .bg-google-ai-fallback a{color:#7dd3fc;text-decoration:underline}
 #yt-bg-player-host{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:50vh;min-width:88.89vh;transform:translate(-50%,-50%)}
 .yt-bg-pane-yt iframe{position:absolute!important;top:50%!important;left:50%!important;width:100vw!important;height:56.25vw!important;min-height:50vh!important;min-width:88.89vh!important;transform:translate(-50%,-50%)!important;border:0!important;opacity:1}
@@ -181,24 +184,42 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   <div class="yt-bg-stack">
     <div class="yt-bg-pane yt-bg-pane-yt"><div id="yt-bg-player-host"></div></div>
     <div class="yt-bg-pane yt-bg-pane-google">
-      <iframe id="bgGoogleAiFrame" class="bg-google-ai-frame" title="背景: Google AI モード検索" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe>
+      <div class="bg-google-ai-stack">
+        <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米の水耕栽培" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
+        <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米の水耕栽培 デメリット" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
+        <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 関東 米の年二回収穫" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
+        <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 千葉県で米の年二回収穫始まる" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
+        <div class="bg-google-ai-cell"><iframe class="bg-google-ai-frame" title="背景: Google AI — 米の年二回収穫 デメリット" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-read; clipboard-write"></iframe></div>
+      </div>
       <p id="bgGoogleAiFallback" class="bg-google-ai-fallback" hidden><a id="bgGoogleAiLink" href="#" target="_blank" rel="noopener noreferrer">Google AI モードで開く</a></p>
     </div>
   </div>
 </div>
 <script>
 (function () {
-  var queries = ["\u7c73\u306e\u6c34\u8015\u683d\u57f9", "\u95a2\u6771 \u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b"];
-  var q = queries[Math.floor(Math.random() * queries.length)];
-  var url = "https://www.google.com/search?q=" + encodeURIComponent(q) + "&udm=50&hl=ja";
-  var fr = document.getElementById("bgGoogleAiFrame");
-  var fb = document.getElementById("bgGoogleAiFallback");
-  var a = document.getElementById("bgGoogleAiLink");
-  if (fr) fr.setAttribute("src", url);
-  if (a) {
-    a.setAttribute("href", url);
-    a.textContent = "Google AI\u30e2\u30fc\u30c9\uff08" + q + "\uff09";
+  var queries = [
+    "\u7c73\u306e\u6c34\u8015\u683d\u57f9",
+    "\u7c73\u306e\u6c34\u8015\u683d\u57f9 \u30c7\u30e1\u30ea\u30c3\u30c8",
+    "\u95a2\u6771 \u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b",
+    "\u5343\u8449\u770c\u3067\u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b\u59cb\u307e\u308b",
+    "\u7c73\u306e\u5e74\u4e8c\u56de\u53ce\u7a6b \u30c7\u30e1\u30ea\u30c3\u30c8"
+  ];
+  var frames = document.querySelectorAll(".bg-google-ai-frame");
+  var i;
+  for (i = 0; i < frames.length && i < queries.length; i++) {
+    frames[i].setAttribute(
+      "src",
+      "https://www.google.com/search?q=" + encodeURIComponent(queries[i]) + "&udm=50&hl=ja"
+    );
   }
+  var a = document.getElementById("bgGoogleAiLink");
+  if (a) {
+    a.setAttribute(
+      "href",
+      "https://www.google.com/search?q=" + encodeURIComponent(queries[0]) + "&udm=50&hl=ja"
+    );
+  }
+  var fb = document.getElementById("bgGoogleAiFallback");
   if (fb) fb.hidden = true;
 })();
 </script>
