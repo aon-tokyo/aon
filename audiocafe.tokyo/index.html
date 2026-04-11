@@ -98,22 +98,37 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   function cleanSnippetText(s) {
     if (!s || typeof s !== "string") return "";
     var t = s.replace(/\r\n/g, "\n");
+    t = t.replace(/^Title:\s*[^\n]+\n?/gim, "");
+    t = t.replace(/^URL Source:\s*[^\n]+\n?/gim, "");
     t = t.replace(/\n{3,}/g, "\n\n");
-    t = t.replace(/^\[[^\]]*\]\([^)]*duckduckgo[^)]*\)\s*/gim, "");
-    t = t.replace(/^\[[^\]]*\]\([^)]*html\.duckduckgo[^)]*\)\s*/gim, "");
-    t = t.replace(/^\[[^\]]*\]\([^)]*google\.com[^)]*\)\s*/gim, "");
-    t = t.replace(/^\[[^\]]*\]\(\s*\)\s*/gm, "");
-    t = t.replace(/^#{1,6}\s+[^\n]+\n+/gm, "");
-    t = t.replace(/^!\[[^\]]*\]\([^)]+\)\s*/gm, "");
-    t = t.replace(/^\[[^\]]*\]\([^)]+\)\s*/gm, "");
+    var pass;
+    for (pass = 0; pass < 8; pass++) {
+      t = t.replace(/\[([^\]]*)\]\(https?:\/\/[^)\s]+\)/gi, function (_, inner) {
+        return inner || "";
+      });
+    }
+    t = t.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
+    t = t.replace(/\[\]\([^)]*\)/g, "");
+    t = t.replace(/^#{1,6}\s+/gm, "");
     t = t.split("\n").filter(function (line) {
       var x = line.trim();
       if (!x) return true;
-      if (/^https?:\/\/html\.duckduckgo\.com/i.test(x)) return false;
-      if (/^\[\]\(https?:\/\/html\.duckduckgo/i.test(x)) return false;
-      if (/^検索スニペット（読み取り）/.test(x)) return false;
+      if (/^Title:\s*/i.test(x)) return false;
+      if (/^URL Source:\s*/i.test(x)) return false;
+      if (/検索スニペット\s*（\s*読み取り\s*）/.test(x)) return false;
+      if (/^https?:\/\/(www\.)?duckduckgo/i.test(x)) return false;
+      if (/^https?:\/\/html\.duckduckgo/i.test(x)) return false;
+      if (/^https?:\/\/(www\.)?google\./i.test(x)) return false;
+      if (/^https?:\/\/r\.jina\.ai/i.test(x)) return false;
+      if (/^https?:\/\/external-content\.duckduckgo/i.test(x)) return false;
+      if (/duckduckgo\.com\/l\/?\?/i.test(x) && x.length < 220) return false;
+      if (/^\[Feedback\]/i.test(x)) return false;
+      if (/^!\[Image\s/i.test(x)) return false;
+      if (/^.{1,200}\s+at\s+DuckDuckGo\s*$/i.test(x)) return false;
       return true;
     }).join("\n");
+    t = t.replace(/[ \t\u3000]{2,}/g, " ");
+    t = t.replace(/\n{3,}/g, "\n\n");
     t = t.trim();
     return t;
   }
