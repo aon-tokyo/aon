@@ -4423,6 +4423,24 @@ function applyYtSearch() {
   reloadYtBackground();
 }
 
+function bindYtSearchApplyEarlyOnce() {
+  var applyBtn = document.getElementById("ytBgSearchApply");
+  var searchIn = document.getElementById("ytBgSearch");
+  if (applyBtn && !applyBtn.dataset.ytEarlyBind) {
+    applyBtn.dataset.ytEarlyBind = "1";
+    applyBtn.addEventListener("click", applyYtSearch, false);
+  }
+  if (searchIn && !searchIn.dataset.ytEarlyBind) {
+    searchIn.dataset.ytEarlyBind = "1";
+    searchIn.addEventListener("keydown", function(ev) {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        applyYtSearch();
+      }
+    }, false);
+  }
+}
+
 function bindYtControlsOnce() {
   if (ytControlsBound) return;
   ytControlsBound = true;
@@ -4431,10 +4449,7 @@ function bindYtControlsOnce() {
   var onlyBtn = document.getElementById("ytBgOnlyToggle");
   var volWrap = document.getElementById("ytBgVolumeWrap");
   if (searchIn) searchIn.value = SEARCH_LIST;
-  if (applyBtn) applyBtn.addEventListener("click", applyYtSearch, false);
-  if (searchIn) searchIn.addEventListener("keydown", function(ev) {
-    if (ev.key === "Enter") { ev.preventDefault(); applyYtSearch(); }
-  }, false);
+  bindYtSearchApplyEarlyOnce();
   if (onlyBtn) onlyBtn.addEventListener("click", function() {
     var on = document.body.classList.toggle("yt-only-mode");
     onlyBtn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -4786,9 +4801,13 @@ window.onYouTubeIframeAPIReady = initYtBgPlayer;
   }, 50);
 })();
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", function() { bindYtCardHandoffOnce(); }, false);
+  document.addEventListener("DOMContentLoaded", function() {
+    bindYtCardHandoffOnce();
+    bindYtSearchApplyEarlyOnce();
+  }, false);
 } else {
   bindYtCardHandoffOnce();
+  bindYtSearchApplyEarlyOnce();
 }
 })();
 </script>
