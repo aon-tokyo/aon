@@ -4093,6 +4093,20 @@ function ytApplyPauseButtonPlayPauseToggle() {
   } catch (e) {}
 }
 
+/** Background tap: pause only when playing (does not resume). */
+function ytPauseVideoFromBackgroundTap() {
+  var p = ytBgPlayer;
+  var YT = window.YT;
+  if (!p || !YT || !p.getPlayerState) return;
+  try {
+    var st = p.getPlayerState();
+    if (st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING) {
+      if (p.pauseVideo) p.pauseVideo();
+    }
+    updateYtTransportUi();
+  } catch (e) {}
+}
+
 function updateYtTransportUi() {
   var pauseBtn = document.getElementById("ytBgPauseToggle");
   var loopOn = document.getElementById("ytBgLoopOn");
@@ -4250,7 +4264,7 @@ function bindYtBgInteractionOnce() {
     if (now - ytBgLastToggleMs < 320) return;
     if (ytVolInteracting) return;
     ytBgLastToggleMs = now;
-    ytApplyPauseButtonPlayPauseToggle();
+    ytPauseVideoFromBackgroundTap();
   }
   document.addEventListener("click", function(ev) {
     if (menu && !menu.hidden && menu.contains(ev.target)) return;
