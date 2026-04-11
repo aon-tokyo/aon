@@ -8,12 +8,12 @@
 <link rel="icon" href="https://audiocafe.tokyo/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#000;--surface:rgba(15,23,42,.52);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15)}
+:root{--bg:#000;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(255,255,255,.13);--card-border:rgba(255,255,255,.28);--card-border-hover:rgba(34,211,238,.5);--card-bg-hover:rgba(255,255,255,.24)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
 .header{position:relative;overflow:hidden;text-align:center;padding:3.5rem 1rem 2rem}
-.header::before{content:none;display:none}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120,119,198,.3),transparent);pointer-events:none}
 @keyframes logoGradientLR{0%{background-position:0% 50%}100%{background-position:100% 50%}}.logo{display:inline-block;font-size:clamp(2.5rem,6vw,3.8rem);font-weight:900;letter-spacing:-.02em;opacity:.62;background:linear-gradient(90deg,rgba(99,102,241,.88) 0%,rgba(37,99,235,.88) 10%,rgba(34,197,94,.88) 20%,rgba(132,204,22,.88) 30%,rgba(250,204,21,.88) 40%,rgba(249,115,22,.88) 50%,rgba(255,20,147,.88) 60%,rgba(239,68,68,.88) 70%,rgba(192,38,211,.88) 80%,rgba(124,58,237,.88) 90%,rgba(99,102,241,.88) 100%);background-size:400% 100%;animation:logoGradientLR 20s ease-in-out infinite;-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;transition:opacity .2s,filter .2s;filter:drop-shadow(0 2px 14px rgba(0,0,0,.55)) drop-shadow(0 0 28px rgba(0,0,0,.35))}
 .logo:hover{opacity:.82;filter:drop-shadow(0 3px 18px rgba(0,0,0,.6)) drop-shadow(0 0 32px rgba(34,211,238,.15))}
 .subtitle{margin-top:.5rem;font-size:clamp(.95rem,2vw,1.25rem);color:var(--text-dim);font-weight:500}
@@ -34,18 +34,19 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
 @media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
-.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--border);background:var(--surface);backdrop-filter:blur(6px);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;cursor:pointer}
-.card:hover{transform:scale(1.04);border-color:var(--border-hover);background:rgba(255,255,255,.07);box-shadow:0 8px 24px rgba(34,211,238,.06)}
-.card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:transform .18s}
-.card:hover .card-flag{transform:scale(1.1)}
-.card-code{font-size:.95rem;font-weight:800;letter-spacing:.08em;color:var(--cyan);transition:color .18s}
-.card:hover .card-code{color:#67e8f9}
-.card-native{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
-.card:hover .card-native{color:#fff}
-.card-en{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
-.card:hover .card-en{color:#fff}
-.card-country{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
-.card:hover .card-country{color:#fff}
+.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:linear-gradient(165deg,rgba(255,255,255,.16),rgba(255,255,255,.06));-webkit-backdrop-filter:blur(10px) saturate(1.15);backdrop-filter:blur(10px) saturate(1.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.35);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s,backdrop-filter .18s;cursor:pointer}
+.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:linear-gradient(165deg,rgba(255,255,255,.26),rgba(255,255,255,.12));box-shadow:0 10px 28px rgba(34,211,238,.1),inset 0 1px 0 rgba(255,255,255,.4)}
+.card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:.35;transition:transform .18s,opacity .22s}
+@media(hover:hover){.card-flag:hover{transform:scale(1.08);opacity:1}}
+@media(hover:none){.card-flag:active{transform:scale(1.08);opacity:1}}
+.card-code{font-size:.95rem;font-weight:800;letter-spacing:.08em;color:rgba(34,211,238,.55);transition:color .18s}
+.card:hover .card-code{color:rgba(103,232,249,.88)}
+.card-native{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.52)}
+.card:hover .card-native{color:rgba(255,255,255,.88)}
+.card-en{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.52)}
+.card:hover .card-en{color:rgba(255,255,255,.88)}
+.card-country{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.52)}
+.card:hover .card-country{color:rgba(255,255,255,.88)}
 .empty{text-align:center;padding:4rem 1rem;color:var(--text-muted);font-size:1rem}
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:1.5rem 1rem;text-align:center;font-size:.7rem;color:var(--text-muted);line-height:1.7}
 .footer a{color:var(--text-dim);text-decoration:none;transition:color .2s}
@@ -58,6 +59,7 @@ body{padding-top:0}
 .header .logo{font-size:clamp(3.75rem,9.25vw,6.25rem)!important;letter-spacing:-0.03em}
 .search-wrap{margin-top:1.35rem}
 
+
 .site-nav-wrap{max-width:76rem;margin:0 auto;padding:.85rem 1rem 0;font-size:.68rem;color:var(--text-muted);line-height:1.65;border-bottom:none}
 .site-nav-wrap .sn-title{display:block;font-weight:700;color:var(--text-dim);margin-bottom:.4rem;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase}
 .site-nav-rows{display:flex;flex-direction:column;gap:.35rem;align-items:center}
@@ -67,6 +69,7 @@ body{padding-top:0}
 .site-nav-row a:hover{text-decoration:underline}
 .site-nav-row .sn-sep{color:var(--text-muted);opacity:.45}
 body>.site-nav-wrap .sn-title,body>.site-nav-wrap .sn-d,body>.site-nav-wrap a,body>.site-nav-wrap .sn-sep,body>.site-nav-wrap table,body>.site-nav-wrap th,body>.site-nav-wrap td{text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 18px rgba(0,0,0,.65)}
+
 
 
 /* background YouTube search playlist */
@@ -105,7 +108,7 @@ body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
 /* stack page above background video */
 body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative;z-index:1}
 
-</style>
+ </style>
 </head>
 <body>
 
@@ -127,11 +130,27 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
     <button type="button" class="yt-bg-btn" id="ytBgOnlyToggle" aria-pressed="false">Youtubeに移動</button>
   </div>
 </div>
+<div id="ytBgCtxMenu" class="yt-bg-ctx-menu" hidden role="menu" aria-label="YouTube background">
+  <div class="yt-ctx-h">再生</div>
+  <button type="button" data-yt-ctx="play">再生</button>
+  <button type="button" data-yt-ctx="pause">一時停止</button>
+  <div class="yt-ctx-h">表示・音声</div>
+  <button type="button" data-yt-ctx="loop">ループ再生（切替）</button>
+  <button type="button" data-yt-ctx="mute">ミュート / 解除</button>
+  <button type="button" data-yt-ctx="seekBack">10秒戻る</button>
+  <button type="button" data-yt-ctx="seekFwd">10秒進む</button>
+  <button type="button" data-yt-ctx="volDown">音量 −10</button>
+  <button type="button" data-yt-ctx="volUp">音量 ＋10</button>
+  <button type="button" data-yt-ctx="openYt">YouTubeで開く</button>
+</div>
 
-<nav class="site-nav-wrap" aria-label="All domains"><span class="sn-title">Domains — home / world / top</span><div class="site-nav-rows"><div class="site-nav-row"><span class="sn-d">aon.tokyo</span><span class="sn-sep">·</span><a href="https://aon.tokyo/">/</a><span class="sn-sep">·</span><a href="https://aon.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://aon.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">audiocafe.tokyo</span><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/">/</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">icpo.tokyo</span><span class="sn-sep">·</span><a href="https://icpo.tokyo/">/</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">ion.tokyo</span><span class="sn-sep">·</span><a href="https://ion.tokyo/">/</a><span class="sn-sep">·</span><a href="https://ion.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://ion.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">raysoft.jp</span><span class="sn-sep">·</span><a href="https://raysoft.jp/">/</a><span class="sn-sep">·</span><a href="https://raysoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://raysoft.jp/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">nanosoft.jp</span><span class="sn-sep">·</span><a href="https://nanosoft.jp/">/</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/top/">/top</a></div></div><div style="width:100%;max-width:52rem;margin:.55rem auto 0;padding:.55rem .75rem .45rem;border-top:1px solid rgba(255,255,255,.08);text-align:left"><div style="font-weight:700;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:.35rem">GitHub — <code style="font-size:.62rem;background:rgba(255,255,255,.08);padding:.1rem .25rem;border-radius:3px">index.html</code> <span style="font-weight:500;text-transform:none;color:#64748b">(root · branch <code style="font-size:.62rem">cursor/top-logo-gradient-4d1a</code>)</span></div><table style="width:100%;border-collapse:collapse;font-size:.62rem;line-height:1.45"><thead><tr style="border-bottom:1px solid rgba(255,255,255,.12)"><th style="text-align:left;padding:.2rem .35rem .35rem 0;color:#cbd5e1;font-weight:600;width:7.5rem">ドメイン</th><th style="text-align:left;padding:.2rem 0 .35rem;color:#cbd5e1;font-weight:600">リンク</th></tr></thead><tbody><tr><td style="padding:.28rem .35rem .28rem 0;vertical-align:top;white-space:nowrap;color:#003366;font-weight:600">aon.tokyo</td><td style="padding:.28rem 0;word-break:break-all"><a style="color:#0056b3" href="https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/world/index.html" target="_blank" rel="noopener noreferrer">https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/world/index.html</a></td></tr><tr><td style="padding:.28rem .35rem .28rem 0;vertical-align:top;white-space:nowrap;color:#003366;font-weight:600">audiocafe.tokyo</td><td style="padding:.28rem 0;word-break:break-all"><a style="color:#0056b3" href="https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/audiocafe/index.html" target="_blank" rel="noopener noreferrer">https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/audiocafe/index.html</a></td></tr><tr><td style="padding:.28rem .35rem .28rem 0;vertical-align:top;white-space:nowrap;color:#003366;font-weight:600">icpo.tokyo</td><td style="padding:.28rem 0;word-break:break-all"><a style="color:#0056b3" href="https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/icpo/index.html" target="_blank" rel="noopener noreferrer">https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/icpo/index.html</a></td></tr><tr><td style="padding:.28rem .35rem .28rem 0;vertical-align:top;white-space:nowrap;color:#003366;font-weight:600">ion.tokyo</td><td style="padding:.28rem 0;word-break:break-all"><a style="color:#0056b3" href="https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/ion/index.html" target="_blank" rel="noopener noreferrer">https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/ion/index.html</a></td></tr><tr><td style="padding:.28rem .35rem .28rem 0;vertical-align:top;white-space:nowrap;color:#003366;font-weight:600">raysoft.jp</td><td style="padding:.28rem 0;word-break:break-all"><a style="color:#0056b3" href="https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/raysoft/index.html" target="_blank" rel="noopener noreferrer">https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/raysoft/index.html</a></td></tr><tr><td style="padding:.28rem .35rem .28rem 0;vertical-align:top;white-space:nowrap;color:#003366;font-weight:600">nanosoft.jp</td><td style="padding:.28rem 0;word-break:break-all"><a style="color:#0056b3" href="https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/nanosoft/index.html" target="_blank" rel="noopener noreferrer">https://github.com/aon-tokyo/aon/blob/cursor/top-logo-gradient-4d1a/nanosoft/index.html</a></td></tr></tbody></table></div></nav>
+<nav class="site-nav-wrap" aria-label="All domains"><span class="sn-title">Domains — home / world / top</span><div class="site-nav-rows"><div class="site-nav-row"><span class="sn-d">aon.tokyo</span><span class="sn-sep">·</span><a href="https://aon.tokyo/">/</a><span class="sn-sep">·</span><a href="https://aon.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://aon.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">audiocafe.tokyo</span><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/">/</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/">/lang</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">icpo.tokyo</span><span class="sn-sep">·</span><a href="https://icpo.tokyo/">/</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">ion.tokyo</span><span class="sn-sep">·</span><a href="https://ion.tokyo/">/</a><span class="sn-sep">·</span><a href="https://ion.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://ion.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">raysoft.jp</span><span class="sn-sep">·</span><a href="https://raysoft.jp/">/</a><span class="sn-sep">·</span><a href="https://raysoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://raysoft.jp/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">nanosoft.jp</span><span class="sn-sep">·</span><a href="https://nanosoft.jp/">/</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/top/">/top</a></div></div></nav>
+
 
 <header class="header">
   <a href="https://audiocafe.tokyo/top/" class="logo">audiocafe.tokyo</a>
+  <p class="subtitle">Please select your native language.</p>
+  <p class="note">あなたの母国語を選択してください。2回目の選択時はブラウザを閉じて再度開いてください。<br>動画を視聴するには日本語を選択してください。</p>
   <div class="search-wrap">
     <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
     <input type="text" class="search" id="search" placeholder="Search languages..." autocomplete="off">
@@ -307,9 +326,7 @@ var ABC_KEY="ABC";
 var ABC_LABEL="ABC (A-Z)";
 
 function makeUrl(gc){
-  // Japanese: show the original /top/ page as-is (no translation)
-  if(gc==="ja") return "https://audiocafe.tokyo/top/";
-  // Other languages: go through Google Translate proxy so text is translated
+  if(gc==="ja") return "https://audiocafe-tokyo.translate.goog/top/?_x_tr_sl=en&_x_tr_tl=ja&_x_tr_hl=ja&_x_tr_pto=wapp";
   return "https://audiocafe-tokyo.translate.goog/top/?_x_tr_sl=ja&_x_tr_tl="+encodeURIComponent(gc)+"&_x_tr_hl=ja&_x_tr_pto=wapp";
 }
 
@@ -477,7 +494,6 @@ render();
 })();
 })();
 </script>
-
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 (function(){
@@ -1070,6 +1086,8 @@ if (document.readyState === "loading") {
 }
 })();
 </script>
+</body>
+</html>
 
 </body>
 </html>
