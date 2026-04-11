@@ -8,12 +8,12 @@
 <link rel="icon" href="https://icpo.tokyo/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#020617;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15)}
+:root{--bg:transparent;--surface:rgba(15,23,42,.52);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
 .header{position:relative;overflow:hidden;text-align:center;padding:3.5rem 1rem 2rem}
-.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120,119,198,.3),transparent);pointer-events:none}
+.header::before{content:none;display:none}
 @keyframes logoGradientLR{0%{background-position:0% 50%}100%{background-position:100% 50%}}.logo{display:inline-block;font-size:clamp(2.5rem,6vw,3.8rem);font-weight:900;letter-spacing:-.02em;background:linear-gradient(90deg,#6366f1 0%,#2563eb 10%,#22c55e 20%,#84cc16 30%,#facc15 40%,#f97316 50%,#ff1493 60%,#ef4444 70%,#c026d3 80%,#7c3aed 90%,#6366f1 100%);background-size:400% 100%;animation:logoGradientLR 20s ease-in-out infinite;-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;transition:opacity .2s}
 .logo:hover{opacity:.85}
 .subtitle{margin-top:.5rem;font-size:clamp(.95rem,2vw,1.25rem);color:var(--text-dim);font-weight:500}
@@ -66,7 +66,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .yt-bg-outer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
 body:not(.yt-bg-ready) .yt-bg-outer{opacity:0;visibility:hidden}
 body.yt-bg-ready .yt-bg-outer{opacity:1;visibility:visible;transition:opacity .45s ease}
-body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:1}
+body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:1;background:rgba(15,23,42,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
 .yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
 .yt-bg-vol-wrap input[type=range]{width:min(240px,46vw);height:12px;accent-color:#22d3ee;cursor:pointer}
