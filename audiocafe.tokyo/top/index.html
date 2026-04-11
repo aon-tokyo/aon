@@ -156,11 +156,10 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
 <div class="yt-bg-outer" aria-hidden="true"><div id="yt-bg-player-host"></div></div>
 <div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
   <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
-  <label for="ytBgVolume">音量</label>
-  <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
-  <button type="button" class="yt-bg-mini-btn" id="ytBgPauseToggle" aria-pressed="false">一時停止</button>
-  <div class="yt-bg-ctrl-row">
-    <span class="yt-bg-ctrl-sep" aria-hidden="true">|</span>
+  <div class="yt-bg-inline-transport" style="display:flex;align-items:center;flex-wrap:wrap;gap:.5rem .65rem;width:100%">
+    <label for="ytBgVolume">音量</label>
+    <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
+    <button type="button" class="yt-bg-mini-btn" id="ytBgPauseToggle" aria-pressed="false">一時停止</button>
     <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOn" aria-pressed="true">ループ中</button>
     <button type="button" class="yt-bg-mini-btn" id="ytBgLoopOff" aria-pressed="false">ループ解除</button>
   </div>
@@ -4239,7 +4238,8 @@ function bindYtBgInteractionOnce() {
     if (menu && !menu.hidden) hideYtCtxMenu();
     if (ev.button !== 0) return;
     var el = ev.target;
-    if (el && el.closest && el.closest("a,button,input,textarea,select,label,.yt-bg-vol-wrap,.yt-bg-ctx-menu")) return;
+    if (el && el.closest && el.closest("a.card")) return;
+    if (el && el.closest && el.closest("button,input,textarea,select,label,.yt-bg-vol-wrap,.yt-bg-ctx-menu")) return;
     toggleBgPlayPause();
   }, true);
   document.addEventListener("contextmenu", function(ev) {
