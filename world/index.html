@@ -68,6 +68,8 @@ body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:
 .yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
 .yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
 .yt-bg-vol-wrap input[type=range]{width:min(240px,46vw);height:12px;accent-color:#22d3ee;cursor:pointer}
+.yt-bg-vol-wrap{flex-wrap:wrap}
+.yt-bg-theme{font-size:.82rem;font-weight:700;color:#94a3b8;white-space:nowrap;letter-spacing:.02em;margin-right:.15rem}
 
 </style>
 </head>
@@ -75,6 +77,7 @@ body>.site-nav-wrap,body>header,body>main,body>footer{position:relative;z-index:
 
 <div id="yt-bg-player-host" class="yt-bg-layer" aria-hidden="true"></div>
 <div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
+  <span class="yt-bg-theme">Youtubeは歌心</span>
   <label for="ytBgVolume">音量</label>
   <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
 </div>
@@ -436,7 +439,7 @@ render();
 <script>
 (function(){
 "use strict";
-var SEARCH_LIST = '歌心りえ\u3000韓国TV\u3000日韓歌応戦\u3000最初から今まで\u3000道化師のソネット\u3000川の流れのように\u3000デュエット\u3000玉置浩二\u3000MISIA';
+var SEARCH_LIST = '\u6b4c\u5fc3';
 var ytBgPlayer = null;
 var adCheckTimer = null;
 
