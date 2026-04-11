@@ -8,14 +8,14 @@
 <link rel="icon" href="https://icpo.tokyo/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#020617;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(15,23,42,.96);--card-border:rgba(255,255,255,.26);--card-border-hover:rgba(34,211,238,.45)}
+:root{--bg:#000;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(15,23,42,.96);--card-border:rgba(255,255,255,.26);--card-border-hover:rgba(34,211,238,.45)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
 .header{position:relative;overflow:hidden;text-align:center;padding:3.5rem 1rem 2rem}
 .header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120,119,198,.3),transparent);pointer-events:none}
-@keyframes logoGradientLR{0%{background-position:0% 50%}100%{background-position:100% 50%}}.logo{display:inline-block;font-size:clamp(2.5rem,6vw,3.8rem);font-weight:900;letter-spacing:-.02em;background:linear-gradient(90deg,#6366f1 0%,#2563eb 10%,#22c55e 20%,#84cc16 30%,#facc15 40%,#f97316 50%,#ff1493 60%,#ef4444 70%,#c026d3 80%,#7c3aed 90%,#6366f1 100%);background-size:400% 100%;animation:logoGradientLR 20s ease-in-out infinite;-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;transition:opacity .2s}
-.logo:hover{opacity:.85}
+@keyframes logoGradientLR{0%{background-position:0% 50%}100%{background-position:100% 50%}}.logo{display:inline-block;font-size:clamp(2.5rem,6vw,3.8rem);font-weight:900;letter-spacing:-.02em;background:linear-gradient(90deg,rgba(99,102,241,.88) 0%,rgba(37,99,235,.88) 10%,rgba(34,197,94,.88) 20%,rgba(132,204,22,.88) 30%,rgba(250,204,21,.88) 40%,rgba(249,115,22,.88) 50%,rgba(255,20,147,.88) 60%,rgba(239,68,68,.88) 70%,rgba(192,38,211,.88) 80%,rgba(124,58,237,.88) 90%,rgba(99,102,241,.88) 100%);background-size:400% 100%;animation:logoGradientLR 20s ease-in-out infinite;-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;transition:opacity .2s,filter .2s;filter:drop-shadow(0 2px 14px rgba(0,0,0,.55)) drop-shadow(0 0 28px rgba(0,0,0,.35))}
+.logo:hover{opacity:.96;filter:drop-shadow(0 3px 18px rgba(0,0,0,.6)) drop-shadow(0 0 32px rgba(34,211,238,.15))}
 .subtitle{margin-top:.5rem;font-size:clamp(.95rem,2vw,1.25rem);color:var(--text-dim);font-weight:500}
 .note{margin-top:.5rem;font-size:.8rem;color:var(--text-muted);max-width:36rem;margin-left:auto;margin-right:auto;line-height:1.6}
 .search-wrap{position:relative;max-width:26rem;margin:1.5rem auto 0}
@@ -61,9 +61,48 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .site-nav-row a:hover{text-decoration:underline}
 .site-nav-row .sn-sep{color:var(--text-muted);opacity:.45}
 
+/* background YouTube search playlist */
+.yt-bg-outer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
+.yt-bg-outer iframe{position:absolute;top:50%;left:50%;width:100vw;height:56.25vw;min-height:100vh;min-width:177.77vh;transform:translate(-50%,-50%);border:0;opacity:1}
+body:not(.yt-bg-ready) .yt-bg-outer{opacity:1;visibility:visible}
+body.yt-bg-ready .yt-bg-outer{opacity:1;visibility:visible;transition:opacity .35s ease}
+body>.site-nav-wrap{position:relative;z-index:1;background:rgba(15,23,42,.42);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+body>header,body>main,body>footer{position:relative;z-index:1;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.header .subtitle,.header .note,.region-title,.region-count{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 24px rgba(0,0,0,.55)}
+.footer,.footer a{text-shadow:0 1px 2px rgba(0,0,0,.75)}
+.yt-bg-vol-wrap{position:fixed;bottom:1.1rem;right:1rem;z-index:50;display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:rgba(15,23,42,.92);border:1px solid rgba(34,211,238,.28);border-radius:14px;box-shadow:0 10px 36px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
+.yt-bg-vol-wrap label{font-size:.875rem;font-weight:700;color:#e2e8f0;letter-spacing:.02em}
+.yt-bg-vol-wrap input[type=range]{width:min(240px,46vw);height:12px;accent-color:#22d3ee;cursor:pointer}
+.yt-bg-vol-wrap{flex-wrap:wrap}
+.yt-bg-theme{font-size:.82rem;font-weight:700;color:#94a3b8;letter-spacing:.02em;margin-right:.15rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;max-width:min(92vw,28rem)}
+.yt-bg-name-en{font-weight:600;color:#cbd5e1;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem}
+.yt-bg-name-sep{opacity:.45;font-weight:400}
+.yt-bg-search-row{width:100%;flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .65rem;margin-top:.35rem;padding-top:.55rem;border-top:1px solid rgba(148,163,184,.25)}
+.yt-bg-search-row label{font-size:.78rem;font-weight:700;color:#cbd5e1;white-space:nowrap}
+.yt-bg-search-row input[type=search]{flex:1 1 min(200px,100%);min-width:0;padding:.45rem .65rem;border-radius:10px;border:1px solid rgba(34,211,238,.35);background:rgba(15,23,42,.85);color:#f1f5f9;font-size:.82rem}
+.yt-bg-search-row .yt-bg-btn{font-size:.78rem;font-weight:700;padding:.45rem .85rem;border-radius:10px;border:1px solid rgba(34,211,238,.45);background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(15,23,42,.9));color:#e0f2fe;cursor:pointer}
+.yt-bg-search-row .yt-bg-btn:hover{border-color:rgba(34,211,238,.75);background:linear-gradient(180deg,rgba(34,211,238,.35),rgba(15,23,42,.95))}
+body.yt-only-mode>.site-nav-wrap,body.yt-only-mode>header,body.yt-only-mode>main,body.yt-only-mode>footer{display:none!important}
+body.yt-only-mode .yt-bg-outer{z-index:100;pointer-events:auto}
+body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
+
 </style>
 </head>
 <body>
+
+<div class="yt-bg-outer" aria-hidden="true"><div id="yt-bg-player-host"></div></div>
+<div class="yt-bg-vol-wrap" id="ytBgVolumeWrap" role="group" aria-label="Background YouTube volume">
+  <span class="yt-bg-theme"><span class="yt-bg-name-ja">Youtubeは歌心りえさん</span><span class="yt-bg-name-sep">·</span><span class="yt-bg-name-en">RIE UTAGOKORO</span></span>
+  <label for="ytBgVolume">音量</label>
+  <input type="range" id="ytBgVolume" min="0" max="100" value="0" step="1" />
+  <div class="yt-bg-search-row">
+    <label for="ytBgSearch">YouTube検索</label>
+    <input type="search" id="ytBgSearch" placeholder="検索ワードを入力" autocomplete="off" enterkeyhint="search" />
+    <button type="button" class="yt-bg-btn" id="ytBgSearchApply">検索を適用</button>
+    <button type="button" class="yt-bg-btn" id="ytBgOnlyToggle" aria-pressed="false">Youtubeに移動</button>
+  </div>
+</div>
+
 <nav class="site-nav-wrap" aria-label="All domains"><span class="sn-title">Domains — home / world / top</span><div class="site-nav-rows"><div class="site-nav-row"><span class="sn-d">aon.tokyo</span><span class="sn-sep">·</span><a href="https://aon.tokyo/">/</a><span class="sn-sep">·</span><a href="https://aon.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://aon.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">audiocafe.tokyo</span><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/">/</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">icpo.tokyo</span><span class="sn-sep">·</span><a href="https://icpo.tokyo/">/</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">ion.tokyo</span><span class="sn-sep">·</span><a href="https://ion.tokyo/">/</a><span class="sn-sep">·</span><a href="https://ion.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://ion.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">raysoft.jp</span><span class="sn-sep">·</span><a href="https://raysoft.jp/">/</a><span class="sn-sep">·</span><a href="https://raysoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://raysoft.jp/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">nanosoft.jp</span><span class="sn-sep">·</span><a href="https://nanosoft.jp/">/</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/top/">/top</a></div></div></nav>
 
 
@@ -413,6 +452,230 @@ render();
     var mo=new MutationObserver(function(){fixAll();});
     mo.observe(document.body||document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["href","src"]});
   }catch(e){}
+})();
+})();
+</script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+(function(){
+"use strict";
+var SEARCH_LIST = '\u6b4c\u5fc3\u308a\u3048\u0020\u97d3\u56fd\u0054\u0056\u0020\u65e5\u97d3\u6b4c\u738b\u6226\u0020\u6700\u521d\u304b\u3089\u4eca\u307e\u3067\u0020\u9053\u5316\u5e2b\u306e\u30bd\u30cd\u30c3\u30c8\u0020\u5ddd\u306e\u6d41\u308c\u306e\u3088\u3046\u306b\u0020\u30c7\u30e5\u30a8\u30c3\u30c8\u0020\u7460\u7483\u8272\u306e\u5730\u7403';
+var FALLBACK_SEARCH = '\u6b4c\u5fc3\u308a\u3048';
+var DEFAULT_BG_VIDEO_ID = 'jNQXAC9IVRw';
+var SAFE_BG_VIDEO_IDS = ['jNQXAC9IVRw', 'M7lc1UVf-VE'];
+var safeBgRotate = 0;
+var ytBgPlayer = null;
+var adCheckTimer = null;
+var ytBgFallbackUsed = false;
+var currentSearchQuery = SEARCH_LIST;
+var ytControlsBound = false;
+
+function applyYtSearch() {
+  var inp = document.getElementById("ytBgSearch");
+  var q = inp ? String(inp.value || "").trim() : "";
+  if (!q) q = SEARCH_LIST;
+  currentSearchQuery = q;
+  ytBgFallbackUsed = false;
+  safeBgRotate = 0;
+  var p = ytBgPlayer;
+  if (p && p.loadPlaylist) {
+    loadSearchPlaylist(p, currentSearchQuery);
+    try { if (p.playVideo) p.playVideo(); } catch (e) {}
+  }
+}
+
+function bindYtControlsOnce() {
+  if (ytControlsBound) return;
+  ytControlsBound = true;
+  var searchIn = document.getElementById("ytBgSearch");
+  var applyBtn = document.getElementById("ytBgSearchApply");
+  var onlyBtn = document.getElementById("ytBgOnlyToggle");
+  if (searchIn) searchIn.value = SEARCH_LIST;
+  if (applyBtn) applyBtn.addEventListener("click", applyYtSearch, false);
+  if (searchIn) searchIn.addEventListener("keydown", function(ev) {
+    if (ev.key === "Enter") { ev.preventDefault(); applyYtSearch(); }
+  }, false);
+  if (onlyBtn) onlyBtn.addEventListener("click", function() {
+    var on = document.body.classList.toggle("yt-only-mode");
+    onlyBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    onlyBtn.textContent = on ? "\u30b5\u30a4\u30c8\u306b\u623b\u308b" : "Youtube\u306b\u79fb\u52d5";
+  }, false);
+}
+
+function markBgReady() {
+  try { document.body.classList.add("yt-bg-ready"); } catch (e) {}
+}
+
+function isLikelyAdTitle(t) {
+  if (!t || typeof t !== "string") return false;
+  if (/[広告]|スポンサー|Advertisement|Sponsored|^\s*Ad\s| 広告/i.test(t)) return true;
+  return false;
+}
+
+function skipIfAd(player) {
+  try {
+    if (!player || !player.getVideoData) return;
+    var vd = player.getVideoData();
+    var title = (vd && vd.title) ? vd.title : "";
+    if (isLikelyAdTitle(title)) {
+      if (player.nextVideo) player.nextVideo();
+    }
+  } catch (e) {}
+}
+
+function clearAdTimer() {
+  if (adCheckTimer) {
+    clearInterval(adCheckTimer);
+    adCheckTimer = null;
+  }
+}
+
+function loadSearchPlaylist(player, query) {
+  try {
+    if (player && player.loadPlaylist) {
+      player.loadPlaylist({
+        listType: "search",
+        list: query,
+        index: 0,
+        startSeconds: 0,
+        suggestedQuality: "default"
+      });
+    }
+  } catch (e) {}
+}
+
+function loadSafeBgVideo(player, idx) {
+  var id = SAFE_BG_VIDEO_IDS[idx % SAFE_BG_VIDEO_IDS.length];
+  try {
+    if (player && player.loadVideoById) player.loadVideoById(id);
+  } catch (e) {}
+}
+
+function onPlayerError(ev) {
+  var p = ev.target;
+  try {
+    if (!ytBgFallbackUsed) {
+      ytBgFallbackUsed = true;
+      currentSearchQuery = FALLBACK_SEARCH;
+      var fs = document.getElementById("ytBgSearch");
+      if (fs) fs.value = FALLBACK_SEARCH;
+      loadSearchPlaylist(p, FALLBACK_SEARCH);
+      try { if (p.playVideo) p.playVideo(); } catch (e0) {}
+      return;
+    }
+    if (safeBgRotate < SAFE_BG_VIDEO_IDS.length) {
+      loadSafeBgVideo(p, safeBgRotate);
+      safeBgRotate++;
+      try { if (p.playVideo) p.playVideo(); } catch (e1) {}
+      return;
+    }
+    try {
+      if (p && p.loadVideoById) p.loadVideoById(DEFAULT_BG_VIDEO_ID);
+      if (p && p.playVideo) p.playVideo();
+    } catch (e2) {}
+  } catch (e) {
+    try {
+      if (p && p.loadVideoById) p.loadVideoById(DEFAULT_BG_VIDEO_ID);
+      if (p && p.playVideo) p.playVideo();
+    } catch (e3) {}
+  }
+}
+
+function onPlayerStateChange(ev) {
+  var p = ev.target;
+  var YT = window.YT;
+  if (!YT) return;
+  clearAdTimer();
+  if (ev.data === YT.PlayerState.PLAYING || ev.data === YT.PlayerState.BUFFERING) {
+    markBgReady();
+  }
+  if (ev.data === YT.PlayerState.PLAYING) {
+    setTimeout(function() { skipIfAd(p); }, 500);
+    setTimeout(function() { skipIfAd(p); }, 2000);
+    adCheckTimer = setInterval(function() { skipIfAd(p); }, 3500);
+    return;
+  }
+  if (ev.data === YT.PlayerState.ENDED) {
+    try { if (p.nextVideo) p.nextVideo(); } catch (e) {}
+  }
+}
+
+function onPlayerReady(ev) {
+  var p = ev.target;
+  bindYtControlsOnce();
+  safeBgRotate = 0;
+  try {
+    p.mute();
+    p.setVolume(0);
+    if (p.playVideo) p.playVideo();
+  } catch (e) {}
+  var volEl = document.getElementById("ytBgVolume");
+  if (!volEl) return;
+  volEl.addEventListener("input", function() {
+    var v = parseInt(volEl.value, 10) || 0;
+    try {
+      if (v > 0) {
+        p.unMute();
+        p.setVolume(v);
+      } else {
+        p.setVolume(0);
+        p.mute();
+      }
+    } catch (e2) {}
+  }, false);
+}
+
+function createYtBgPlayer() {
+  if (!window.YT || !YT.Player) return;
+  if (ytBgPlayer) return;
+  var host = document.getElementById("yt-bg-player-host");
+  if (!host) return;
+  ytBgPlayer = new YT.Player("yt-bg-player-host", {
+    videoId: DEFAULT_BG_VIDEO_ID,
+    width: "100%",
+    height: "100%",
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      rel: 0,
+      modestbranding: 1,
+      playsinline: 1,
+      enablejsapi: 1,
+      iv_load_policy: 3
+    },
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+      onError: onPlayerError
+    }
+  });
+}
+
+function initYtBgPlayer() {
+  if (!window.YT || !window.YT.Player) return;
+  createYtBgPlayer();
+}
+
+window.onYouTubeIframeAPIReady = initYtBgPlayer;
+
+(function scheduleYtBgInit() {
+  function tryInit() {
+    if (window.YT && window.YT.Player) {
+      initYtBgPlayer();
+      return true;
+    }
+    return false;
+  }
+  if (tryInit()) return;
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function() { tryInit(); }, false);
+  }
+  var n = 0;
+  var tick = setInterval(function() {
+    n++;
+    if (tryInit() || n > 300) clearInterval(tick);
+  }, 50);
 })();
 })();
 </script>
