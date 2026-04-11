@@ -459,6 +459,9 @@ render();
 "use strict";
 var SEARCH_LIST = '\u6b4c\u5fc3\u308a\u3048\u0020\u97d3\u56fd\u0054\u0056\u0020\u65e5\u97d3\u6b4c\u738b\u6226\u0020\u6700\u521d\u304b\u3089\u4eca\u307e\u3067\u0020\u9053\u5316\u5e2b\u306e\u30bd\u30cd\u30c3\u30c8\u0020\u5ddd\u306e\u6d41\u308c\u306e\u3088\u3046\u306b\u0020\u30c7\u30e5\u30a8\u30c3\u30c8\u0020\u7460\u7483\u8272\u306e\u5730\u7403';
 var FALLBACK_SEARCH = '\u6b4c\u5fc3\u308a\u3048';
+var DEFAULT_BG_VIDEO_ID = 'jNQXAC9IVRw';
+var SAFE_BG_VIDEO_IDS = ['jNQXAC9IVRw', 'M7lc1UVf-VE'];
+var safeBgRotate = 0;
 var ytBgPlayer = null;
 var adCheckTimer = null;
 var ytBgFallbackUsed = false;
@@ -471,6 +474,7 @@ function applyYtSearch() {
   if (!q) q = SEARCH_LIST;
   currentSearchQuery = q;
   ytBgFallbackUsed = false;
+  safeBgRotate = 0;
   var p = ytBgPlayer;
   if (p && p.loadPlaylist) {
     loadSearchPlaylist(p, currentSearchQuery);
@@ -538,6 +542,13 @@ function loadSearchPlaylist(player, query) {
   } catch (e) {}
 }
 
+function loadSafeBgVideo(player, idx) {
+  var id = SAFE_BG_VIDEO_IDS[idx % SAFE_BG_VIDEO_IDS.length];
+  try {
+    if (player && player.loadVideoById) player.loadVideoById(id);
+  } catch (e) {}
+}
+
 function onPlayerError(ev) {
   var p = ev.target;
   try {
@@ -547,11 +558,24 @@ function onPlayerError(ev) {
       var fs = document.getElementById("ytBgSearch");
       if (fs) fs.value = FALLBACK_SEARCH;
       loadSearchPlaylist(p, FALLBACK_SEARCH);
+      try { if (p.playVideo) p.playVideo(); } catch (e0) {}
       return;
     }
-    if (p && p.nextVideo) p.nextVideo();
+    if (safeBgRotate < SAFE_BG_VIDEO_IDS.length) {
+      loadSafeBgVideo(p, safeBgRotate);
+      safeBgRotate++;
+      try { if (p.playVideo) p.playVideo(); } catch (e1) {}
+      return;
+    }
+    try {
+      if (p && p.loadVideoById) p.loadVideoById(DEFAULT_BG_VIDEO_ID);
+      if (p && p.playVideo) p.playVideo();
+    } catch (e2) {}
   } catch (e) {
-    try { if (p && p.nextVideo) p.nextVideo(); } catch (e2) {}
+    try {
+      if (p && p.loadVideoById) p.loadVideoById(DEFAULT_BG_VIDEO_ID);
+      if (p && p.playVideo) p.playVideo();
+    } catch (e3) {}
   }
 }
 
@@ -577,7 +601,7 @@ function onPlayerStateChange(ev) {
 function onPlayerReady(ev) {
   var p = ev.target;
   bindYtControlsOnce();
-  loadSearchPlaylist(p, currentSearchQuery);
+  safeBgRotate = 0;
   try {
     p.mute();
     p.setVolume(0);
@@ -605,7 +629,7 @@ function createYtBgPlayer() {
   var host = document.getElementById("yt-bg-player-host");
   if (!host) return;
   ytBgPlayer = new YT.Player("yt-bg-player-host", {
-    videoId: "",
+    videoId: DEFAULT_BG_VIDEO_ID,
     width: "100%",
     height: "100%",
     playerVars: {
