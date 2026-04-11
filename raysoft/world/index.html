@@ -36,8 +36,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 @media(min-width:1024px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
 .card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--border);background:var(--surface);backdrop-filter:blur(6px);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;cursor:pointer}
 .card:hover{transform:scale(1.04);border-color:var(--border-hover);background:rgba(255,255,255,.07);box-shadow:0 8px 24px rgba(34,211,238,.06)}
-.card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:transform .18s}
-.card:hover .card-flag{transform:scale(1.1)}
+.card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:.68;transition:transform .18s,opacity .18s}
+.card:hover .card-flag{transform:scale(1.1);opacity:1}
 .card-code{font-size:.95rem;font-weight:800;letter-spacing:.08em;color:var(--cyan);transition:color .18s}
 .card:hover .card-code{color:#67e8f9}
 .card-native{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
