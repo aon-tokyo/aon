@@ -480,25 +480,32 @@ var ytBgFallbackUsed = false;
 var currentSearchQuery = SEARCH_LIST;
 var ytControlsBound = false;
 
-function applyYtSearch() {
-  var inp = document.getElementById("ytBgSearch");
-  var q = inp ? String(inp.value || "").trim() : "";
-  if (!q) q = SEARCH_LIST;
-  currentSearchQuery = q;
-  ytBgFallbackUsed = false;
-  safeBgRotate = 0;
-  var p = ytBgPlayer;
-  if (p && p.loadPlaylist) {
-    loadSearchPlaylist(p, currentSearchQuery);
-    try { if (p.playVideo) p.playVideo(); } catch (e) {}
-  }
-}
-
 function syncQueryFromInput() {
   var inp = document.getElementById("ytBgSearch");
   var q = inp ? String(inp.value || "").trim() : "";
   if (!q) q = SEARCH_LIST;
   currentSearchQuery = q;
+}
+
+function destroyYtBgPlayer() {
+  try {
+    if (ytBgPlayer && ytBgPlayer.destroy) ytBgPlayer.destroy();
+  } catch (e) {}
+  ytBgPlayer = null;
+}
+
+function reloadYtBackground() {
+  destroyYtBgPlayer();
+  var host = document.getElementById("yt-bg-player-host");
+  if (host) host.innerHTML = "";
+  createYtBgPlayer();
+}
+
+function applyYtSearch() {
+  syncQueryFromInput();
+  ytBgFallbackUsed = false;
+  safeBgRotate = 0;
+  reloadYtBackground();
 }
 
 function bindYtControlsOnce() {
@@ -507,6 +514,7 @@ function bindYtControlsOnce() {
   var searchIn = document.getElementById("ytBgSearch");
   var applyBtn = document.getElementById("ytBgSearchApply");
   var onlyBtn = document.getElementById("ytBgOnlyToggle");
+  var volWrap = document.getElementById("ytBgVolumeWrap");
   if (searchIn) searchIn.value = SEARCH_LIST;
   if (applyBtn) applyBtn.addEventListener("click", applyYtSearch, false);
   if (searchIn) searchIn.addEventListener("keydown", function(ev) {
@@ -516,6 +524,21 @@ function bindYtControlsOnce() {
     var on = document.body.classList.toggle("yt-only-mode");
     onlyBtn.setAttribute("aria-pressed", on ? "true" : "false");
     onlyBtn.textContent = on ? "\u30b5\u30a4\u30c8\u306b\u623b\u308b" : "Youtube\u306b\u79fb\u52d5";
+  }, false);
+  if (volWrap) volWrap.addEventListener("input", function(ev) {
+    if (!ev.target || ev.target.id !== "ytBgVolume") return;
+    var p = ytBgPlayer;
+    if (!p) return;
+    var v = parseInt(ev.target.value, 10) || 0;
+    try {
+      if (v > 0) {
+        p.unMute();
+        p.setVolume(v);
+      } else {
+        p.setVolume(0);
+        p.mute();
+      }
+    } catch (e) {}
   }, false);
 }
 
@@ -561,6 +584,20 @@ function loadSearchPlaylist(player, query) {
   } catch (e) {}
 }
 
+function ytPlayerVarsForSearch(query) {
+  return {
+    listType: "search",
+    list: query,
+    autoplay: 1,
+    controls: 0,
+    rel: 0,
+    modestbranding: 1,
+    playsinline: 1,
+    enablejsapi: 1,
+    iv_load_policy: 3
+  };
+}
+
 function loadSafeBgVideo(player, idx) {
   var id = SAFE_BG_VIDEO_IDS[idx % SAFE_BG_VIDEO_IDS.length];
   try {
@@ -576,8 +613,7 @@ function onPlayerError(ev) {
       currentSearchQuery = FALLBACK_SEARCH;
       var fs = document.getElementById("ytBgSearch");
       if (fs) fs.value = FALLBACK_SEARCH;
-      loadSearchPlaylist(p, FALLBACK_SEARCH);
-      try { if (p.playVideo) p.playVideo(); } catch (e0) {}
+      reloadYtBackground();
       return;
     }
     if (safeBgRotate < SAFE_BG_VIDEO_IDS.length) {
@@ -620,28 +656,12 @@ function onPlayerStateChange(ev) {
 function onPlayerReady(ev) {
   var p = ev.target;
   bindYtControlsOnce();
-  syncQueryFromInput();
   safeBgRotate = 0;
-  loadSearchPlaylist(p, currentSearchQuery);
   try {
     p.mute();
     p.setVolume(0);
     if (p.playVideo) p.playVideo();
   } catch (e) {}
-  var volEl = document.getElementById("ytBgVolume");
-  if (!volEl) return;
-  volEl.addEventListener("input", function() {
-    var v = parseInt(volEl.value, 10) || 0;
-    try {
-      if (v > 0) {
-        p.unMute();
-        p.setVolume(v);
-      } else {
-        p.setVolume(0);
-        p.mute();
-      }
-    } catch (e2) {}
-  }, false);
 }
 
 function createYtBgPlayer() {
@@ -649,19 +669,12 @@ function createYtBgPlayer() {
   if (ytBgPlayer) return;
   var host = document.getElementById("yt-bg-player-host");
   if (!host) return;
+  syncQueryFromInput();
+  var q = currentSearchQuery;
   ytBgPlayer = new YT.Player("yt-bg-player-host", {
-    videoId: DEFAULT_BG_VIDEO_ID,
     width: "100%",
     height: "100%",
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      rel: 0,
-      modestbranding: 1,
-      playsinline: 1,
-      enablejsapi: 1,
-      iv_load_policy: 3
-    },
+    playerVars: ytPlayerVarsForSearch(q),
     events: {
       onReady: onPlayerReady,
       onStateChange: onPlayerStateChange,
