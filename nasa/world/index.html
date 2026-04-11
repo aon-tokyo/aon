@@ -8,7 +8,7 @@
 <link rel="icon" href="https://nasa.tokyo/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#000;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(15,23,42,.22);--card-border:rgba(255,255,255,.14);--card-border-hover:rgba(34,211,238,.38);--card-bg-hover:rgba(15,23,42,.38)}
+:root{--bg:#000;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(255,255,255,.07);--card-border:rgba(255,255,255,.18);--card-border-hover:rgba(34,211,238,.42);--card-bg-hover:rgba(255,255,255,.14)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
@@ -34,8 +34,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
 @media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
-.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:var(--card-bg);-webkit-backdrop-filter:blur(14px) saturate(1.35);backdrop-filter:blur(14px) saturate(1.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s,backdrop-filter .18s;cursor:pointer}
-.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:var(--card-bg-hover);box-shadow:0 10px 28px rgba(34,211,238,.07),inset 0 1px 0 rgba(255,255,255,.16)}
+.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:var(--card-bg);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s,backdrop-filter .18s;cursor:pointer}
+.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:var(--card-bg-hover);box-shadow:0 10px 28px rgba(34,211,238,.09),inset 0 1px 0 rgba(255,255,255,.28)}
 .card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:.35;transition:transform .18s,opacity .22s}
 @media(hover:hover){.card-flag:hover{transform:scale(1.08);opacity:1}}
 @media(hover:none){.card-flag:active{transform:scale(1.08);opacity:1}}
@@ -87,8 +87,14 @@ body>header,body>main,body>footer{position:relative;z-index:1;background:transpa
 body.yt-only-mode>.site-nav-wrap,body.yt-only-mode>header,body.yt-only-mode>main,body.yt-only-mode>footer{display:none!important}
 body.yt-only-mode .yt-bg-outer{z-index:100;pointer-events:auto}
 body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
+.yt-bg-ctx-menu{position:fixed;z-index:200;min-width:11rem;padding:.35rem 0;background:rgba(15,23,42,.96);border:1px solid rgba(34,211,238,.35);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.45);display:none;font-size:.78rem}
+.yt-bg-ctx-menu button{display:block;width:100%;text-align:left;padding:.45rem .85rem;border:none;background:transparent;color:#e2e8f0;cursor:pointer;font:inherit}
+.yt-bg-ctx-menu button:hover{background:rgba(34,211,238,.15);color:#fff}
+.yt-bg-ctx-menu .yt-ctx-h{padding:.25rem .85rem .15rem;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#64748b;font-weight:700}
+/* stack page above background video */
+body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative;z-index:1}
 
-</style>
+ </style>
 </head>
 <body>
 
@@ -103,6 +109,19 @@ body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
     <button type="button" class="yt-bg-btn" id="ytBgSearchApply">検索を適用</button>
     <button type="button" class="yt-bg-btn" id="ytBgOnlyToggle" aria-pressed="false">Youtubeに移動</button>
   </div>
+</div>
+<div id="ytBgCtxMenu" class="yt-bg-ctx-menu" hidden role="menu" aria-label="YouTube background">
+  <div class="yt-ctx-h">再生</div>
+  <button type="button" data-yt-ctx="play">再生</button>
+  <button type="button" data-yt-ctx="pause">一時停止</button>
+  <div class="yt-ctx-h">表示・音声</div>
+  <button type="button" data-yt-ctx="loop">ループ再生（切替）</button>
+  <button type="button" data-yt-ctx="mute">ミュート / 解除</button>
+  <button type="button" data-yt-ctx="seekBack">10秒戻る</button>
+  <button type="button" data-yt-ctx="seekFwd">10秒進む</button>
+  <button type="button" data-yt-ctx="volDown">音量 −10</button>
+  <button type="button" data-yt-ctx="volUp">音量 ＋10</button>
+  <button type="button" data-yt-ctx="openYt">YouTubeで開く</button>
 </div>
 
 <nav class="site-nav-wrap" aria-label="All domains"><span class="sn-title">Domains — home / world / top</span><div class="site-nav-rows"><div class="site-nav-row"><span class="sn-d">aon.tokyo</span><span class="sn-sep">·</span><a href="https://aon.tokyo/">/</a><span class="sn-sep">·</span><a href="https://aon.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://aon.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">audiocafe.tokyo</span><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/">/</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://audiocafe.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">icpo.tokyo</span><span class="sn-sep">·</span><a href="https://icpo.tokyo/">/</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://icpo.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">ion.tokyo</span><span class="sn-sep">·</span><a href="https://ion.tokyo/">/</a><span class="sn-sep">·</span><a href="https://ion.tokyo/world/">/world</a><span class="sn-sep">·</span><a href="https://ion.tokyo/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">raysoft.jp</span><span class="sn-sep">·</span><a href="https://raysoft.jp/">/</a><span class="sn-sep">·</span><a href="https://raysoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://raysoft.jp/top/">/top</a></div><div class="site-nav-row"><span class="sn-d">nanosoft.jp</span><span class="sn-sep">·</span><a href="https://nanosoft.jp/">/</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/world/">/world</a><span class="sn-sep">·</span><a href="https://nanosoft.jp/top/">/top</a></div></div></nav>
@@ -287,9 +306,7 @@ var ABC_KEY="ABC";
 var ABC_LABEL="ABC (A-Z)";
 
 function makeUrl(gc){
-  // Japanese: show the original /top/ page as-is (no translation)
-  if(gc==="ja") return "https://nasa.tokyo/top/";
-  // Other languages: go through Google Translate proxy so text is translated
+  if(gc==="ja") return "https://nasa-tokyo.translate.goog/top/?_x_tr_sl=en&_x_tr_tl=ja&_x_tr_hl=ja&_x_tr_pto=wapp";
   return "https://nasa-tokyo.translate.goog/top/?_x_tr_sl=ja&_x_tr_tl="+encodeURIComponent(gc)+"&_x_tr_hl=ja&_x_tr_pto=wapp";
 }
 
@@ -473,12 +490,31 @@ var currentSearchQuery = SEARCH_LIST;
 var ytControlsBound = false;
 var ytSearchFetchToken = 0;
 var YT_SAMPLE_VIDEO_IDS = { "M7lc1UVf-VE": 1, "jNQXAC9IVRw": 1 };
+var ytBgLoop = true;
+var ytCtxMenuBound = false;
+var ytBgLastToggleMs = 0;
 
 function syncQueryFromInput() {
   var inp = document.getElementById("ytBgSearch");
   var q = inp ? String(inp.value || "").trim() : "";
   if (!q) q = SEARCH_LIST;
   currentSearchQuery = q;
+}
+
+function syncVolumeFromSlider() {
+  var el = document.getElementById("ytBgVolume");
+  var p = ytBgPlayer;
+  if (!el || !p) return;
+  var v = parseInt(el.value, 10) || 0;
+  try {
+    if (v > 0) {
+      p.unMute();
+      p.setVolume(v);
+    } else {
+      p.setVolume(0);
+      p.mute();
+    }
+  } catch (e) {}
 }
 
 function destroyYtBgPlayer() {
@@ -526,6 +562,9 @@ function reloadYtBackground() {
   var host = document.getElementById("yt-bg-player-host");
   if (host) host.innerHTML = "";
   createYtBgPlayer();
+  setTimeout(function() { syncVolumeFromSlider(); }, 0);
+  setTimeout(function() { syncVolumeFromSlider(); }, 400);
+  setTimeout(function() { syncVolumeFromSlider(); }, 1200);
 }
 
 function applyYtSearch() {
@@ -551,22 +590,134 @@ function bindYtControlsOnce() {
     var on = document.body.classList.toggle("yt-only-mode");
     onlyBtn.setAttribute("aria-pressed", on ? "true" : "false");
     onlyBtn.textContent = on ? "\u30b5\u30a4\u30c8\u306b\u623b\u308b" : "Youtube\u306b\u79fb\u52d5";
+    setTimeout(function() { syncVolumeFromSlider(); }, 0);
   }, false);
   if (volWrap) volWrap.addEventListener("input", function(ev) {
     if (!ev.target || ev.target.id !== "ytBgVolume") return;
+    syncVolumeFromSlider();
+  }, false);
+  bindYtBgInteractionOnce();
+}
+
+function hideYtCtxMenu() {
+  var menu = document.getElementById("ytBgCtxMenu");
+  if (!menu) return;
+  menu.style.display = "none";
+  menu.hidden = true;
+}
+
+function showYtCtxMenu(clientX, clientY) {
+  var menu = document.getElementById("ytBgCtxMenu");
+  if (!menu) return;
+  menu.hidden = false;
+  menu.style.display = "block";
+  var w = menu.offsetWidth || 160;
+  var h = menu.offsetHeight || 200;
+  var x = Math.min(clientX, window.innerWidth - w - 6);
+  var y = Math.min(clientY, window.innerHeight - h - 6);
+  menu.style.left = Math.max(4, x) + "px";
+  menu.style.top = Math.max(4, y) + "px";
+}
+
+function bindYtBgInteractionOnce() {
+  if (ytCtxMenuBound) return;
+  ytCtxMenuBound = true;
+  var menu = document.getElementById("ytBgCtxMenu");
+  function toggleBgPlayPause() {
+    var now = Date.now();
+    if (now - ytBgLastToggleMs < 320) return;
+    ytBgLastToggleMs = now;
     var p = ytBgPlayer;
-    if (!p) return;
-    var v = parseInt(ev.target.value, 10) || 0;
+    if (!p || !p.getPlayerState) return;
     try {
-      if (v > 0) {
-        p.unMute();
-        p.setVolume(v);
+      var YT = window.YT;
+      if (!YT) return;
+      var st = p.getPlayerState();
+      if (st === YT.PlayerState.PLAYING) {
+        if (p.pauseVideo) p.pauseVideo();
       } else {
-        p.setVolume(0);
-        p.mute();
+        if (p.playVideo) p.playVideo();
+        syncVolumeFromSlider();
       }
     } catch (e) {}
-  }, false);
+  }
+  document.addEventListener("click", function(ev) {
+    if (menu && !menu.hidden && menu.contains(ev.target)) return;
+    if (menu && !menu.hidden) hideYtCtxMenu();
+    if (ev.button !== 0) return;
+    var el = ev.target;
+    if (el && el.closest && el.closest("a,button,input,textarea,select,label,.yt-bg-vol-wrap,.yt-bg-ctx-menu")) return;
+    toggleBgPlayPause();
+  }, true);
+  document.addEventListener("contextmenu", function(ev) {
+    var el = ev.target;
+    if (el && el.closest && el.closest("#ytBgVolumeWrap,.yt-bg-ctx-menu,a,button,input,textarea,select,label")) return;
+    ev.preventDefault();
+    showYtCtxMenu(ev.clientX, ev.clientY);
+  }, true);
+  if (menu) {
+    var btns = menu.querySelectorAll("[data-yt-ctx]");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("click", function(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var act = ev.currentTarget.getAttribute("data-yt-ctx");
+        var p = ytBgPlayer;
+        hideYtCtxMenu();
+        if (!p) return;
+        try {
+          if (act === "play") {
+            if (p.playVideo) p.playVideo();
+            syncVolumeFromSlider();
+            return;
+          }
+          if (act === "pause") {
+            if (p.pauseVideo) p.pauseVideo();
+            return;
+          }
+          if (act === "loop") {
+            ytBgLoop = !ytBgLoop;
+            return;
+          }
+          if (act === "mute") {
+            var mu = p.isMuted && p.isMuted();
+            if (mu) {
+              if (p.unMute) p.unMute();
+              syncVolumeFromSlider();
+            } else {
+              if (p.mute) p.mute();
+            }
+            return;
+          }
+          if (act === "seekBack" && p.getCurrentTime && p.seekTo) {
+            p.seekTo(Math.max(0, p.getCurrentTime() - 10), true);
+            return;
+          }
+          if (act === "seekFwd" && p.getCurrentTime && p.seekTo) {
+            p.seekTo(p.getCurrentTime() + 10, true);
+            return;
+          }
+          if (act === "volDown" || act === "volUp") {
+            var vel = document.getElementById("ytBgVolume");
+            var vv = vel ? (parseInt(vel.value, 10) || 0) : 0;
+            vv += act === "volUp" ? 10 : -10;
+            if (vv < 0) vv = 0;
+            if (vv > 100) vv = 100;
+            if (vel) vel.value = String(vv);
+            syncVolumeFromSlider();
+            return;
+          }
+          if (act === "openYt") {
+            var vid = null;
+            try {
+              if (p.getVideoData) vid = p.getVideoData().video_id;
+            } catch (e1) {}
+            if (vid) window.open("https://www.youtube.com/watch?v=" + encodeURIComponent(vid), "_blank", "noopener,noreferrer");
+          }
+        } catch (e) {}
+      });
+    }
+  }
 }
 
 function markBgReady() {
@@ -649,8 +800,12 @@ function onPlayerStateChange(ev) {
   }
   if (ev.data === YT.PlayerState.ENDED) {
     try {
-      if (p.seekTo) p.seekTo(0, true);
-      if (p.playVideo) p.playVideo();
+      if (ytBgLoop) {
+        if (p.seekTo) p.seekTo(0, true);
+        if (p.playVideo) p.playVideo();
+      } else {
+        if (p.seekTo) p.seekTo(0, true);
+      }
     } catch (e) {}
   }
 }
@@ -660,8 +815,7 @@ function onPlayerReady(ev) {
   bindYtControlsOnce();
   safeBgRotate = 0;
   try {
-    p.mute();
-    p.setVolume(0);
+    syncVolumeFromSlider();
     if (p.playVideo) p.playVideo();
   } catch (e) {}
 }
