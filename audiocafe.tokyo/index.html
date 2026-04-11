@@ -151,25 +151,37 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
       var parsed = parseJinaBody(txt);
       pre.textContent = parsed || "\uff08\u8868\u793a\u3067\u304d\u308b\u30c6\u30ad\u30b9\u30c8\u304c\u3042\u308a\u307e\u305b\u3093\uff09";
     }
-    fetch(jinaReaderUrl(gUrl), { credentials: "omit", mode: "cors" })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.text();
-      })
-      .then(function (txt) {
-        var p = parseJinaBody(txt);
-        if (p && p.length > 80 && p.indexOf("\u53d6\u5f97\u30a8\u30e9\u30fc") === -1 && p.indexOf("blocked") === -1) {
+    function isUsableSnippet(p) {
+      if (!p || typeof p !== "string") return false;
+      if (p.length < 50) return false;
+      if (p.indexOf("\u53d6\u5f97\u30a8\u30e9\u30fc") !== -1) return false;
+      if (/blocked|SecurityCompromise|Anonymous access to domain www\.google/i.test(p)) return false;
+      return true;
+    }
+    function fetchJinaText(pageUrl) {
+      return fetch(jinaReaderUrl(pageUrl), { credentials: "omit", mode: "cors" }).then(function (r) {
+        return r.text().then(function (txt) {
+          return { ok: r.ok, txt: txt };
+        });
+      });
+    }
+    fetchJinaText(gUrl)
+      .then(function (res) {
+        var p = parseJinaBody(res.txt);
+        if (res.ok && isUsableSnippet(p)) {
           pre.textContent = p;
           return;
         }
-        return fetch(jinaReaderUrl(dUrl), { credentials: "omit", mode: "cors" }).then(function (r2) {
-          if (!r2.ok) throw new Error("HTTP " + r2.status);
-          return r2.text();
+        return fetchJinaText(dUrl).then(function (res2) {
+          if (!res2.ok) throw new Error("ddg http");
+          applyText(res2.txt);
         });
       })
-      .then(function (maybeSecond) {
-        if (maybeSecond == null || typeof maybeSecond !== "string") return;
-        applyText(maybeSecond);
+      .catch(function () {
+        return fetchJinaText(dUrl).then(function (res2) {
+          if (!res2.ok) throw new Error("ddg http");
+          applyText(res2.txt);
+        });
       })
       .catch(function () {
         pre.textContent =
