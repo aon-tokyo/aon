@@ -8,7 +8,7 @@
 <link rel="icon" href="https://raysoft.jp/favicon.ico">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#000;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(15,23,42,.96);--card-border:rgba(255,255,255,.26);--card-border-hover:rgba(34,211,238,.45)}
+:root{--bg:#000;--surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);--border-hover:rgba(34,211,238,.3);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#64748b;--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.15);--card-bg:rgba(15,23,42,.22);--card-border:rgba(255,255,255,.14);--card-border-hover:rgba(34,211,238,.38);--card-bg-hover:rgba(15,23,42,.38)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column}
 ::selection{background:var(--cyan-glow);color:#fff}
@@ -34,19 +34,19 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-ap
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
 @media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
-.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:var(--card-bg);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;cursor:pointer}
-.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:rgba(30,41,59,.98);box-shadow:0 8px 24px rgba(34,211,238,.08)}
-.card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:.42;transition:transform .18s,opacity .22s}
+.card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:1rem .5rem;border-radius:.75rem;border:1px solid var(--card-border);background:var(--card-bg);-webkit-backdrop-filter:blur(14px) saturate(1.35);backdrop-filter:blur(14px) saturate(1.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);text-decoration:none;text-align:center;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s,backdrop-filter .18s;cursor:pointer}
+.card:hover{transform:scale(1.04);border-color:var(--card-border-hover);background:var(--card-bg-hover);box-shadow:0 10px 28px rgba(34,211,238,.07),inset 0 1px 0 rgba(255,255,255,.16)}
+.card-flag{width:60px;height:40px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:.35;transition:transform .18s,opacity .22s}
 @media(hover:hover){.card-flag:hover{transform:scale(1.08);opacity:1}}
 @media(hover:none){.card-flag:active{transform:scale(1.08);opacity:1}}
-.card-code{font-size:.95rem;font-weight:800;letter-spacing:.08em;color:var(--cyan);transition:color .18s}
-.card:hover .card-code{color:#67e8f9}
-.card-native{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
-.card:hover .card-native{color:#fff}
-.card-en{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
-.card:hover .card-en{color:#fff}
-.card-country{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.9)}
-.card:hover .card-country{color:#fff}
+.card-code{font-size:.95rem;font-weight:800;letter-spacing:.08em;color:rgba(34,211,238,.55);transition:color .18s}
+.card:hover .card-code{color:rgba(103,232,249,.88)}
+.card-native{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.52)}
+.card:hover .card-native{color:rgba(255,255,255,.88)}
+.card-en{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.52)}
+.card:hover .card-en{color:rgba(255,255,255,.88)}
+.card-country{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.52)}
+.card:hover .card-country{color:rgba(255,255,255,.88)}
 .empty{text-align:center;padding:4rem 1rem;color:var(--text-muted);font-size:1rem}
 .footer{border-top:1px solid rgba(255,255,255,.05);padding:1.5rem 1rem;text-align:center;font-size:.7rem;color:var(--text-muted);line-height:1.7}
 .footer a{color:var(--text-dim);text-decoration:none;transition:color .2s}
@@ -463,8 +463,8 @@ render();
 "use strict";
 var SEARCH_LIST = '\u6b4c\u5fc3\u308a\u3048\u0020\u97d3\u56fd\u0054\u0056\u0020\u65e5\u97d3\u6b4c\u738b\u6226\u0020\u6700\u521d\u304b\u3089\u4eca\u307e\u3067\u0020\u9053\u5316\u5e2b\u306e\u30bd\u30cd\u30c3\u30c8\u0020\u5ddd\u306e\u6d41\u308c\u306e\u3088\u3046\u306b\u0020\u30c7\u30e5\u30a8\u30c3\u30c8\u0020\u7460\u7483\u8272\u306e\u5730\u7403';
 var FALLBACK_SEARCH = '\u6b4c\u5fc3\u308a\u3048';
-var DEFAULT_BG_VIDEO_ID = 'M7lc1UVf-VE';
-var SAFE_BG_VIDEO_IDS = ['M7lc1UVf-VE', 'jNQXAC9IVRw'];
+var DEFAULT_BG_VIDEO_ID = 'O2IMOiSCLi8';
+var SAFE_BG_VIDEO_IDS = ['O2IMOiSCLi8', 'NDWleweBx_I', 'qsYPw-VNekQ'];
 var safeBgRotate = 0;
 var ytBgPlayer = null;
 var adCheckTimer = null;
@@ -472,6 +472,7 @@ var ytBgFallbackUsed = false;
 var currentSearchQuery = SEARCH_LIST;
 var ytControlsBound = false;
 var ytSearchFetchToken = 0;
+var YT_SAMPLE_VIDEO_IDS = { "M7lc1UVf-VE": 1, "jNQXAC9IVRw": 1 };
 
 function syncQueryFromInput() {
   var inp = document.getElementById("ytBgSearch");
@@ -490,16 +491,22 @@ function destroyYtBgPlayer() {
 
 function extractFirstWatchIdFromHtml(html) {
   if (!html || typeof html !== "string") return null;
-  var re = /youtube\.com\/watch\?[^"'\\s<>]*v=([a-zA-Z0-9_-]{11})/g;
+  var re = /\/watch\?v=([a-zA-Z0-9_-]{11})/g;
   var m;
   while ((m = re.exec(html)) !== null) {
-    if (m[1] !== "videoseries") return m[1];
+    var id = m[1];
+    if (!YT_SAMPLE_VIDEO_IDS[id]) return id;
+  }
+  re = /youtube\.com\/watch\?[^"'\\s<>]*v=([a-zA-Z0-9_-]{11})/g;
+  while ((m = re.exec(html)) !== null) {
+    if (m[1] !== "videoseries" && !YT_SAMPLE_VIDEO_IDS[m[1]]) return m[1];
   }
   return null;
 }
 
 function resolveYoutubeSearchVideoId(query, cb) {
-  var url = "https://r.jina.ai/https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+  var ytResults = "https://www.youtube.com/results?search_query=" + encodeURIComponent(query) + "&sp=EgIQAQ%253D%253D";
+  var url = "https://r.jina.ai/" + ytResults;
   fetch(url, { credentials: "omit", mode: "cors" })
     .then(function(r) {
       if (!r.ok) throw new Error("fetch");
