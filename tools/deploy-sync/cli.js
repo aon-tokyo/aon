@@ -15,6 +15,10 @@ import {
 } from "./lib/manifest.js";
 import { uploadFtp } from "./lib/ftp-upload.js";
 import { uploadSftp } from "./lib/sftp-upload.js";
+import {
+  resolveGitUploadPaths,
+  intersectWithDeployPaths,
+} from "./lib/git-files.js";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -31,6 +35,7 @@ Options:
   --dry-run           List actions only
   --continue-on-git-failure  After failed git push, still run server upload (or set in YAML)
   --full-upload         Upload every matched file (ignore manifest); for hosts weak to incremental
+  --upload-mode <m>     incremental | full | git (overrides server.uploadMode)
   --i-understand-delete-on-server  Required with mirror delete (server.deleteRemoved)
 
 Environment:
@@ -40,7 +45,7 @@ Environment:
 
 async function main() {
   const argv = minimist(process.argv.slice(2), {
-    string: ["config", "target"],
+    string: ["config", "target", "upload-mode"],
     boolean: [
       "dry-run",
       "help",
@@ -74,6 +79,10 @@ async function main() {
     cfg.server = cfg.server || {};
     cfg.server.uploadMode = "full";
   }
+  if (argv["upload-mode"]) {
+    cfg.server = cfg.server || {};
+    cfg.server.uploadMode = argv["upload-mode"];
+  }
 
   const normalizedTarget = normalizeTarget(
     argv.target || cfg.target || "dual"
@@ -96,11 +105,11 @@ async function main() {
       dryRun,
     });
     gitOk = r.ok;
-    if (!g.ok && !cfg.continueOnGitFailure) {
+    if (!r.ok && !cfg.continueOnGitFailure) {
       console.error("deploy-sync: git step failed; aborting.");
       process.exit(1);
     }
-    if (!g.ok && cfg.continueOnGitFailure) {
+    if (!r.ok && cfg.continueOnGitFailure) {
       console.warn("deploy-sync: continuing despite git failure (--continue-on-git-failure)");
     }
   }
@@ -133,6 +142,25 @@ async function main() {
       upload = Array.from(current.keys());
       console.log(
         `deploy-sync: server uploadMode=full (all ${upload.length} matched files; no manifest skip)`
+      );
+    } else if (uploadMode === "git") {
+      const gitDiffMode = (server.gitDiffMode || "ahead").toLowerCase();
+      const gitAgainst = server.gitAgainst || "@{u}";
+      let gitPaths;
+      try {
+        gitPaths = resolveGitUploadPaths(repoRoot, gitDiffMode, gitAgainst);
+      } catch (e) {
+        console.error("deploy-sync:", e.message || e);
+        process.exit(1);
+      }
+      const allowed = new Set(current.keys());
+      upload = intersectWithDeployPaths(gitPaths, allowed);
+      upload = upload.filter((rel) => {
+        const abs = path.join(repoRoot, rel);
+        return fs.existsSync(abs) && fs.statSync(abs).isFile();
+      });
+      console.log(
+        `deploy-sync: server uploadMode=git (${gitDiffMode} vs ${gitAgainst}) gitPaths=${gitPaths.length} after paths filter=${upload.length}`
       );
     } else {
       const diff = diffIncremental(previous, current);

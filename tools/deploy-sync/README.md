@@ -44,6 +44,10 @@ deploy-sync --target server
 deploy-sync --target server --full-upload
 # or in YAML: server.uploadMode: full
 
+# Git-diff-aligned upload (only files that git reports changed, ∩ deploy paths)
+deploy-sync --target server --upload-mode git
+# YAML: server.uploadMode: git, server.gitDiffMode: ahead | working | against
+
 # Both (git push first, then incremental SFTP/FTP)
 deploy-sync --target both
 ```
