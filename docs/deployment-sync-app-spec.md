@@ -46,6 +46,8 @@
 
 **`uploadMode: git`**: `git diff` / `git diff @{u}...HEAD` 等で得たパスと `paths` の **積集合**だけをアップロードする。意味的に **GitHub で見える差分に近い集合**に揃えやすい（証明書・転送は FTP/SFTP 側の設定）。
 
+**差分表示（任意）**: `server.showDiff: true` または CLI `--show-diff` で、転送前に **`git diff --stat` または `--patch`** を表示できる。`uploadMode: git` では `gitDiffMode` と同じ基準の diff。`incremental` ではマニフェストで上げるファイル一覧のあと、参考として同パスに対する `git diff HEAD` を表示（マニフェストと完全一致しない場合あり）。
+
 併せて **FTP/SFTP 互換オプション**（パッシブ IPv4 のみ、転送間隔、失敗時リトライ等）を設定できる。
 
 ---
@@ -177,4 +179,4 @@ manifest:
 
 ---
 
-*文書バージョン: 0.4 — `uploadMode: git`（git 差分と deploy paths の積）を追記。*
+*文書バージョン: 0.5 — オプションの diff 表示（`showDiff` / `--show-diff`）を追記。*

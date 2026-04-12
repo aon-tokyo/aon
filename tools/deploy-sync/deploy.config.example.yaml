@@ -40,6 +40,9 @@ server:
   #   uploadRetries: 2
   #   retryDelayMs: 800
   #   delayBetweenUploadsMs: 0
+  # --- デプロイ前に差分表示（任意）---
+  # showDiff: false        # true で転送前に git diff 等を表示
+  # diffFormat: stat       # stat（行数サマリ）| patch（パッチ全文、大きいと長い）
   # verbose: false
 
 paths:

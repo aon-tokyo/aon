@@ -19,6 +19,12 @@ import {
   resolveGitUploadPaths,
   intersectWithDeployPaths,
 } from "./lib/git-files.js";
+import {
+  printGitModeDiff,
+  printFullModeDiff,
+  printIncrementalManifestList,
+  printIncrementalDiffHint,
+} from "./lib/show-diff.js";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -36,6 +42,8 @@ Options:
   --continue-on-git-failure  After failed git push, still run server upload (or set in YAML)
   --full-upload         Upload every matched file (ignore manifest); for hosts weak to incremental
   --upload-mode <m>     incremental | full | git (overrides server.uploadMode)
+  --show-diff           Print diff before upload (see also server.showDiff in YAML)
+  --diff-format <f>     stat | patch (default: stat)
   --i-understand-delete-on-server  Required with mirror delete (server.deleteRemoved)
 
 Environment:
@@ -45,7 +53,7 @@ Environment:
 
 async function main() {
   const argv = minimist(process.argv.slice(2), {
-    string: ["config", "target", "upload-mode"],
+    string: ["config", "target", "upload-mode", "diff-format"],
     boolean: [
       "dry-run",
       "help",
@@ -53,6 +61,7 @@ async function main() {
       "i-understand-delete-on-server",
       "continue-on-git-failure",
       "full-upload",
+      "show-diff",
     ],
     alias: { h: "help" },
   });
@@ -82,6 +91,14 @@ async function main() {
   if (argv["upload-mode"]) {
     cfg.server = cfg.server || {};
     cfg.server.uploadMode = argv["upload-mode"];
+  }
+  if (argv["show-diff"]) {
+    cfg.server = cfg.server || {};
+    cfg.server.showDiff = true;
+  }
+  if (argv["diff-format"]) {
+    cfg.server = cfg.server || {};
+    cfg.server.diffFormat = argv["diff-format"];
   }
 
   const normalizedTarget = normalizeTarget(
@@ -193,6 +210,29 @@ async function main() {
       }
       toDelete = diffMirrorDeletes(previous, current);
       console.log(`deploy-sync: mirror delete count=${toDelete.length}`);
+    }
+
+    const showDiff = server.showDiff === true;
+    const diffFormat =
+      (server.diffFormat || "stat").toLowerCase() === "patch"
+        ? "patch"
+        : "stat";
+
+    if (showDiff) {
+      if (uploadMode === "git") {
+        printGitModeDiff(
+          repoRoot,
+          server.gitDiffMode || "ahead",
+          server.gitAgainst || "@{u}",
+          upload,
+          diffFormat
+        );
+      } else if (uploadMode === "full") {
+        printFullModeDiff(repoRoot, upload, diffFormat);
+      } else {
+        printIncrementalManifestList(upload, previous, current);
+        printIncrementalDiffHint(repoRoot, upload, diffFormat);
+      }
     }
 
     if (dryRun) {

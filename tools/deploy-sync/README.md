@@ -48,6 +48,11 @@ deploy-sync --target server --full-upload
 deploy-sync --target server --upload-mode git
 # YAML: server.uploadMode: git, server.gitDiffMode: ahead | working | against
 
+# Show diff before upload (optional)
+deploy-sync --target server --show-diff
+deploy-sync --show-diff --diff-format patch   # full patch (can be large)
+# YAML: server.showDiff: true, server.diffFormat: stat | patch
+
 # Both (git push first, then incremental SFTP/FTP)
 deploy-sync --target both
 ```
