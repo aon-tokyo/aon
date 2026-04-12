@@ -4205,12 +4205,17 @@ function getCurrentYtBgVideoId() {
   return null;
 }
 
+/** Re-sample YouTube thumbnail luminance at most once per this interval (ms). */
+var YT_CONTRAST_INTERVAL_MS = 20000;
 var ytContrastLastVid = null;
 var ytContrastLums = null;
+var ytContrastLastSampleAt = 0;
 var ytContrastRaf = null;
 var ytContrastScrollTimer = null;
+var ytContrastMutateTimer = null;
 var ytContrastObs = null;
 var ytContrastInitDone = false;
+var ytContrastPeriodicTimer = null;
 
 function sampleYoutubeThumbQuadrantLuminance(videoId, cb) {
   if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
@@ -4300,23 +4305,31 @@ function applyQuadrantTextContrast(lums) {
   }
 }
 
+function runQuadrantContrastSample() {
+  if (!document.body.classList || !document.body.classList.contains("ac-blog-top-page")) return;
+  var vid = getCurrentYtBgVideoId();
+  if (!vid) return;
+  var now = Date.now();
+  if (vid !== ytContrastLastVid) {
+    ytContrastLastVid = vid;
+    ytContrastLums = null;
+  }
+  var needSample = !ytContrastLums || now - ytContrastLastSampleAt >= YT_CONTRAST_INTERVAL_MS;
+  if (!needSample) return;
+  sampleYoutubeThumbQuadrantLuminance(vid, function(lums) {
+    if (!lums) return;
+    ytContrastLums = lums;
+    ytContrastLastSampleAt = Date.now();
+    applyQuadrantTextContrast(lums);
+  });
+}
+
 function scheduleQuadrantContrastUpdate() {
   if (!document.body.classList || !document.body.classList.contains("ac-blog-top-page")) return;
   if (ytContrastRaf) cancelAnimationFrame(ytContrastRaf);
   ytContrastRaf = requestAnimationFrame(function() {
     ytContrastRaf = null;
-    var vid = getCurrentYtBgVideoId();
-    if (!vid) return;
-    if (vid !== ytContrastLastVid || !ytContrastLums) {
-      ytContrastLastVid = vid;
-      sampleYoutubeThumbQuadrantLuminance(vid, function(lums) {
-        if (!lums) return;
-        ytContrastLums = lums;
-        applyQuadrantTextContrast(lums);
-      });
-    } else {
-      applyQuadrantTextContrast(ytContrastLums);
-    }
+    runQuadrantContrastSample();
   });
 }
 
@@ -4329,18 +4342,37 @@ function initQuadrantContrastTracking() {
     ytContrastScrollTimer = setTimeout(function() {
       ytContrastScrollTimer = null;
       if (ytContrastLums) applyQuadrantTextContrast(ytContrastLums);
-    }, 80);
+    }, 120);
   }
   window.addEventListener("scroll", onScrollResize, { passive: true });
   window.addEventListener("resize", onScrollResize);
   if (!ytContrastObs) {
     try {
       ytContrastObs = new MutationObserver(function() {
-        if (ytContrastLums) applyQuadrantTextContrast(ytContrastLums);
+        if (ytContrastMutateTimer) clearTimeout(ytContrastMutateTimer);
+        ytContrastMutateTimer = setTimeout(function() {
+          ytContrastMutateTimer = null;
+          if (ytContrastLums) applyQuadrantTextContrast(ytContrastLums);
+        }, 120);
       });
       ytContrastObs.observe(document.body, { childList: true, subtree: true });
     } catch (e0) {}
   }
+  if (!ytContrastPeriodicTimer) {
+    ytContrastPeriodicTimer = setInterval(function() {
+      scheduleQuadrantContrastUpdate();
+    }, YT_CONTRAST_INTERVAL_MS);
+  }
+  window.addEventListener(
+    "pagehide",
+    function() {
+      if (ytContrastPeriodicTimer) {
+        clearInterval(ytContrastPeriodicTimer);
+        ytContrastPeriodicTimer = null;
+      }
+    },
+    false
+  );
   scheduleQuadrantContrastUpdate();
 }
 
@@ -4873,13 +4905,6 @@ function onPlayerStateChange(ev) {
   }
   updateYtTransportUi();
   if (ev.data === YT.PlayerState.PLAYING) {
-    try {
-      if (document.body.classList && document.body.classList.contains("ac-blog-top-page")) {
-        ytContrastLastVid = null;
-        ytContrastLums = null;
-        scheduleQuadrantContrastUpdate();
-      }
-    } catch (eC) {}
     setTimeout(function() { skipIfAd(p); }, 500);
     setTimeout(function() { skipIfAd(p); }, 2000);
     adCheckTimer = setInterval(function() { skipIfAd(p); }, 3500);
