@@ -18,8 +18,21 @@ server:
   password: "${DEPLOY_PASSWORD}"
   # privateKey: /path/to/id_rsa   # sftp: use key instead of password
   remoteRoot: /home/user/public_html/mysite
+  # incremental = manifest で変更分のみ / full = 毎回マッチした全ファイルを PUT（レンタルで増分が不安な場合）
+  uploadMode: incremental # incremental | full
   syncMode: incremental # incremental | mirror (mirror needs delete flags)
   deleteRemoved: false
+  # --- レンタル FTP/SFTP が不安定な場合の緩和（任意）---
+  # ftpCompat:
+  #   passiveIpv4Only: true   # EPSV が通らない古い FTP 向け（IPv4 PASV のみ）
+  #   uploadRetries: 3
+  #   retryDelayMs: 1000
+  #   delayBetweenUploadsMs: 200  # 連続 PUT の間隔（レート制限対策）
+  #   binaryBeforeUpload: true  # 既定 true: 転送前に TYPE I
+  # sftpCompat:
+  #   uploadRetries: 2
+  #   retryDelayMs: 800
+  #   delayBetweenUploadsMs: 0
   # verbose: false
 
 paths:

@@ -30,6 +30,7 @@ Options:
   --target <t>        github | server | both  (overrides config target)
   --dry-run           List actions only
   --continue-on-git-failure  After failed git push, still run server upload (or set in YAML)
+  --full-upload         Upload every matched file (ignore manifest); for hosts weak to incremental
   --i-understand-delete-on-server  Required with mirror delete (server.deleteRemoved)
 
 Environment:
@@ -46,6 +47,7 @@ async function main() {
       "h",
       "i-understand-delete-on-server",
       "continue-on-git-failure",
+      "full-upload",
     ],
     alias: { h: "help" },
   });
@@ -67,6 +69,10 @@ async function main() {
   const cfg = loadConfig(configPath, cwd);
   if (argv["continue-on-git-failure"]) {
     cfg.continueOnGitFailure = true;
+  }
+  if (argv["full-upload"]) {
+    cfg.server = cfg.server || {};
+    cfg.server.uploadMode = "full";
   }
 
   const normalizedTarget = normalizeTarget(
@@ -118,15 +124,29 @@ async function main() {
       current.set(rel.replace(/\\/g, "/"), h);
     }
 
+    const uploadMode = (server.uploadMode || "incremental").toLowerCase();
     const previous = loadManifest(manifestPath);
-    const { upload, skipReason } = diffIncremental(previous, current);
 
-    console.log(
-      `deploy-sync: server files matched=${current.size} toUpload=${upload.length} (incremental)`
-    );
-    if (skipReason.length && dryRun) {
-      for (const s of skipReason.slice(0, 20)) console.log(`  skip unchanged: ${s}`);
-      if (skipReason.length > 20) console.log(`  ... +${skipReason.length - 20} more`);
+    let upload;
+    let skipReason = [];
+    if (uploadMode === "full") {
+      upload = Array.from(current.keys());
+      console.log(
+        `deploy-sync: server uploadMode=full (all ${upload.length} matched files; no manifest skip)`
+      );
+    } else {
+      const diff = diffIncremental(previous, current);
+      upload = diff.upload;
+      skipReason = diff.skipReason;
+      console.log(
+        `deploy-sync: server files matched=${current.size} toUpload=${upload.length} (incremental)`
+      );
+      if (skipReason.length && dryRun) {
+        for (const s of skipReason.slice(0, 20))
+          console.log(`  skip unchanged: ${s}`);
+        if (skipReason.length > 20)
+          console.log(`  ... +${skipReason.length - 20} more`);
+      }
     }
 
     const syncMode = (server.syncMode || "incremental").toLowerCase();
@@ -156,7 +176,7 @@ async function main() {
 
     if (upload.length === 0 && toDelete.length === 0) {
       console.log(
-        "deploy-sync: server nothing to upload or delete (incremental); updating manifest to match local tree."
+        "deploy-sync: server nothing to upload or delete; updating manifest to match local tree."
       );
       saveManifest(manifestPath, current);
       console.log(`deploy-sync: manifest saved ${path.relative(cwd, manifestPath)}`);

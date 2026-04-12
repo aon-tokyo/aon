@@ -40,9 +40,19 @@ deploy-sync --target github
 # Upload to server only (incremental)
 deploy-sync --target server
 
+# Full upload every time (no manifest skip) — for rental hosts weak to incremental
+deploy-sync --target server --full-upload
+# or in YAML: server.uploadMode: full
+
 # Both (git push first, then incremental SFTP/FTP)
 deploy-sync --target both
 ```
+
+### Rental server quirks
+
+- **`server.uploadMode: full`** or **`--full-upload`**: uploads every matched file every run (still does not delete on server unless mirror flags). Use when the host does not behave well with “skip unchanged”.
+- **`server.ftpCompat`**: `passiveIpv4Only: true` (some shared hosts), `uploadRetries`, `delayBetweenUploadsMs`, `retryDelayMs`.
+- **`server.sftpCompat`**: same retries/delays for SFTP.
 
 ## Requirements
 
