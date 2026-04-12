@@ -176,6 +176,7 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu):not(#bgGoogleAiFa
 /* After language selection (Google Translate blog view): hide domain hub + top logo */
 body.ac-tg-blog-mode nav#acSiteNavDomains{display:none!important}
 body.ac-tg-blog-mode>header>.logo{display:none!important}
+body.ac-ja-native-blog-mode .yt-bg-outer,body.ac-ja-native-blog-mode #ytBgVolumeWrap,body.ac-ja-native-blog-mode #ytBgCtxMenu,body.ac-ja-native-blog-mode #bgGoogleScrollWrap{display:none!important}
 </style>
 </head>
 <body>
@@ -184,7 +185,9 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   function fromHash(){try{var h=location.hash||"";return h.indexOf("tg=1")!==-1}catch(e){return!1}}
   function fromStorage(){try{return sessionStorage.getItem("tgBlogView")==="1"}catch(e){return!1}}
   function activate(){document.body.classList.add("ac-tg-blog-mode")}
-  if(location.hostname.indexOf(".translate.goog")!==-1){activate();try{sessionStorage.setItem("tgBlogView","1")}catch(e){}return}
+  var h=location.hostname||"";
+  if(h.indexOf(".translate.goog")!==-1){activate();try{sessionStorage.setItem("tgBlogView","1")}catch(e){}return}
+  if(h==="audiocafe.tokyo"||h==="www.audiocafe.tokyo"){try{sessionStorage.removeItem("tgBlogView")}catch(e){}document.body.classList.add("ac-ja-native-blog-mode");return}
   if(fromHash())activate();
   else if(fromStorage())activate();
 })();
@@ -211,6 +214,7 @@ body.ac-tg-blog-mode>header>.logo{display:none!important}
   </div>
 <script>
 (function () {
+  if (document.body.classList && document.body.classList.contains("ac-ja-native-blog-mode")) return;
   var queries = [
     "\u65e5\u672c\u306e\u7c73\u0020\u5916\u56fd\u4eba\u306b\u3088\u308b\u8cb7\u3044\u5360\u3081",
     "\u6e1b\u53cd\u653f\u7b56\u0020\u30e1\u30ea\u30c3\u30c8\u0020\u30c7\u30e1\u30ea\u30c3\u30c8",
@@ -4272,6 +4276,11 @@ function bindYtCardHandoffOnce() {
     if (!t || !t.closest) return;
     var a = t.closest("a.card");
     if (!a || !a.getAttribute("href")) return;
+    var hrefAttr = "";
+    try {
+      hrefAttr = String(a.getAttribute("href") || "");
+    } catch (eH) {}
+    if (hrefAttr.indexOf("translate.goog") === -1) return;
     var vid = getCurrentYtBgVideoId();
     if (!vid) return;
     var vel = document.getElementById("ytBgVolume");
@@ -4779,6 +4788,7 @@ function instantiateYtBgPlayer(videoId) {
 function createYtBgPlayer() {
   if (!window.YT || !YT.Player) return;
   if (ytBgPlayer) return;
+  if (document.body.classList && document.body.classList.contains("ac-ja-native-blog-mode")) return;
   var host = document.getElementById("yt-bg-player-host");
   if (!host) return;
   var ho = consumeYtHandoffHash();
