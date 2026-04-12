@@ -1,0 +1,19 @@
+{
+  "name": "deploy-sync",
+  "version": "1.0.0",
+  "description": "Deploy to GitHub and/or rental server (FTP/SFTP) with incremental uploads",
+  "type": "module",
+  "bin": {
+    "deploy-sync": "./cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "basic-ftp": "^5.0.5",
+    "fast-glob": "^3.3.3",
+    "minimist": "^1.2.8",
+    "ssh2-sftp-client": "^11.0.0",
+    "yaml": "^2.7.0"
+  }
+}

@@ -1,0 +1,15 @@
+# Run from repo root: node tools/deploy-sync/cli.js --config tools/deploy-sync/test-deploy.config.yaml --dry-run
+target: server-only
+server:
+  protocol: sftp
+  host: example.invalid
+  port: 22
+  user: test
+  password: test
+  remoteRoot: /public_html
+paths:
+  localRoot: .
+  include:
+    - "tools/deploy-sync/package.json"
+manifest:
+  path: tools/deploy-sync/.test-manifest.json

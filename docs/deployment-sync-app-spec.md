@@ -2,6 +2,8 @@
 
 ローカル（または Cursor のワークスペース）のファイルを、**GitHub への push** と **レンタルサーバーへのアップロード**を、用途に応じて組み合わせられる CLI／デスクトップアプリ。
 
+**実装（CLI）**: リポジトリ内 [`tools/deploy-sync/`](../tools/deploy-sync/README.md)（`deploy-sync` / `node tools/deploy-sync/cli.js`）。
+
 ---
 
 ## 1. 目的
