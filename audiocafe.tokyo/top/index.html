@@ -164,10 +164,9 @@ body.yt-only-mode .yt-bg-vol-wrap{z-index:110}
 /* stack page above background video */
 body.ac-gcopy-focus nav#acSiteNavDomains,body.ac-gcopy-focus>header,body.ac-gcopy-focus>main,body.ac-gcopy-focus>footer{visibility:hidden!important;pointer-events:none!important}
 body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu):not(#bgGoogleAiFallback):not(#bgGoogleScrollWrap){position:relative;z-index:1}
-/* 4-quadrant contrast guide (visible grid over full viewport, behind content) */
+/* Horizontal-band contrast guide (top / bottom row; one color per row) */
 #acBgContrastGrid{display:none;position:fixed;inset:0;z-index:0;pointer-events:none}
 body.ac-yt-contrast-on #acBgContrastGrid{display:block}
-#acBgContrastGrid::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.22);transform:translateX(-50%);box-shadow:0 0 0 1px rgba(0,0,0,.12)}
 #acBgContrastGrid::after{content:"";position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,.22);transform:translateY(-50%);box-shadow:0 0 0 1px rgba(0,0,0,.12)}
 body.ac-yt-contrast-on .ac-yt-contrast-text.ac-yt-contrast-dark{color:#0f172a!important;text-shadow:0 1px 2px rgba(255,255,255,.55)!important}
 body.ac-yt-contrast-on .ac-yt-contrast-text.ac-yt-contrast-light{color:#f8fafc!important;text-shadow:0 1px 3px rgba(0,0,0,.88)!important}
@@ -4261,7 +4260,11 @@ function sampleYoutubeThumbQuadrantLuminance(videoId, cb) {
         }
         return sum / n;
       }
-      if (cb) cb([regionLum(0, 0), regionLum(1, 0), regionLum(0, 1), regionLum(1, 1)]);
+      var q00 = regionLum(0, 0);
+      var q10 = regionLum(1, 0);
+      var q01 = regionLum(0, 1);
+      var q11 = regionLum(1, 1);
+      if (cb) cb([(q00 + q10) / 2, (q01 + q11) / 2]);
     } catch (e1) {
       if (cb) cb(null);
     }
@@ -4273,16 +4276,23 @@ function sampleYoutubeThumbQuadrantLuminance(videoId, cb) {
   img.src = "https://images.weserv.nl/?url=" + encodeURIComponent(rawThumb.replace(/^https?:\/\//, ""));
 }
 
-function viewportQuadrantIndex(cx, cy) {
-  var hw = window.innerWidth / 2;
-  var hh = window.innerHeight / 2;
-  var qx = cx >= hw ? 1 : 0;
-  var qy = cy >= hh ? 1 : 0;
-  return qy * 2 + qx;
+/** 0 = viewport top half, 1 = bottom half (same text color for the whole horizontal band). */
+function viewportRowBandIndex(cy) {
+  return cy >= window.innerHeight / 2 ? 1 : 0;
+}
+
+function normalizeRowBandLums(lums) {
+  if (!lums || !lums.length) return null;
+  if (lums.length === 4) {
+    return [(lums[0] + lums[1]) / 2, (lums[2] + lums[3]) / 2];
+  }
+  if (lums.length === 2) return lums;
+  return null;
 }
 
 function applyQuadrantTextContrast(lums) {
-  if (!lums || lums.length !== 4) return;
+  var rowLums = normalizeRowBandLums(lums);
+  if (!rowLums) return;
   document.body.classList.add("ac-yt-contrast-on");
   var nodes = document.querySelectorAll(
     "body a, body p, body li, body h1, body h2, body h3, body h4, body h5, body h6, body span, body td, body th, body label, body .logo-text"
@@ -4293,11 +4303,10 @@ function applyQuadrantTextContrast(lums) {
     if (el.closest && (el.closest(".yt-bg-outer") || el.closest("#ytBgVolumeWrap") || el.closest("#ytBgCtxMenu") || el.closest("#bgGoogleScrollWrap"))) continue;
     var r = el.getBoundingClientRect();
     if (r.width < 0.5 && r.height < 0.5) continue;
-    var cx = r.left + r.width / 2;
     var cy = r.top + r.height / 2;
-    if (cy < -80 || cy > window.innerHeight + 80 || cx < -80 || cx > window.innerWidth + 80) continue;
-    var qi = viewportQuadrantIndex(cx, cy);
-    var lum = lums[qi];
+    if (cy < -80 || cy > window.innerHeight + 80 || r.left > window.innerWidth + 80 || r.right < -80) continue;
+    var ri = viewportRowBandIndex(cy);
+    var lum = rowLums[ri];
     var useDarkText = lum >= 128;
     el.classList.add("ac-yt-contrast-text");
     el.classList.toggle("ac-yt-contrast-dark", useDarkText);
