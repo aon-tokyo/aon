@@ -4,3 +4,6 @@
 .deploy-manifest.json
 deploy.local.yaml
 deploy.local.yml
+
+# deploy-hub local profile store (may reference secrets)
+.deploy-hub/

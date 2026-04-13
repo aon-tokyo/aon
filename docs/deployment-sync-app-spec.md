@@ -4,6 +4,8 @@
 
 **実装（CLI）**: リポジトリ内 [`tools/deploy-sync/`](../tools/deploy-sync/README.md)（`deploy-sync` / `node tools/deploy-sync/cli.js`）。
 
+**マルチプロファイル・バックアップ・Cursor タスク**: [`tools/deploy-hub/`](../tools/deploy-hub/README.md)（最大 200 プロファイル、ローカル／NAS／クラウド同期フォルダへ `store` バックアップ、インストーラー付き）。
+
 ---
 
 ## 1. 目的
