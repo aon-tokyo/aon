@@ -1,0 +1,17 @@
+# From repo root: tests git upload mode (intersect with paths)
+target: server-only
+server:
+  protocol: sftp
+  host: example.invalid
+  port: 22
+  user: x
+  password: x
+  remoteRoot: /public_html
+  uploadMode: git
+  gitDiffMode: working
+paths:
+  localRoot: .
+  include:
+    - "tools/deploy-sync/**"
+manifest:
+  path: tools/deploy-sync/.test-manifest-git.json

@@ -1,0 +1,58 @@
+# Copy to deploy.config.yaml and adjust. Secrets: deploy.local.yaml or ${ENV_VARS}
+
+target: both # github-only | server-only | both (same as dual)
+
+git:
+  remote: origin
+  branch: main
+  pushOnly: true # if false: git add -A, commit, then push
+  # commitMessage: "chore: deploy"
+
+# continueOnGitFailure: false  # set true to FTP even when push fails
+
+server:
+  protocol: sftp # ftp | sftp
+  host: ftp.example.com
+  port: 22
+  user: "${DEPLOY_USER}"
+  password: "${DEPLOY_PASSWORD}"
+  # privateKey: /path/to/id_rsa   # sftp: use key instead of password
+  remoteRoot: /home/user/public_html/mysite
+  # incremental = ローカルマニフェストで変更分のみ
+  # full = 毎回マッチした全ファイルを PUT（レンタルで増分が不安な場合）
+  # git = git の差分に含まれるファイルのみ（paths と共通部分）— GitHub の差分と揃えやすい
+  uploadMode: incremental # incremental | full | git
+  # git モードのみ（uploadMode: git）:
+  # gitDiffMode: ahead    # @{u}...HEAD（未 push コミットの差分）既定
+  # gitDiffMode: working  # HEAD との未コミット差分 + 未追跡（exclude-standard 除く）
+  # gitDiffMode: against  # 指定 ref との diff（例: origin/main）
+  # gitAgainst: "@{u}"    # ahead/against で使う ref（既定 @{u}）
+  syncMode: incremental # incremental | mirror (mirror needs delete flags)
+  deleteRemoved: false
+  # --- レンタル FTP/SFTP が不安定な場合の緩和（任意）---
+  # ftpCompat:
+  #   passiveIpv4Only: true   # EPSV が通らない古い FTP 向け（IPv4 PASV のみ）
+  #   uploadRetries: 3
+  #   retryDelayMs: 1000
+  #   delayBetweenUploadsMs: 200  # 連続 PUT の間隔（レート制限対策）
+  #   binaryBeforeUpload: true  # 既定 true: 転送前に TYPE I
+  # sftpCompat:
+  #   uploadRetries: 2
+  #   retryDelayMs: 800
+  #   delayBetweenUploadsMs: 0
+  # --- デプロイ前に差分表示（任意）---
+  # showDiff: false        # true で転送前に git diff 等を表示
+  # diffFormat: stat       # stat（行数サマリ）| patch（パッチ全文、大きいと長い）
+  # verbose: false
+
+paths:
+  localRoot: .
+  include:
+    - "**/*"
+  exclude:
+    - "**/.git/**"
+    - "**/node_modules/**"
+    - "tools/**"
+
+manifest:
+  path: .deploy-manifest.json

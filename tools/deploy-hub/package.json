@@ -1,0 +1,15 @@
+{
+  "name": "deploy-hub",
+  "version": "1.0.0",
+  "description": "Multi-profile deploy hub: Git push, FTP/SFTP, backups to local/NAS paths, Cursor-friendly",
+  "type": "module",
+  "bin": {
+    "deploy-hub": "./cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "minimist": "^1.2.8"
+  }
+}

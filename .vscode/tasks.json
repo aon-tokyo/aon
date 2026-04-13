@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "deploy-hub: interactive menu",
+      "type": "shell",
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/deploy-hub/cli.js"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "deploy-hub: environment check (Git)",
+      "type": "shell",
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/deploy-hub/cli.js", "check"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "none"
+    },
+    {
+      "label": "deploy-sync: dry-run (needs deploy.config.yaml)",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/tools/deploy-sync/cli.js",
+        "--dry-run",
+        "--target",
+        "both"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "none"
+    }
+  ]
+}

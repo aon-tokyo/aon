@@ -1,1 +1,9 @@
 /world-pages-translate.zip
+
+# deploy-sync local state (incremental upload manifest)
+.deploy-manifest.json
+deploy.local.yaml
+deploy.local.yml
+
+# deploy-hub local profile store (may reference secrets)
+.deploy-hub/

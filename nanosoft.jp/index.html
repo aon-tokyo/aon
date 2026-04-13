@@ -142,6 +142,8 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
   <p>Powered by Google Translate</p>
 </footer>
 
+<script src="site-config.js"></script>
+<script src="../_shared/js/lang-card-url.js"></script>
 <script>
 (function(){
 "use strict";
@@ -303,10 +305,7 @@ var ABC_KEY="ABC";
 var ABC_LABEL="ABC (A-Z)";
 
 function makeUrl(gc){
-  // Japanese: show the original /top/ page as-is (no translation)
-  if(gc==="ja") return "https://nanosoft.jp/top/";
-  // Other languages: go through Google Translate proxy so text is translated
-  return "https://nanosoft-jp.translate.goog/top/?_x_tr_sl=ja&_x_tr_tl="+encodeURIComponent(gc)+"&_x_tr_hl=ja&_x_tr_pto=wapp";
+  return window.AcSite.makeLangCardUrl(gc);
 }
 
 var searchEl=document.getElementById("search");
