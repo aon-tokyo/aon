@@ -13,14 +13,39 @@
 
 ## 使い方
 
+### ローカル確認
+
 ```bash
-# ブラウザで直接開く
+# ブラウザで直接開く（最も簡単）
 open anken.jp/index.html
 
-# もしくはローカルサーバーで起動
+# もしくは簡易サーバーで起動（Python が入っている場合）
 python3 -m http.server 8000 --directory anken.jp
-# http://localhost:8000/
+# → http://localhost:8000/
 ```
+
+> 上記の `python3 -m http.server` は **ローカル開発用**です。
+> 本番サーバーで Python は **不要**です。
+
+### 本番（共用レンタルサーバー）へのデプロイ
+
+このサイトは **完全な静的HTML / CSS / JavaScript** で動作するため、
+サーバー側の言語（PHP / Python / Perl など）は一切不要です。
+そのため以下のような共用レンタルサーバーでも、**`index.html` を FTP でアップするだけ**で動きます。
+
+- ✅ ロリポップ！（全プラン、Python 非対応プランでも動作）
+- ✅ さくらのレンタルサーバ
+- ✅ エックスサーバー
+- ✅ ConoHa WING
+- ✅ GitHub Pages / Cloudflare Pages / Netlify / Vercel など
+
+#### ロリポップ！の場合の手順（例）
+
+1. ロリポップ！ユーザー専用ページで FTP 情報を確認
+2. FFFTP / FileZilla / 「ロリポップ！FTP（ブラウザ版）」で接続
+3. 公開フォルダ（例：独自ドメイン用 `/anken.jp/`）に `index.html` をアップロード
+4. `https://あなたのドメイン/` にアクセスして表示確認
+
 
 ## ファイル構成
 
