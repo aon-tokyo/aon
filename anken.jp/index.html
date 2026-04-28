@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>案件ボード | フリーランスIT案件サイト</title>
+<meta name="description" content="シンプルなフリーランス向けIT案件マッチングサイト。職種・スキル・働き方で絞り込み、気になる案件にすぐ応募できます。">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2306b6d4'/%3E%3Ctext x='50' y='66' font-size='56' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800'%3E案%3C/text%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b1220;
+  --bg-2:#0f172a;
+  --surface:#111c33;
+  --surface-2:#16223d;
+  --border:rgba(255,255,255,.08);
+  --border-strong:rgba(255,255,255,.16);
+  --text:#e5edf7;
+  --text-dim:#9aa8c0;
+  --text-muted:#6b7a93;
+  --primary:#06b6d4;
+  --primary-2:#22d3ee;
+  --primary-glow:rgba(6,182,212,.18);
+  --accent:#a78bfa;
+  --success:#10b981;
+  --warning:#f59e0b;
+  --danger:#ef4444;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:radial-gradient(1200px 600px at 80% -10%,rgba(6,182,212,.12),transparent 60%),
+             radial-gradient(900px 500px at -10% 20%,rgba(167,139,250,.10),transparent 55%),
+             var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit;cursor:pointer}
+
+/* Header */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:saturate(1.4) blur(10px);
+  -webkit-backdrop-filter:saturate(1.4) blur(10px);
+  background:rgba(11,18,32,.72);
+  border-bottom:1px solid var(--border);
+}
+.nav{
+  max-width:1200px;margin:0 auto;padding:.9rem 1.1rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.02em}
+.brand-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:grid;place-items:center;color:#0b1220;font-weight:900;
+  box-shadow:0 6px 18px rgba(6,182,212,.35);
+}
+.brand-name{font-size:1.05rem}
+.brand-sub{font-size:.7rem;color:var(--text-dim);font-weight:600;letter-spacing:.08em}
+.nav-links{display:flex;gap:.25rem;align-items:center}
+.nav-links a{
+  padding:.45rem .8rem;border-radius:8px;font-size:.9rem;color:var(--text-dim);font-weight:600;
+  transition:color .15s,background .15s;
+}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-cta{
+  padding:.55rem 1rem;border-radius:9px;font-size:.85rem;font-weight:700;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#0b1220;
+  box-shadow:0 6px 18px rgba(6,182,212,.3);
+}
+.nav-cta:hover{filter:brightness(1.08)}
+@media(max-width:720px){.nav-links a:not(.nav-cta){display:none}}
+
+/* Hero */
+.hero{
+  max-width:1200px;margin:0 auto;padding:3rem 1.1rem 1.5rem;text-align:center;
+}
+.hero h1{
+  font-size:clamp(1.85rem,4.5vw,3rem);font-weight:900;letter-spacing:-.01em;line-height:1.25;
+  background:linear-gradient(135deg,#fff 0%,#cfe9ff 50%,#a5b4fc 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{margin-top:.9rem;color:var(--text-dim);font-size:clamp(.95rem,1.5vw,1.05rem);max-width:46rem;margin-left:auto;margin-right:auto}
+.hero-stats{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:1rem 2rem;margin-top:1.6rem;
+  font-size:.9rem;color:var(--text-dim);
+}
+.hero-stats b{color:#fff;font-size:1.15rem;display:block;font-weight:800}
+
+/* Search bar */
+.search-bar{
+  max-width:1200px;margin:1.6rem auto 0;padding:0 1.1rem;
+}
+.search-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1rem;display:grid;grid-template-columns:1fr;gap:.7rem;
+  box-shadow:var(--shadow);
+}
+@media(min-width:760px){.search-card{grid-template-columns:1.4fr 1fr 1fr auto}}
+.field{position:relative}
+.field input,.field select{
+  width:100%;padding:.85rem 1rem .85rem 2.5rem;border-radius:10px;
+  border:1px solid var(--border-strong);background:var(--surface-2);color:#fff;
+  font-size:.95rem;outline:none;transition:border-color .15s,box-shadow .15s;
+  appearance:none;
+}
+.field input::placeholder{color:var(--text-muted)}
+.field input:focus,.field select:focus{
+  border-color:var(--primary-2);box-shadow:0 0 0 3px var(--primary-glow);
+}
+.field svg{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);width:1.1rem;height:1.1rem;color:var(--text-muted);pointer-events:none}
+.field select{padding-right:2.2rem;cursor:pointer}
+.field.select::after{
+  content:"";position:absolute;right:1rem;top:50%;width:.55rem;height:.55rem;
+  border-right:2px solid var(--text-dim);border-bottom:2px solid var(--text-dim);
+  transform:translateY(-70%) rotate(45deg);pointer-events:none;
+}
+.search-btn{
+  padding:.85rem 1.4rem;border-radius:10px;border:0;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#0b1220;
+  font-weight:800;letter-spacing:.02em;
+  box-shadow:0 6px 18px rgba(6,182,212,.3);
+}
+.search-btn:hover{filter:brightness(1.08)}
+
+/* Tag filters */
+.tag-row{
+  max-width:1200px;margin:1rem auto 0;padding:0 1.1rem;
+  display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;
+}
+.tag-row .lbl{font-size:.78rem;color:var(--text-muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-right:.3rem}
+.chip{
+  padding:.35rem .85rem;border-radius:9999px;font-size:.82rem;font-weight:700;
+  background:rgba(255,255,255,.05);color:var(--text-dim);border:1px solid var(--border);
+  transition:all .15s;
+}
+.chip:hover{color:#fff;background:rgba(255,255,255,.09)}
+.chip.active{
+  background:var(--primary-glow);color:var(--primary-2);border-color:rgba(34,211,238,.45);
+}
+
+/* Listings */
+.main{max-width:1200px;margin:1.5rem auto 0;padding:0 1.1rem 4rem}
+.listing-head{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem;
+  margin:1.4rem 0 .8rem;
+}
+.listing-head h2{font-size:1.2rem;font-weight:800;letter-spacing:.02em}
+.count{color:var(--text-dim);font-size:.9rem;font-weight:600}
+.sort{
+  background:var(--surface-2);border:1px solid var(--border-strong);color:#fff;
+  padding:.5rem .8rem;border-radius:8px;font-size:.85rem;
+}
+
+.grid{
+  display:grid;grid-template-columns:1fr;gap:.95rem;
+}
+@media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1080px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+.card{
+  background:linear-gradient(165deg,var(--surface) 0%,var(--surface-2) 100%);
+  border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.1rem 1rem;
+  display:flex;flex-direction:column;gap:.7rem;
+  transition:transform .18s,border-color .18s,box-shadow .18s;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:3px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));opacity:.0;transition:opacity .2s;
+}
+.card:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:0 14px 36px rgba(0,0,0,.45)}
+.card:hover::before{opacity:1}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem}
+.badge{
+  display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .55rem;border-radius:6px;
+  font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+}
+.badge.new{background:rgba(16,185,129,.15);color:#34d399}
+.badge.hot{background:rgba(239,68,68,.15);color:#fb7185}
+.badge.remote{background:rgba(34,211,238,.15);color:var(--primary-2)}
+.badge.onsite{background:rgba(245,158,11,.15);color:#fbbf24}
+.badge.hybrid{background:rgba(167,139,250,.15);color:#c4b5fd}
+.card h3{font-size:1.05rem;font-weight:800;line-height:1.4;color:#fff}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.82rem;color:var(--text-dim)}
+.meta span{display:inline-flex;align-items:center;gap:.3rem}
+.meta svg{width:.95rem;height:.95rem;opacity:.85}
+.skills{display:flex;flex-wrap:wrap;gap:.3rem}
+.skill{
+  font-size:.72rem;font-weight:700;padding:.2rem .55rem;border-radius:6px;
+  background:rgba(255,255,255,.05);color:var(--text-dim);border:1px solid var(--border);
+}
+.rate{
+  display:flex;align-items:baseline;gap:.35rem;margin-top:auto;
+  font-size:1.35rem;font-weight:900;color:#fff;letter-spacing:-.01em;
+}
+.rate .unit{font-size:.78rem;color:var(--text-dim);font-weight:600}
+.card-foot{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-top:.55rem;border-top:1px solid var(--border)}
+.posted{font-size:.75rem;color:var(--text-muted)}
+.apply{
+  padding:.5rem .95rem;border-radius:8px;font-size:.82rem;font-weight:800;
+  background:var(--primary-glow);color:var(--primary-2);border:1px solid rgba(34,211,238,.35);
+  transition:all .15s;
+}
+.apply:hover{background:var(--primary);color:#0b1220;border-color:transparent}
+
+.empty{
+  grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-dim);
+  background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--radius);
+}
+.empty b{display:block;color:#fff;font-size:1.1rem;margin-bottom:.4rem}
+
+/* Footer */
+.footer{
+  border-top:1px solid var(--border);padding:1.6rem 1.1rem;text-align:center;
+  color:var(--text-muted);font-size:.8rem;line-height:1.8;
+}
+.footer a{color:var(--text-dim)}
+.footer a:hover{color:#fff}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(2,6,15,.7);backdrop-filter:blur(6px);
+  z-index:100;display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.modal-backdrop.open{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius);
+  max-width:560px;width:100%;padding:1.6rem;max-height:90vh;overflow:auto;
+  box-shadow:0 30px 70px rgba(0,0,0,.6);
+}
+.modal h3{font-size:1.25rem;font-weight:800;margin-bottom:.3rem}
+.modal .modal-meta{color:var(--text-dim);font-size:.85rem;margin-bottom:1rem}
+.modal-form{display:grid;gap:.7rem;margin-top:1rem}
+.modal-form label{font-size:.78rem;font-weight:700;color:var(--text-dim);letter-spacing:.04em}
+.modal-form input,.modal-form textarea{
+  width:100%;padding:.7rem .85rem;border-radius:8px;border:1px solid var(--border-strong);
+  background:var(--surface-2);color:#fff;font:inherit;outline:none;
+}
+.modal-form input:focus,.modal-form textarea:focus{border-color:var(--primary-2);box-shadow:0 0 0 3px var(--primary-glow)}
+.modal-form textarea{min-height:110px;resize:vertical}
+.modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.4rem}
+.btn-ghost{
+  padding:.6rem 1rem;border-radius:8px;background:transparent;color:var(--text-dim);
+  border:1px solid var(--border-strong);font-weight:700;
+}
+.btn-ghost:hover{color:#fff;background:rgba(255,255,255,.05)}
+.btn-primary{
+  padding:.6rem 1.2rem;border-radius:8px;border:0;font-weight:800;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#0b1220;
+}
+.btn-primary:hover{filter:brightness(1.08)}
+.toast{
+  position:fixed;left:50%;bottom:1.5rem;transform:translateX(-50%) translateY(20px);
+  padding:.85rem 1.3rem;border-radius:10px;background:var(--success);color:#062b20;font-weight:800;
+  box-shadow:0 14px 36px rgba(0,0,0,.35);opacity:0;pointer-events:none;
+  transition:transform .25s,opacity .25s;z-index:200;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav">
+    <a href="#" class="brand" aria-label="案件ボード ホーム">
+      <span class="brand-mark">案</span>
+      <span>
+        <span class="brand-name">案件ボード</span><br>
+        <span class="brand-sub">ANKEN BOARD</span>
+      </span>
+    </a>
+    <nav class="nav-links" aria-label="メインナビゲーション">
+      <a href="#listings">案件一覧</a>
+      <a href="#about">サイトについて</a>
+      <a href="#contact">お問い合わせ</a>
+      <a href="#post" class="nav-cta">案件を掲載</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>あなたに合うIT案件が、最短で見つかる。</h1>
+  <p>フリーランスエンジニア・デザイナー向けの案件マッチングサイト。リモート・常駐・副業から、スキル・単価で絞り込んで、気になる案件にすぐ応募できます。</p>
+  <div class="hero-stats" aria-label="サイト統計">
+    <div><b id="stat-total">—</b>掲載案件数</div>
+    <div><b>1,200+</b>登録パートナー企業</div>
+    <div><b>78%</b>リモート対応</div>
+  </div>
+</section>
+
+<div class="search-bar">
+  <form class="search-card" id="search-form" role="search" onsubmit="return false">
+    <div class="field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="キーワード（例：React, AWS, PM）">
+    </div>
+    <div class="field select">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+      <select id="role">
+        <option value="">職種：すべて</option>
+        <option>フロントエンド</option>
+        <option>バックエンド</option>
+        <option>フルスタック</option>
+        <option>モバイル</option>
+        <option>インフラ／SRE</option>
+        <option>データ／AI</option>
+        <option>PM／PMO</option>
+        <option>デザイナー</option>
+      </select>
+    </div>
+    <div class="field select">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-8h6v8"/></svg>
+      <select id="style">
+        <option value="">働き方：すべて</option>
+        <option value="remote">フルリモート</option>
+        <option value="hybrid">ハイブリッド</option>
+        <option value="onsite">常駐</option>
+      </select>
+    </div>
+    <button class="search-btn" type="submit">検索</button>
+  </form>
+</div>
+
+<div class="tag-row" id="skill-chips">
+  <span class="lbl">人気スキル</span>
+</div>
+
+<main class="main" id="listings">
+  <div class="listing-head">
+    <h2>新着案件 <span class="count" id="result-count"></span></h2>
+    <select class="sort" id="sort">
+      <option value="new">新着順</option>
+      <option value="rate-desc">単価が高い順</option>
+      <option value="rate-asc">単価が低い順</option>
+    </select>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer class="footer" id="contact">
+  <div>© 2026 案件ボード — シンプルなIT案件マッチング</div>
+  <div style="margin-top:.4rem">
+    <a href="#about">サイトについて</a> ・
+    <a href="#post">案件を掲載する</a> ・
+    <a href="mailto:contact@example.com">お問い合わせ</a>
+  </div>
+</footer>
+
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h3 id="modal-title">案件に応募</h3>
+    <div class="modal-meta" id="modal-meta"></div>
+    <form class="modal-form" id="apply-form" onsubmit="return submitApply(event)">
+      <div>
+        <label for="ap-name">お名前</label>
+        <input id="ap-name" type="text" required placeholder="山田 太郎">
+      </div>
+      <div>
+        <label for="ap-mail">メールアドレス</label>
+        <input id="ap-mail" type="email" required placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="ap-msg">アピール・ご質問</label>
+        <textarea id="ap-msg" placeholder="経歴・稼働可能日数・ご質問など"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" onclick="closeModal()">キャンセル</button>
+        <button type="submit" class="btn-primary">応募する</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast">応募を受け付けました</div>
+
+<script>
+const ANKEN = [
+  {id:1,title:"大規模ECサイトのフロントエンド開発（React / Next.js）",role:"フロントエンド",style:"remote",skills:["React","Next.js","TypeScript","GraphQL"],rate:85,location:"フルリモート",duration:"6ヶ月〜",posted:2,hot:true},
+  {id:2,title:"金融SaaSのバックエンドAPI開発（Go）",role:"バックエンド",style:"hybrid",skills:["Go","PostgreSQL","Docker","AWS"],rate:90,location:"東京・週2出社",duration:"長期",posted:1,hot:true},
+  {id:3,title:"AWS インフラ移行・SREエンジニア募集",role:"インフラ／SRE",style:"remote",skills:["AWS","Terraform","Kubernetes","CI/CD"],rate:95,location:"フルリモート",duration:"3ヶ月〜",posted:3},
+  {id:4,title:"自社プロダクトのフルスタック開発（Rails + Vue）",role:"フルスタック",style:"hybrid",skills:["Ruby on Rails","Vue.js","MySQL"],rate:75,location:"東京・週3出社",duration:"6ヶ月〜",posted:5},
+  {id:5,title:"iOS アプリ開発（Swift / SwiftUI）",role:"モバイル",style:"remote",skills:["Swift","SwiftUI","Firebase"],rate:80,location:"フルリモート",duration:"4ヶ月",posted:7},
+  {id:6,title:"生成AIを活用した社内チャットボット開発",role:"データ／AI",style:"remote",skills:["Python","LangChain","OpenAI API","FastAPI"],rate:100,location:"フルリモート",duration:"3ヶ月",posted:0,hot:true},
+  {id:7,title:"大手通信会社の常駐PM（要件定義〜進行管理）",role:"PM／PMO",style:"onsite",skills:["PM","アジャイル","要件定義"],rate:90,location:"東京・常駐",duration:"長期",posted:4},
+  {id:8,title:"ヘルスケアアプリのUI/UXデザイナー",role:"デザイナー",style:"remote",skills:["Figma","UX設計","プロトタイピング"],rate:70,location:"フルリモート",duration:"3ヶ月",posted:6},
+  {id:9,title:"動画配信プラットフォームのフロントエンド改善",role:"フロントエンド",style:"remote",skills:["TypeScript","React","Redux","HLS"],rate:80,location:"フルリモート",duration:"6ヶ月",posted:9},
+  {id:10,title:"BtoB SaaSのデータ基盤構築（dbt / Snowflake）",role:"データ／AI",style:"hybrid",skills:["dbt","Snowflake","Python","SQL"],rate:88,location:"東京・週1出社",duration:"6ヶ月〜",posted:10},
+  {id:11,title:"スタートアップCTO候補（業務委託・週3〜）",role:"フルスタック",style:"hybrid",skills:["Node.js","React","AWS","チームビルディング"],rate:120,location:"東京・週3",duration:"長期",posted:11,hot:true},
+  {id:12,title:"Android アプリの保守・機能追加",role:"モバイル",style:"remote",skills:["Kotlin","Jetpack Compose","REST API"],rate:72,location:"フルリモート",duration:"継続",posted:14},
+];
+
+const POPULAR_SKILLS=["React","TypeScript","Go","AWS","Python","Next.js","Kubernetes","Figma","Rails","Swift"];
+
+const $ = sel => document.querySelector(sel);
+const grid = $("#grid");
+const stateActiveSkills = new Set();
+
+function renderChips(){
+  const wrap = $("#skill-chips");
+  POPULAR_SKILLS.forEach(s=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="chip";b.textContent=s;
+    b.addEventListener("click",()=>{
+      if(stateActiveSkills.has(s)){stateActiveSkills.delete(s);b.classList.remove("active")}
+      else{stateActiveSkills.add(s);b.classList.add("active")}
+      render();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+function styleBadge(s){
+  if(s==="remote")return '<span class="badge remote">リモート</span>';
+  if(s==="onsite")return '<span class="badge onsite">常駐</span>';
+  if(s==="hybrid")return '<span class="badge hybrid">ハイブリッド</span>';
+  return "";
+}
+function postedLabel(d){
+  if(d===0)return "本日";
+  if(d===1)return "昨日";
+  return d+"日前";
+}
+
+function render(){
+  const q = $("#q").value.trim().toLowerCase();
+  const role = $("#role").value;
+  const style = $("#style").value;
+  const sort = $("#sort").value;
+
+  let list = ANKEN.filter(a=>{
+    if(q){
+      const hay=(a.title+" "+a.skills.join(" ")+" "+a.role+" "+a.location).toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    if(role && a.role!==role) return false;
+    if(style && a.style!==style) return false;
+    if(stateActiveSkills.size){
+      for(const s of stateActiveSkills){if(!a.skills.includes(s))return false;}
+    }
+    return true;
+  });
+
+  if(sort==="rate-desc")list.sort((a,b)=>b.rate-a.rate);
+  else if(sort==="rate-asc")list.sort((a,b)=>a.rate-b.rate);
+  else list.sort((a,b)=>a.posted-b.posted);
+
+  grid.innerHTML="";
+  $("#result-count").textContent = `（${list.length}件）`;
+
+  if(!list.length){
+    grid.innerHTML = `<div class="empty"><b>該当する案件が見つかりませんでした</b>条件を変えてもう一度お試しください。</div>`;
+    return;
+  }
+
+  for(const a of list){
+    const el=document.createElement("article");
+    el.className="card";
+    el.innerHTML = `
+      <div class="card-top">
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          ${a.posted<=2?'<span class="badge new">新着</span>':''}
+          ${a.hot?'<span class="badge hot">注目</span>':''}
+          ${styleBadge(a.style)}
+        </div>
+        <span class="posted">${postedLabel(a.posted)}</span>
+      </div>
+      <h3>${a.title}</h3>
+      <div class="meta">
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${a.location}
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          ${a.duration}
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+          ${a.role}
+        </span>
+      </div>
+      <div class="skills">${a.skills.map(s=>`<span class="skill">${s}</span>`).join("")}</div>
+      <div class="rate">¥${a.rate}<span class="unit">万 / 月</span></div>
+      <div class="card-foot">
+        <span class="posted">案件ID：A${String(a.id).padStart(4,"0")}</span>
+        <button class="apply" data-id="${a.id}">応募する</button>
+      </div>`;
+    el.querySelector(".apply").addEventListener("click",()=>openModal(a));
+    grid.appendChild(el);
+  }
+}
+
+function openModal(a){
+  $("#modal-title").textContent = a.title;
+  $("#modal-meta").textContent = `${a.role}・${a.location}・¥${a.rate}万/月`;
+  $("#modal").classList.add("open");
+  $("#modal").dataset.anken = a.id;
+  setTimeout(()=>$("#ap-name").focus(),50);
+}
+function closeModal(){$("#modal").classList.remove("open")}
+function submitApply(e){
+  e.preventDefault();
+  closeModal();
+  const t=$("#toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2200);
+  $("#apply-form").reset();
+  return false;
+}
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+["q","role","style","sort"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",render);
+  document.getElementById(id).addEventListener("change",render);
+});
+$("#search-form").addEventListener("submit",e=>{e.preventDefault();render();});
+
+renderChips();
+render();
+$("#stat-total").textContent = ANKEN.length + "件";
+</script>
+</body>
+</html>
