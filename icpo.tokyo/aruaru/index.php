@@ -32,6 +32,31 @@ define('FRAMEWORKS', [
     ],
 ]);
 
+/* 言語 → 関連フレームワーク・ツールのマッピング
+   言語チップ選択時にこのリストのFWだけを表示する */
+define('LANG_FW_MAP', [
+    'JavaScript'  => ['React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit','Astro','Remix','Solid.js','HTMX','Express','Fastify','NestJS','React Native','Expo','GraphQL','REST API'],
+    'TypeScript'  => ['React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit','Astro','Remix','Solid.js','HTMX','Express','Fastify','NestJS','React Native','Expo','GraphQL','REST API'],
+    'Python'      => ['Django','FastAPI','Flask','REST API','GraphQL','Docker','Kubernetes','Ansible','dbt','Snowflake','LangChain'],
+    'Go'          => ['Gin','Echo','REST API','GraphQL','Docker','Kubernetes'],
+    'PHP'         => ['Laravel','REST API','GraphQL','Docker'],
+    'Ruby'        => ['Ruby on Rails','REST API','GraphQL','Docker'],
+    'Java'        => ['Spring Boot','REST API','GraphQL','Docker','Kubernetes'],
+    'Kotlin'      => ['Spring Boot','Jetpack Compose','REST API','Docker'],
+    'Swift'       => ['SwiftUI','REST API'],
+    'Rust'        => ['REST API','GraphQL','Docker'],
+    'C#'          => ['ASP.NET Core','REST API','Docker'],
+    'C++'         => ['REST API','Docker'],
+    'Scala'       => ['REST API','Docker','Kubernetes','Snowflake'],
+    'R'           => ['dbt','Snowflake'],
+    'Dart'        => ['Flutter','Expo'],
+    'Elixir'      => ['Phoenix','REST API','GraphQL'],
+    'Haskell'     => ['REST API'],
+    'Lua'         => ['REST API'],
+    'COBOL'       => [],
+    'VBA'         => [],
+]);
+
 define('PREFS', [
     '','北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
     '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
@@ -594,31 +619,61 @@ a{color:inherit;text-decoration:none}
 
       <!-- Row 2: Language chips -->
       <div class="mb-2">
-        <label class="f-label">希望プログラミング言語 <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・OR検索）</span></label>
-        <div class="chip-wrap" id="lang-chips">
+        <label class="f-label">希望プログラミング言語 <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・選択するとFWが絞り込まれます）</span></label>
+        <div class="chip-wrap open" id="lang-chips">
           <?php foreach (LANGS as $lang): ?>
             <span class="chip<?= in_arr($lang,$langs_in)?' on':'' ?>"
                   data-val="<?= h($lang) ?>" data-group="langs"
-                  onclick="toggleChip(this)"><?= h($lang) ?></span>
+                  onclick="toggleLangChip(this)"><?= h($lang) ?></span>
           <?php endforeach; ?>
         </div>
-        <span class="chip-more" onclick="toggleWrap('lang-chips',this)">▼ すべて表示</span>
       </div>
 
-      <!-- Row 3: Framework chips -->
-      <div class="mb-3">
-        <label class="f-label">希望フレームワーク・ツール <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・OR検索）</span></label>
-        <div class="chip-wrap" id="fw-chips">
-          <?php foreach (FRAMEWORKS as $cat => $fwList): ?>
-            <span class="chip chip-cat"><?= h($cat) ?></span>
-            <?php foreach ($fwList as $fw): ?>
-              <span class="chip<?= in_arr($fw,$fws_in)?' on':'' ?>"
-                    data-val="<?= h($fw) ?>" data-group="fws"
-                    onclick="toggleChip(this)"><?= h($fw) ?></span>
-            <?php endforeach; ?>
-          <?php endforeach; ?>
+      <!-- Row 3: Framework chips（言語選択で絞り込み） -->
+      <div class="mb-3" id="fw-section">
+        <label class="f-label" id="fw-label">
+          希望フレームワーク・ツール
+          <span id="fw-hint" style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">
+            （言語を選ぶと関連FWが表示されます）
+          </span>
+        </label>
+        <!-- 言語未選択時のプレースホルダー -->
+        <div id="fw-placeholder" style="padding:.55rem .8rem;border-radius:9px;border:1px dashed var(--border-s);color:var(--muted);font-size:.82rem">
+          ↑ まず言語を選択すると、関連フレームワーク・ツールが表示されます
         </div>
-        <span class="chip-more" onclick="toggleWrap('fw-chips',this)">▼ すべて表示</span>
+        <!-- 言語選択後に表示されるFWチップ群 -->
+        <div class="chip-wrap open" id="fw-chips" style="display:none">
+          <?php
+          /* 全FWをフラットに出力。data-langs属性で関連言語リストを持たせる */
+          $fw_to_langs = [];
+          foreach (LANG_FW_MAP as $lang => $fwList) {
+              foreach ($fwList as $fw) {
+                  $fw_to_langs[$fw][] = $lang;
+              }
+          }
+          /* カテゴリ順に出力 */
+          foreach (FRAMEWORKS as $cat => $fwList):
+              $hasVisible = false;
+              ob_start();
+              foreach ($fwList as $fw):
+                  $rel_langs = $fw_to_langs[$fw] ?? [];
+                  $data_langs = h(implode(',', $rel_langs));
+                  $on_class = in_arr($fw,$fws_in) ? ' on' : '';
+                  echo '<span class="chip' . $on_class . '"'
+                      . ' data-val="' . h($fw) . '"'
+                      . ' data-group="fws"'
+                      . ' data-langs="' . $data_langs . '"'
+                      . ' onclick="toggleChip(this)"'
+                      . ' style="display:none">'
+                      . h($fw) . '</span>';
+              endforeach;
+              $chunk = ob_get_clean();
+              echo '<span class="chip chip-cat fw-cat-label" data-cat="' . h($cat) . '" style="display:none">' . h($cat) . '</span>';
+              echo $chunk;
+          endforeach;
+          ?>
+        </div>
+        <span class="chip-more" id="fw-more" style="display:none" onclick="toggleWrap('fw-chips',this)">▼ すべて表示</span>
       </div>
 
       <!-- Hidden inputs for selected langs/fws -->
@@ -852,40 +907,140 @@ a{color:inherit;text-decoration:none}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/* 月額 ↔ 年収 連動 */
-function syncRate(v)         { document.getElementById('rate-num').value   = v;            document.getElementById('annual-num').value = v * 12; }
-function syncRateFromNum(v)  { const n=parseInt(v)||0; document.getElementById('rate-slider').value = n; document.getElementById('annual-num').value = n * 12; }
-function syncFromAnnual(v)   { const m=Math.round((parseInt(v)||0)/12);    document.getElementById('rate-slider').value = m; document.getElementById('rate-num').value = m; }
+/* ─── 言語 → FW マッピング（PHPのLANG_FW_MAPと同期） ─────── */
+const LANG_FW_MAP = <?php
+  $map = [];
+  foreach (LANG_FW_MAP as $lang => $fws) { $map[$lang] = $fws; }
+  echo json_encode($map, JSON_UNESCAPED_UNICODE);
+?>;
 
-/* チップ選択 → hidden input の追加/削除 */
-function toggleChip(el) {
-  el.classList.toggle('on');
-  const val   = el.dataset.val;
-  const group = el.dataset.group;   // "langs" or "fws"
-  const wrap  = document.getElementById('hidden-chip-inputs');
-  const id    = 'hci-' + group + '-' + val.replace(/[^a-zA-Z0-9]/g,'_');
+/* ─── 選択中の言語を管理 ──────────────────────────────────── */
+const selectedLangs = new Set(<?php echo json_encode(array_values($langs_in), JSON_UNESCAPED_UNICODE); ?>);
 
-  if (el.classList.contains('on')) {
+/* ─── 月額 ↔ 年収 連動 ───────────────────────────────────── */
+function syncRate(v)        { document.getElementById('rate-num').value   = v;   document.getElementById('annual-num').value = v*12; }
+function syncRateFromNum(v) { const n=parseInt(v)||0; document.getElementById('rate-slider').value=n; document.getElementById('annual-num').value=n*12; }
+function syncFromAnnual(v)  { const m=Math.round((parseInt(v)||0)/12); document.getElementById('rate-slider').value=m; document.getElementById('rate-num').value=m; }
+
+/* ─── hidden input 管理（FWチップ用） ───────────────────── */
+function setHiddenChip(group, val, on) {
+  const wrap = document.getElementById('hidden-chip-inputs');
+  const id   = 'hci-' + group + '-' + val.replace(/[^a-zA-Z0-9]/g,'_');
+  if (on) {
     if (!document.getElementById(id)) {
       const inp = document.createElement('input');
-      inp.type  = 'hidden';
-      inp.id    = id;
-      inp.name  = group + '[]';
-      inp.value = val;
+      inp.type='hidden'; inp.id=id; inp.name=group+'[]'; inp.value=val;
       wrap.appendChild(inp);
     }
   } else {
-    const existing = document.getElementById(id);
-    if (existing) existing.remove();
+    const ex = document.getElementById(id);
+    if (ex) ex.remove();
   }
 }
 
-/* チップ欄 展開/折り畳み */
+/* ─── FWチップの表示更新（選択言語に応じて絞り込み） ─────── */
+function updateFwVisibility() {
+  const fwWrap     = document.getElementById('fw-chips');
+  const placeholder= document.getElementById('fw-placeholder');
+  const fwMore     = document.getElementById('fw-more');
+  const fwHint     = document.getElementById('fw-hint');
+
+  if (selectedLangs.size === 0) {
+    /* 言語未選択 → FW欄を非表示、プレースホルダー表示 */
+    fwWrap.style.display      = 'none';
+    placeholder.style.display = '';
+    fwMore.style.display      = 'none';
+    fwHint.textContent        = '（言語を選ぶと関連FWが表示されます）';
+    /* 選択中FWをすべて解除 */
+    fwWrap.querySelectorAll('.chip[data-group="fws"].on').forEach(c => {
+      c.classList.remove('on');
+      setHiddenChip('fws', c.dataset.val, false);
+    });
+    return;
+  }
+
+  /* 表示すべきFWを算出（選択言語のいずれかに含まれるもの） */
+  const showFws = new Set();
+  selectedLangs.forEach(lang => {
+    (LANG_FW_MAP[lang] || []).forEach(fw => showFws.add(fw));
+  });
+
+  /* 各FWチップを表示/非表示 */
+  let visibleCount = 0;
+  fwWrap.querySelectorAll('.chip[data-group="fws"]').forEach(chip => {
+    const show = showFws.has(chip.dataset.val);
+    chip.style.display = show ? '' : 'none';
+    if (show) visibleCount++;
+    /* 非表示になったのに選択中ならOFFに */
+    if (!show && chip.classList.contains('on')) {
+      chip.classList.remove('on');
+      setHiddenChip('fws', chip.dataset.val, false);
+    }
+  });
+
+  /* カテゴリラベルを、配下に表示FWがある場合のみ表示 */
+  const cats = fwWrap.querySelectorAll('.fw-cat-label');
+  cats.forEach(catEl => {
+    const cat = catEl.dataset.cat;
+    /* 同じ data-cat に属するFWチップを探す */
+    let hasVisible = false;
+    let sibling = catEl.nextElementSibling;
+    while (sibling && !sibling.classList.contains('fw-cat-label')) {
+      if (sibling.dataset.group === 'fws' && sibling.style.display !== 'none') { hasVisible = true; break; }
+      sibling = sibling.nextElementSibling;
+    }
+    catEl.style.display = hasVisible ? '' : 'none';
+  });
+
+  /* FW欄を表示 */
+  fwWrap.style.display      = visibleCount > 0 ? '' : 'none';
+  placeholder.style.display = visibleCount > 0 ? 'none' : '';
+  fwMore.style.display      = visibleCount > 0 ? '' : 'none';
+
+  const langNames = [...selectedLangs].join(' / ');
+  fwHint.textContent = `（${langNames} の関連FWを表示中）`;
+}
+
+/* ─── 言語チップ選択 ─────────────────────────────────────── */
+function toggleLangChip(el) {
+  el.classList.toggle('on');
+  const val = el.dataset.val;
+  if (el.classList.contains('on')) {
+    selectedLangs.add(val);
+    setHiddenChip('langs', val, true);
+  } else {
+    selectedLangs.delete(val);
+    setHiddenChip('langs', val, false);
+  }
+  updateFwVisibility();
+}
+
+/* ─── FWチップ選択（通常のトグル） ─────────────────────── */
+function toggleChip(el) {
+  el.classList.toggle('on');
+  setHiddenChip(el.dataset.group, el.dataset.val, el.classList.contains('on'));
+}
+
+/* ─── チップ欄 展開/折り畳み ─────────────────────────────── */
 function toggleWrap(wrapId, btn) {
   const wrap = document.getElementById(wrapId);
   const open = wrap.classList.toggle('open');
   btn.textContent = open ? '▲ 閉じる' : '▼ すべて表示';
 }
+
+/* ─── 初期化：ページ読込時にFW表示状態を反映 ──────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  /* 前回の検索でFWが選択されていた場合、hidden inputを復元 */
+  <?php foreach ($fws_in as $f): ?>
+  setHiddenChip('fws', <?= json_encode($f) ?>, true);
+  <?php endforeach; ?>
+  updateFwVisibility();
+  /* 選択済みFWチップをON状態に */
+  <?php foreach ($fws_in as $f): ?>
+  document.querySelectorAll('.chip[data-val=<?= json_encode($f) ?>][data-group="fws"]')
+    .forEach(c => { c.classList.add('on'); c.style.display=''; });
+  <?php endforeach; ?>
+});
 </script>
 </body>
 </html>
