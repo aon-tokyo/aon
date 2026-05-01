@@ -393,6 +393,207 @@ $kw_parts = array_filter(array_merge(
 $kw = urlencode(mb_substr(implode(' ', $kw_parts), 0, 100));
 
 /* ═══════════════════════════════════════════════════════════
+   ▼▼▼ API 設定（ここにキーを入力してください）▼▼▼
+═══════════════════════════════════════════════════════════ */
+
+// Google Programmable Search Engine
+// 取得方法: https://programmablesearchengine.google.com/
+define('GOOGLE_CSE_KEY', getenv('GOOGLE_CSE_KEY') ?: '');   // APIキー
+define('GOOGLE_CSE_CX',  getenv('GOOGLE_CSE_CX')  ?: '');   // 検索エンジンID
+
+// OpenAI API
+// 取得方法: https://platform.openai.com/api-keys
+define('OPENAI_API_KEY', getenv('OPENAI_API_KEY') ?: '');
+
+// キャッシュ有効期限（秒）
+define('CACHE_TTL_SEARCH', 86400 * 7);   // 検索結果キャッシュ：7日
+define('CACHE_TTL_TRENDS', 86400 * 3);   // AIトレンド分析：3日
+
+// キャッシュディレクトリ（index.php と同じ aruaru/ 内に自動作成）
+define('CACHE_DIR', __DIR__ . '/data');
+
+/* ═══════════════════════════════════════════════════════════
+   キャッシュ管理
+═══════════════════════════════════════════════════════════ */
+function cache_path(string $key): string {
+    if (!is_dir(CACHE_DIR)) { @mkdir(CACHE_DIR, 0755, true); }
+    return CACHE_DIR . '/' . preg_replace('/[^a-z0-9_\-]/i', '_', $key) . '.json';
+}
+function cache_get(string $key, int $ttl): ?array {
+    $f = cache_path($key);
+    if (!file_exists($f)) return null;
+    if (time() - filemtime($f) > $ttl) return null;
+    $d = json_decode(file_get_contents($f), true);
+    return is_array($d) ? $d : null;
+}
+function cache_set(string $key, array $data): void {
+    file_put_contents(cache_path($key), json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Google Custom Search API 呼び出し
+   - APIキー未設定時は空配列を返す
+   - 結果はキャッシュに保存（TTL: 7日）
+   - クロールなし：ユーザーがページを開いた時のみ実行
+═══════════════════════════════════════════════════════════ */
+function google_search(string $query, int $num = 6): array {
+    if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
+    $ckey = 'gse_' . md5($query);
+    $cached = cache_get($ckey, CACHE_TTL_SEARCH);
+    if ($cached !== null) return $cached;
+
+    $url = 'https://www.googleapis.com/customsearch/v1?' . http_build_query([
+        'key'   => GOOGLE_CSE_KEY,
+        'cx'    => GOOGLE_CSE_CX,
+        'q'     => $query,
+        'num'   => $num,
+        'lr'    => 'lang_ja',
+        'gl'    => 'jp',
+    ]);
+    $ctx = stream_context_create(['http' => ['timeout' => 5, 'ignore_errors' => true]]);
+    $raw = @file_get_contents($url, false, $ctx);
+    if (!$raw) return [];
+    $data = json_decode($raw, true);
+    if (empty($data['items'])) return [];
+
+    $items = array_map(fn($it) => [
+        'title'   => $it['title']   ?? '',
+        'snippet' => $it['snippet'] ?? '',
+        'url'     => $it['link']    ?? '',
+        'domain'  => parse_url($it['link'] ?? '', PHP_URL_HOST) ?: '',
+    ], array_slice($data['items'], 0, $num));
+
+    cache_set($ckey, $items);
+
+    /* ストック（全検索結果を蓄積して後でAI分析に使う） */
+    $stock = cache_get('search_stock', 86400 * 365) ?? [];
+    $stock[] = ['q' => $query, 'ts' => date('Y-m-d'), 'items' => $items];
+    if (count($stock) > 200) $stock = array_slice($stock, -200);
+    cache_set('search_stock', $stock);
+
+    return $items;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OpenAI GPT-4o-mini によるトレンド分析
+   - APIキー未設定時はデフォルトデータを返す
+   - 結果はキャッシュに保存（TTL: 3日）
+   - 蓄積された検索ワードを元に人気言語・FWを分析
+═══════════════════════════════════════════════════════════ */
+function ai_trend_analysis(): array {
+    $default = [
+        'langs'       => LANGS,
+        'fws_top'     => ['React','Next.js','TypeScript','Python','FastAPI','Go','Flutter','LangChain','Kubernetes','Docker'],
+        'summary'     => '',
+        'updated_at'  => '',
+        'model'       => 'default',
+    ];
+    if (OPENAI_API_KEY === '') return $default;
+
+    $cached = cache_get('ai_trends', CACHE_TTL_TRENDS);
+    if ($cached !== null) return $cached;
+
+    /* 蓄積された検索ワードを収集 */
+    $stock = cache_get('search_stock', 86400 * 365) ?? [];
+    $all_q = array_column($stock, 'q');
+    $recent_q = implode(', ', array_slice(array_unique($all_q), -50));
+
+    /* 現在の固定データも参考情報として渡す */
+    $current_langs = implode(', ', LANGS);
+
+    $prompt = <<<EOT
+あなたはITエンジニア採用トレンドの専門アナリストです。
+以下の情報をもとに、2026年現在の日本のITエンジニア案件・求人市場で
+需要が高いプログラミング言語とフレームワークのランキングを分析してください。
+
+【最近の検索ワード（ユーザーが実際に検索したもの）】
+{$recent_q}
+
+【現在登録中の言語リスト】
+{$current_langs}
+
+以下のJSON形式で回答してください（説明文なし、JSONのみ）:
+{
+  "langs_ranked": ["最も需要が高い言語", "2位", ...（全言語を順位付け）],
+  "fws_top": ["最も需要が高いFW/ツール", "2位", ...（上位10件）],
+  "hot_langs": ["急上昇中の言語1", "急上昇中の言語2", "急上昇中の言語3"],
+  "hot_fws": ["急上昇中のFW1", "急上昇中のFW2", "急上昇中のFW3"],
+  "summary": "100字以内の日本語サマリー（2026年のトレンドを簡潔に）"
+}
+EOT;
+
+    $payload = json_encode([
+        'model'       => 'gpt-4o-mini',
+        'temperature' => 0.3,
+        'max_tokens'  => 600,
+        'messages'    => [
+            ['role' => 'system', 'content' => 'あなたはITトレンドアナリストです。JSONのみで回答してください。'],
+            ['role' => 'user',   'content' => $prompt],
+        ],
+    ]);
+
+    $ctx = stream_context_create(['http' => [
+        'method'  => 'POST',
+        'timeout' => 15,
+        'ignore_errors' => true,
+        'header'  => "Content-Type: application/json\r\nAuthorization: Bearer " . OPENAI_API_KEY . "\r\n",
+        'content' => $payload,
+    ]]);
+    $raw = @file_get_contents('https://api.openai.com/v1/chat/completions', false, $ctx);
+    if (!$raw) return $default;
+
+    $resp = json_decode($raw, true);
+    $text = $resp['choices'][0]['message']['content'] ?? '';
+
+    /* JSON部分だけを取り出す */
+    if (preg_match('/\{[\s\S]+\}/u', $text, $m)) {
+        $ai = json_decode($m[0], true);
+    }
+    if (empty($ai) || !isset($ai['langs_ranked'])) return $default;
+
+    $result = [
+        'langs'      => $ai['langs_ranked'],
+        'fws_top'    => $ai['fws_top']   ?? $default['fws_top'],
+        'hot_langs'  => $ai['hot_langs'] ?? [],
+        'hot_fws'    => $ai['hot_fws']   ?? [],
+        'summary'    => $ai['summary']   ?? '',
+        'updated_at' => date('Y-m-d H:i'),
+        'model'      => 'gpt-4o-mini',
+    ];
+    cache_set('ai_trends', $result);
+
+    /* AIが決定したトレンドをストックに記録 */
+    $history = cache_get('trend_history', 86400 * 365) ?? [];
+    $history[] = $result;
+    if (count($history) > 30) $history = array_slice($history, -30);
+    cache_set('trend_history', $history);
+
+    return $result;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   実行：Google検索 & AIトレンド取得
+═══════════════════════════════════════════════════════════ */
+
+/* 検索クエリ生成（言語・FW・キーワードを合成） */
+$search_query_parts = array_filter(array_merge(
+    $q !== '' ? [$q] : [],
+    $langs_in,
+    $fws_in,
+    ['フリーランス 案件 求人 エンジニア'],
+));
+$search_query = mb_substr(implode(' ', $search_query_parts), 0, 100);
+if ($search_query_parts === ['フリーランス 案件 求人 エンジニア']) {
+    $search_query = 'ITエンジニア フリーランス 案件 求人 2026';
+}
+
+$google_results = google_search($search_query);
+$ai_trends      = ai_trend_analysis();
+
+/* AIのランク順に言語リストを並べ替え（ページ表示に使う） */
+$langs_ordered = !empty($ai_trends['langs']) ? $ai_trends['langs'] : LANGS;
+
+/* ═══════════════════════════════════════════════════════════
    ヘルパー関数
 ═══════════════════════════════════════════════════════════ */
 function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
@@ -617,14 +818,27 @@ a{color:inherit;text-decoration:none}
         </div>
       </div>
 
-      <!-- Row 2: Language chips -->
+      <!-- Row 2: Language chips（AI順） -->
       <div class="mb-2">
-        <label class="f-label">希望プログラミング言語 <span style="color:#dde6f5;font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・選択するとFWが絞り込まれます）</span></label>
+        <label class="f-label">
+          希望プログラミング言語
+          <span style="color:#dde6f5;font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・選択するとFWが絞り込まれます）</span>
+          <?php if (!empty($ai_trends['updated_at'])): ?>
+            <span style="font-size:.6rem;color:var(--primary-lt);font-weight:600;margin-left:.4rem;letter-spacing:0;text-transform:none">
+              ★ AI需要順 更新:<?= h($ai_trends['updated_at']) ?>
+            </span>
+          <?php endif; ?>
+        </label>
         <div class="chip-wrap open" id="lang-chips">
-          <?php foreach (LANGS as $lang): ?>
+          <?php foreach ($langs_ordered as $lang): ?>
+            <?php if (!in_array($lang, LANGS, true)) continue; ?>
+            <?php $is_hot = in_array($lang, $ai_trends['hot_langs'] ?? [], true); ?>
             <span class="chip<?= in_arr($lang,$langs_in)?' on':'' ?>"
                   data-val="<?= h($lang) ?>" data-group="langs"
-                  onclick="toggleLangChip(this)"><?= h($lang) ?></span>
+                  onclick="toggleLangChip(this)"
+                  title="<?= $is_hot ? '🔥 急上昇中' : '' ?>"
+                  style="<?= $is_hot ? 'border-color:rgba(249,115,22,.7);color:#fed7aa' : '' ?>"
+                  ><?= h($lang) ?><?= $is_hot ? ' 🔥' : '' ?></span>
           <?php endforeach; ?>
         </div>
       </div>
@@ -861,8 +1075,136 @@ a{color:inherit;text-decoration:none}
       </div>
     <?php endif; ?>
 
+    <!-- ══ GOOGLE SEARCH RESULTS ══════════════════════════════ -->
+    <?php if (!empty($google_results)): ?>
+    <div class="mt-4" id="google-results">
+      <div class="ext-section">
+        <div class="ext-title mb-1">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em;margin-right:.3rem"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          Google検索マッチング結果
+          <span style="font-size:.62rem;color:#dde6f5;font-weight:500;margin-left:.4rem">
+            「<?= h(urldecode($search_query)) ?>」の最新情報
+            <span style="color:var(--primary-lt)"><?= empty(cache_get('gse_'.md5($search_query), CACHE_TTL_SEARCH - 1)) ? '（最新取得）' : '（キャッシュ中）' ?></span>
+          </span>
+        </div>
+        <p class="ext-sub mb-3">Google検索から取得した実際の案件・求人情報です。タイトルをクリックで詳細ページへ。</p>
+        <div class="row g-2">
+          <?php foreach ($google_results as $gr): ?>
+          <div class="col-12 col-md-6 col-lg-4">
+            <a href="<?= h($gr['url']) ?>" target="_blank" rel="noopener noreferrer" class="ext-card" style="text-decoration:none">
+              <div style="font-size:.6rem;color:var(--primary-lt);font-weight:700;margin-bottom:.25rem;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                <?= h($gr['domain']) ?>
+              </div>
+              <div style="font-size:.85rem;font-weight:800;color:#fff;line-height:1.4;margin-bottom:.35rem">
+                <?= h(mb_strimwidth($gr['title'], 0, 55, '…')) ?>
+              </div>
+              <div style="font-size:.74rem;color:#dde6f5;line-height:1.5">
+                <?= h(mb_strimwidth($gr['snippet'], 0, 100, '…')) ?>
+              </div>
+              <div class="ext-cta mt-2">詳細を見る →</div>
+            </a>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <div style="font-size:.66rem;color:#dde6f5;margin-top:.8rem">
+          ※ 検索結果は最大7日間キャッシュされます。条件を変えると再取得します。
+          Google Custom Search APIのキーが未設定の場合は表示されません。
+        </div>
+      </div>
+    </div>
+    <?php elseif (GOOGLE_CSE_KEY === ''): ?>
+    <div class="mt-4">
+      <div class="ext-section" style="border-style:dashed">
+        <div class="ext-title mb-2">🔍 Google検索マッチング機能（設定待ち）</div>
+        <p class="ext-sub">
+          <strong style="color:#fff">この枠は Google Custom Search API を設定すると有効になります。</strong><br>
+          設定方法：<code style="color:var(--primary-lt)">GOOGLE_CSE_KEY</code> と <code style="color:var(--primary-lt)">GOOGLE_CSE_CX</code> を
+          index.php の先頭（API設定欄）に入力してください。<br>
+          無料枠：1日100クエリ（超過時 1,000クエリあたり約750円）。
+          結果は<strong style="color:#fff">最大7日間キャッシュ</strong>されるため通常の利用なら無料枠内で収まります。
+        </p>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- ══ AI TREND REPORT ══════════════════════════════════════ -->
+    <div class="mt-3" id="ai-trend">
+      <div class="ext-section" style="border-color:rgba(167,139,250,.35)">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+          <div class="ext-title">
+            🤖 AIトレンド分析
+          </div>
+          <?php if (!empty($ai_trends['updated_at'])): ?>
+            <span style="font-size:.62rem;color:var(--primary-lt);font-weight:700;padding:.12rem .45rem;border-radius:5px;background:var(--primary-glow)">
+              <?= h($ai_trends['model']) ?> · <?= h($ai_trends['updated_at']) ?> 更新
+            </span>
+          <?php elseif (OPENAI_API_KEY === ''): ?>
+            <span style="font-size:.62rem;color:#fbbf24;font-weight:700;padding:.12rem .45rem;border-radius:5px;background:rgba(245,158,11,.12)">
+              OpenAI APIキー未設定（デフォルト表示）
+            </span>
+          <?php endif; ?>
+        </div>
+
+        <?php if (!empty($ai_trends['summary'])): ?>
+        <p style="font-size:.82rem;color:#fff;line-height:1.7;margin-bottom:1rem;padding:.65rem .9rem;background:rgba(167,139,250,.1);border-radius:9px;border-left:3px solid var(--accent)">
+          <?= h($ai_trends['summary']) ?>
+        </p>
+        <?php endif; ?>
+
+        <div class="row g-3">
+          <!-- 急上昇ランキング -->
+          <div class="col-12 col-md-6">
+            <div style="font-size:.72rem;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem">🔥 急上昇中の言語</div>
+            <div class="d-flex flex-wrap gap-1">
+              <?php foreach ($ai_trends['hot_langs'] ?? [] as $i => $lang): ?>
+                <span class="chip on" style="border-color:rgba(249,115,22,.7);color:#fed7aa;background:rgba(249,115,22,.12)">
+                  <?= $i+1 ?>. <?= h($lang) ?>
+                </span>
+              <?php endforeach; ?>
+              <?php if (empty($ai_trends['hot_langs'])): ?>
+                <span style="font-size:.78rem;color:#dde6f5">APIキーを設定するとAIが分析します</span>
+              <?php endif; ?>
+            </div>
+          </div>
+          <!-- 急上昇FW -->
+          <div class="col-12 col-md-6">
+            <div style="font-size:.72rem;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem">🔥 急上昇中のFW・ツール</div>
+            <div class="d-flex flex-wrap gap-1">
+              <?php foreach ($ai_trends['hot_fws'] ?? [] as $i => $fw): ?>
+                <span class="chip on" style="border-color:rgba(249,115,22,.7);color:#fed7aa;background:rgba(249,115,22,.12)">
+                  <?= $i+1 ?>. <?= h($fw) ?>
+                </span>
+              <?php endforeach; ?>
+              <?php if (empty($ai_trends['hot_fws'])): ?>
+                <span style="font-size:.78rem;color:#dde6f5">APIキーを設定するとAIが分析します</span>
+              <?php endif; ?>
+            </div>
+          </div>
+          <!-- 注目FW Top10 -->
+          <div class="col-12">
+            <div style="font-size:.72rem;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem">⭐ AI選定 注目FW・ツール Top<?= count($ai_trends['fws_top']) ?></div>
+            <div class="d-flex flex-wrap gap-1">
+              <?php foreach ($ai_trends['fws_top'] as $i => $fw): ?>
+                <span class="chip on" style="<?= $i < 3 ? 'border-color:rgba(167,139,250,.7)' : '' ?>">
+                  <?= $i < 3 ? '🥇🥈🥉'[$i] . ' ' : ($i+1).'. ' ?><?= h($fw) ?>
+                </span>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+
+        <?php if (OPENAI_API_KEY === ''): ?>
+        <div style="margin-top:.8rem;font-size:.72rem;color:#dde6f5;padding:.55rem .8rem;background:rgba(167,139,250,.08);border-radius:8px">
+          💡 <strong style="color:#fff">AIトレンド分析を有効にするには</strong>：
+          index.php の先頭にある <code style="color:var(--primary-lt)">OPENAI_API_KEY</code> を設定してください。
+          蓄積された検索ワードをAIが自動分析し、言語チップの順番を需要順に並べ替えます（3日ごとに更新）。
+        </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
     <!-- EXTERNAL SITES -->
-    <div class="mt-4" id="ext">
+    <div class="mt-3" id="ext">
       <div class="ext-section">
         <div class="ext-title mb-1">🔍 この条件でもっと探す — 外部求人・案件サイト</div>
         <p class="ext-sub mb-3">
