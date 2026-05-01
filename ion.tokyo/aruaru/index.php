@@ -1492,10 +1492,13 @@ function updateFwVisibility() {
     placeholder.style.display = '';
     fwMore.style.display      = 'none';
     fwHint.textContent        = '（言語を選ぶと関連FWが表示されます）';
-    /* 選択中FWをすべて解除 */
-    fwWrap.querySelectorAll('.chip[data-group="fws"].on').forEach(c => {
-      c.classList.remove('on');
-      setHiddenChip('fws', c.dataset.val, false);
+    /* 選択中FWをすべて解除（hidden inputも削除） */
+    fwWrap.querySelectorAll('.chip[data-group="fws"]').forEach(c => {
+      if (c.classList.contains('on')) {
+        c.classList.remove('on');
+        setHiddenChip('fws', c.dataset.val, false);
+      }
+      c.style.display = 'none';
     });
     return;
   }
@@ -1571,15 +1574,29 @@ function toggleWrap(wrapId, btn) {
 
 /* ─── 初期化：ページ読込時にFW表示状態を反映 ──────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  /* 前回の検索でFWが選択されていた場合、hidden inputを復元 */
-  <?php foreach ($fws_in as $f): ?>
-  setHiddenChip('fws', <?= json_encode($f) ?>, true);
-  <?php endforeach; ?>
-  updateFwVisibility();
-  /* 選択済みFWチップをON状態に */
+  /* 1. まず選択済みFWチップをON状態・表示に（updateFwVisibility より先に実行） */
   <?php foreach ($fws_in as $f): ?>
   document.querySelectorAll('.chip[data-val=<?= json_encode($f) ?>][data-group="fws"]')
     .forEach(c => { c.classList.add('on'); c.style.display=''; });
+  <?php endforeach; ?>
+
+  /* 2. FW表示を更新（ON状態が設定された後に呼ぶ） */
+  updateFwVisibility();
+
+  /* 3. hidden-chip-inputs にある PHP 出力の hidden input は既に正しいので
+        JS で重複追加しない（setHiddenChip は呼ばない）
+     ただし PHP hidden input が存在しない場合（初回）に備えて確認してから追加 */
+  <?php foreach ($langs_in as $l): ?>
+  (function(){
+    const id = 'hci-langs-' + <?= json_encode($l) ?>.replace(/[^a-zA-Z0-9]/g,'_');
+    if (!document.getElementById(id)) setHiddenChip('langs', <?= json_encode($l) ?>, true);
+  })();
+  <?php endforeach; ?>
+  <?php foreach ($fws_in as $f): ?>
+  (function(){
+    const id = 'hci-fws-' + <?= json_encode($f) ?>.replace(/[^a-zA-Z0-9]/g,'_');
+    if (!document.getElementById(id)) setHiddenChip('fws', <?= json_encode($f) ?>, true);
+  })();
   <?php endforeach; ?>
 });
 </script>
