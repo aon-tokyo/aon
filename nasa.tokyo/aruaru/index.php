@@ -57,15 +57,100 @@ define('LANG_FW_MAP', [
     'VBA'         => [],
 ]);
 
-define('PREFS', [
-    '','北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
-    '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
-    '新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県',
-    '静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県',
-    '奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県',
-    '徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県',
-    '熊本県','大分県','宮崎県','鹿児島県','沖縄県',
+/* 勤務地グループ定義
+   value : フィルタに使うキー（GETパラメータ）
+   label : 表示名
+   match : フィルタ時に prefecture フィールドと照合する文字列の配列
+           空配列 = 全国（制限なし） */
+define('LOCATION_GROUPS', [
+    ['value'=>'',                   'label'=>'日本全国（指定なし）',   'match'=>[]],
+    // ─── 北海道・東北 ───────────────────────────────────────────
+    ['value'=>'北海道全域',         'label'=>'北海道全域',             'match'=>['北海道']],
+    ['value'=>'青森県',             'label'=>'青森県',                 'match'=>['青森県']],
+    ['value'=>'岩手県',             'label'=>'岩手県',                 'match'=>['岩手県']],
+    ['value'=>'宮城県',             'label'=>'宮城県',                 'match'=>['宮城県']],
+    ['value'=>'秋田県',             'label'=>'秋田県',                 'match'=>['秋田県']],
+    ['value'=>'山形県',             'label'=>'山形県',                 'match'=>['山形県']],
+    ['value'=>'福島県',             'label'=>'福島県',                 'match'=>['福島県']],
+    // ─── 首都圏 ─────────────────────────────────────────────────
+    ['value'=>'東京都全域',         'label'=>'東京都全域',             'match'=>['東京都']],
+    ['value'=>'東京都23区内',       'label'=>'東京都23区内',           'match'=>['東京都'],'city_filter'=>'23ku'],
+    ['value'=>'東京都23区外',       'label'=>'東京都23区外（多摩等）', 'match'=>['東京都'],'city_filter'=>'23ku_outside'],
+    ['value'=>'神奈川県',           'label'=>'神奈川県',               'match'=>['神奈川県']],
+    ['value'=>'埼玉県',             'label'=>'埼玉県',                 'match'=>['埼玉県']],
+    ['value'=>'千葉県',             'label'=>'千葉県',                 'match'=>['千葉県']],
+    ['value'=>'茨城県',             'label'=>'茨城県',                 'match'=>['茨城県']],
+    ['value'=>'栃木県',             'label'=>'栃木県',                 'match'=>['栃木県']],
+    ['value'=>'群馬県',             'label'=>'群馬県',                 'match'=>['群馬県']],
+    ['value'=>'山梨県',             'label'=>'山梨県',                 'match'=>['山梨県']],
+    // ─── 北陸・甲信越 ───────────────────────────────────────────
+    ['value'=>'新潟県',             'label'=>'新潟県',                 'match'=>['新潟県']],
+    ['value'=>'富山県',             'label'=>'富山県',                 'match'=>['富山県']],
+    ['value'=>'石川県',             'label'=>'石川県',                 'match'=>['石川県']],
+    ['value'=>'福井県',             'label'=>'福井県',                 'match'=>['福井県']],
+    ['value'=>'長野県',             'label'=>'長野県',                 'match'=>['長野県']],
+    // ─── 東海 ───────────────────────────────────────────────────
+    ['value'=>'愛知県全域',         'label'=>'愛知県全域（名古屋等）', 'match'=>['愛知県']],
+    ['value'=>'静岡県',             'label'=>'静岡県',                 'match'=>['静岡県']],
+    ['value'=>'岐阜県',             'label'=>'岐阜県',                 'match'=>['岐阜県']],
+    ['value'=>'三重県',             'label'=>'三重県',                 'match'=>['三重県']],
+    // ─── 関西 ───────────────────────────────────────────────────
+    ['value'=>'関西全域',           'label'=>'関西全域',               'match'=>['大阪府','京都府','兵庫県','奈良県','滋賀県','和歌山県']],
+    ['value'=>'大阪府全域',         'label'=>'大阪府全域',             'match'=>['大阪府']],
+    ['value'=>'大阪市内',           'label'=>'大阪市内',               'match'=>['大阪府'],'city_filter'=>'osaka_city'],
+    ['value'=>'大阪市外',           'label'=>'大阪府・市外（堺・北摂等）','match'=>['大阪府'],'city_filter'=>'osaka_outside'],
+    ['value'=>'京都府',             'label'=>'京都府',                 'match'=>['京都府']],
+    ['value'=>'兵庫県',             'label'=>'兵庫県（神戸・尼崎等）', 'match'=>['兵庫県']],
+    ['value'=>'奈良県',             'label'=>'奈良県',                 'match'=>['奈良県']],
+    ['value'=>'滋賀県',             'label'=>'滋賀県',                 'match'=>['滋賀県']],
+    ['value'=>'和歌山県',           'label'=>'和歌山県',               'match'=>['和歌山県']],
+    // ─── 中国・四国 ─────────────────────────────────────────────
+    ['value'=>'中国全域',           'label'=>'中国全域',               'match'=>['広島県','岡山県','鳥取県','島根県','山口県']],
+    ['value'=>'広島県',             'label'=>'広島県',                 'match'=>['広島県']],
+    ['value'=>'岡山県',             'label'=>'岡山県',                 'match'=>['岡山県']],
+    ['value'=>'鳥取県',             'label'=>'鳥取県',                 'match'=>['鳥取県']],
+    ['value'=>'島根県',             'label'=>'島根県',                 'match'=>['島根県']],
+    ['value'=>'山口県',             'label'=>'山口県',                 'match'=>['山口県']],
+    ['value'=>'四国全域',           'label'=>'四国全域',               'match'=>['徳島県','香川県','愛媛県','高知県']],
+    ['value'=>'徳島県',             'label'=>'徳島県',                 'match'=>['徳島県']],
+    ['value'=>'香川県',             'label'=>'香川県',                 'match'=>['香川県']],
+    ['value'=>'愛媛県',             'label'=>'愛媛県',                 'match'=>['愛媛県']],
+    ['value'=>'高知県',             'label'=>'高知県',                 'match'=>['高知県']],
+    // ─── 九州・沖縄 ─────────────────────────────────────────────
+    ['value'=>'九州全域',           'label'=>'九州全域',               'match'=>['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県']],
+    ['value'=>'福岡県',             'label'=>'福岡県',                 'match'=>['福岡県']],
+    ['value'=>'佐賀県',             'label'=>'佐賀県',                 'match'=>['佐賀県']],
+    ['value'=>'長崎県',             'label'=>'長崎県',                 'match'=>['長崎県']],
+    ['value'=>'熊本県',             'label'=>'熊本県',                 'match'=>['熊本県']],
+    ['value'=>'大分県',             'label'=>'大分県',                 'match'=>['大分県']],
+    ['value'=>'宮崎県',             'label'=>'宮崎県',                 'match'=>['宮崎県']],
+    ['value'=>'鹿児島県',           'label'=>'鹿児島県',               'match'=>['鹿児島県']],
+    ['value'=>'沖縄県',             'label'=>'沖縄県',                 'match'=>['沖縄県']],
 ]);
+
+/* 23区リスト（東京都23区内フィルタ用） */
+define('TOKYO_23KU', ['千代田区','中央区','港区','新宿区','文京区','台東区','墨田区','江東区',
+    '品川区','目黒区','大田区','世田谷区','渋谷区','中野区','杉並区','豊島区',
+    '北区','荒川区','板橋区','練馬区','足立区','葛飾区','江戸川区']);
+
+/* 大阪市内区リスト */
+define('OSAKA_CITY_KU', ['北区','都島区','福島区','此花区','中央区','西区','港区','大正区',
+    '天王寺区','浪速区','西淀川区','淀川区','東淀川区','東成区','生野区',
+    '旭区','城東区','鶴見区','阿倍野区','住之江区','住吉区','東住吉区',
+    '平野区','西成区']);
+
+/* 勤務地グループからprefectureフィルタ配列を返すヘルパー */
+function resolve_pref_filter(string $pref_val): array {
+    foreach (LOCATION_GROUPS as $g) {
+        if ($g['value'] === $pref_val) {
+            return [
+                'match'       => $g['match'],
+                'city_filter' => $g['city_filter'] ?? '',
+            ];
+        }
+    }
+    return ['match'=>[],'city_filter'=>''];
+}
 
 define('EXT_SITES', [
     ['name'=>'レバテックフリーランス','tag'=>'フリーランス','type'=>'fl',
@@ -335,7 +420,7 @@ $style    = trim($_GET['style']     ?? '');
 $langs_in = array_filter(array_map('trim', (array)($_GET['langs'] ?? [])));
 $fws_in   = array_filter(array_map('trim', (array)($_GET['fws']   ?? [])));
 $min_rate = max(0, (int)($_GET['min_rate'] ?? 0));
-$pref     = trim($_GET['pref']      ?? '');
+$pref     = trim($_GET['pref']      ?? '');   // LOCATION_GROUPS の value
 $city     = trim($_GET['city']      ?? '');
 $station  = trim($_GET['station']   ?? '');
 $remote_ok = !empty($_GET['remote_ok']);
@@ -354,7 +439,12 @@ function match_score(array $a, array $langs_in, array $fws_in): int {
     return $sc;
 }
 
-$result = array_filter(ANKEN, function($a) use ($q, $role, $style, $langs_in, $fws_in, $min_rate, $pref, $city, $station, $remote_ok) {
+/* 勤務地グループのフィルタ情報を解決 */
+$pref_filter = resolve_pref_filter($pref);
+$pref_match  = $pref_filter['match'];       // prefecture に含まれるべき文字列の配列
+$city_filter = $pref_filter['city_filter']; // '23ku' | '23ku_outside' | 'osaka_city' | 'osaka_outside' | ''
+
+$result = array_filter(ANKEN, function($a) use ($q, $role, $style, $langs_in, $fws_in, $min_rate, $pref, $pref_match, $city_filter, $city, $station, $remote_ok) {
     if ($q !== '') {
         $hay = implode(' ', array_merge([$a['title'],$a['role'],$a['location'],$a['prefecture'],$a['city'],$a['station'],$a['site_name']], $a['langs'], $a['fws']));
         if (mb_stripos($hay, $q) === false) return false;
@@ -365,7 +455,24 @@ $result = array_filter(ANKEN, function($a) use ($q, $role, $style, $langs_in, $f
     if (!empty($langs_in) && !array_intersect($langs_in, $a['langs'])) return false;
     if (!empty($fws_in)   && !array_intersect($fws_in,   $a['fws']))   return false;
     if ($min_rate > 0 && $a['rate'] < $min_rate) return false;
-    if ($pref !== '' && $a['style'] !== 'remote' && $a['prefecture'] !== $pref) return false;
+
+    /* 勤務地フィルタ（リモート案件は都道府県フィルタ不要） */
+    if (!empty($pref_match) && $a['style'] !== 'remote') {
+        if (!in_array($a['prefecture'], $pref_match, true)) return false;
+        /* 23区フィルタ */
+        if ($city_filter === '23ku') {
+            if (!in_array($a['city'], TOKYO_23KU, true)) return false;
+        } elseif ($city_filter === '23ku_outside') {
+            if (in_array($a['city'], TOKYO_23KU, true) || $a['city'] === '') return false;
+        }
+        /* 大阪市内フィルタ */
+        if ($city_filter === 'osaka_city') {
+            if (!in_array($a['city'], OSAKA_CITY_KU, true)) return false;
+        } elseif ($city_filter === 'osaka_outside') {
+            if (in_array($a['city'], OSAKA_CITY_KU, true) || $a['city'] === '') return false;
+        }
+    }
+
     if ($city !== '' && $a['city'] !== '' && mb_stripos($a['city'], $city) === false) return false;
     if ($station !== '' && $a['station'] !== '' && mb_stripos($a['station'], $station) === false) return false;
     return true;
@@ -590,15 +697,23 @@ EOT;
    実行：Google検索 & AIトレンド取得
 ═══════════════════════════════════════════════════════════ */
 
-/* 検索クエリ生成（言語・FW・キーワードを合成） */
+/* 検索クエリ生成（言語・FW・キーワード・勤務地を合成） */
+$pref_label_for_search = '';
+foreach (LOCATION_GROUPS as $g) {
+    if ($g['value'] === $pref && $pref !== '') {
+        $pref_label_for_search = $g['label'];
+        break;
+    }
+}
 $search_query_parts = array_filter(array_merge(
     $q !== '' ? [$q] : [],
     $langs_in,
     $fws_in,
+    $pref_label_for_search !== '' ? [$pref_label_for_search] : [],
     ['フリーランス 案件 求人 エンジニア'],
 ));
 $search_query = mb_substr(implode(' ', $search_query_parts), 0, 100);
-if ($search_query_parts === ['フリーランス 案件 求人 エンジニア']) {
+if (count($search_query_parts) === 1) {
     $search_query = 'ITエンジニア フリーランス 案件 求人 2026';
 }
 
@@ -960,11 +1075,30 @@ a{color:inherit;text-decoration:none}
       <!-- Row 5: Location -->
       <div class="row g-2 mb-3 align-items-end">
         <div class="col-12 col-sm-4 col-md-3">
-          <label class="f-label" for="pref">都道府県</label>
+          <label class="f-label" for="pref">勤務地</label>
           <select class="form-select" id="pref" name="pref">
-            <?php foreach (PREFS as $p): ?>
-              <option value="<?= h($p) ?>"<?= sel($p,$pref) ?>><?= $p === '' ? '都道府県を選択' : h($p) ?></option>
+            <?php
+            /* グループ区切りを optgroup で表示 */
+            $group_headers = [
+              '北海道全域'  => ['optgroup_start'=>'━━ 北海道・東北'],
+              '東京都全域'  => ['optgroup_start'=>'━━ 首都圏'],
+              '新潟県'      => ['optgroup_start'=>'━━ 北陸・甲信越'],
+              '愛知県全域'  => ['optgroup_start'=>'━━ 東海'],
+              '関西全域'    => ['optgroup_start'=>'━━ 関西'],
+              '中国全域'    => ['optgroup_start'=>'━━ 中国・四国'],
+              '九州全域'    => ['optgroup_start'=>'━━ 九州・沖縄'],
+            ];
+            $prev_group = null;
+            foreach (LOCATION_GROUPS as $g):
+                if (isset($group_headers[$g['value']])) {
+                    if ($prev_group !== null) echo '</optgroup>';
+                    echo '<optgroup label="' . htmlspecialchars($group_headers[$g['value']]['optgroup_start'],ENT_QUOTES,'UTF-8') . '">';
+                    $prev_group = $g['value'];
+                }
+            ?>
+              <option value="<?= h($g['value']) ?>"<?= sel($g['value'],$pref) ?>><?= h($g['label']) ?></option>
             <?php endforeach; ?>
+            <?php if ($prev_group !== null) echo '</optgroup>'; ?>
           </select>
         </div>
         <div class="col-12 col-sm-4 col-md-3">
