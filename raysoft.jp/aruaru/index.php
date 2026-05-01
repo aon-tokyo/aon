@@ -410,24 +410,39 @@ define('CACHE_TTL_SEARCH', 86400 * 7);   // 検索結果キャッシュ：7日
 define('CACHE_TTL_TRENDS', 86400 * 3);   // AIトレンド分析：3日
 
 // キャッシュディレクトリ（index.php と同じ aruaru/ 内に自動作成）
-define('CACHE_DIR', __DIR__ . '/data');
-
 /* ═══════════════════════════════════════════════════════════
-   キャッシュ管理
+   キャッシュ管理（1ファイル完結・サブフォルダ不要）
+   書き込み先を自動探索:
+     1. index.php と同じフォルダに data/ を作成できれば使う
+     2. 作れない場合はシステム一時ディレクトリを使う
+     3. どちらも使えない場合はキャッシュなしで動作（APIは毎回呼ぶ）
 ═══════════════════════════════════════════════════════════ */
+function _resolve_cache_dir(): string {
+    $local = __DIR__ . '/data';
+    if (is_dir($local) && is_writable($local)) return $local;
+    if (@mkdir($local, 0755, true) && is_writable($local)) return $local;
+    $tmp = rtrim(sys_get_temp_dir(), '/\\ ') . '/anken_cache_' . substr(md5(__FILE__), 0, 8);
+    if (is_dir($tmp) || @mkdir($tmp, 0755, true)) return $tmp;
+    return '';
+}
+$_CACHE_DIR = _resolve_cache_dir();
+
 function cache_path(string $key): string {
-    if (!is_dir(CACHE_DIR)) { @mkdir(CACHE_DIR, 0755, true); }
-    return CACHE_DIR . '/' . preg_replace('/[^a-z0-9_\-]/i', '_', $key) . '.json';
+    global $_CACHE_DIR;
+    if ($_CACHE_DIR === '') return '';
+    return $_CACHE_DIR . '/' . preg_replace('/[^a-z0-9_\-]/i', '_', $key) . '.json';
 }
 function cache_get(string $key, int $ttl): ?array {
     $f = cache_path($key);
-    if (!file_exists($f)) return null;
+    if ($f === '' || !file_exists($f)) return null;
     if (time() - filemtime($f) > $ttl) return null;
-    $d = json_decode(file_get_contents($f), true);
+    $d = @json_decode(@file_get_contents($f), true);
     return is_array($d) ? $d : null;
 }
 function cache_set(string $key, array $data): void {
-    file_put_contents(cache_path($key), json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    $f = cache_path($key);
+    if ($f === '') return;
+    @file_put_contents($f, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -991,7 +1006,8 @@ a{color:inherit;text-decoration:none}
 
     <!-- ══ GOOGLE検索マッチング結果（メイン） ══════════════════ -->
     <?php
-    $is_cached = !empty($google_results) && file_exists(cache_path('gse_'.md5($search_query)));
+    $cp = cache_path('gse_'.md5($search_query));
+    $is_cached = !empty($google_results) && $cp !== '' && file_exists($cp);
     $cache_label = $is_cached ? '（キャッシュ中・最大7日）' : '（最新取得）';
     ?>
 
