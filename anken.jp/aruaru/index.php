@@ -989,41 +989,114 @@ a{color:inherit;text-decoration:none}
 <main class="py-3" id="results">
   <div class="container-xl px-3">
 
+    <!-- ══ GOOGLE検索マッチング結果（メイン） ══════════════════ -->
+    <?php
+    $is_cached = !empty($google_results) && file_exists(cache_path('gse_'.md5($search_query)));
+    $cache_label = $is_cached ? '（キャッシュ中・最大7日）' : '（最新取得）';
+    ?>
+
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
       <h2 style="font-size:1.08rem;font-weight:800;color:#fff;margin:0">
-        マッチング結果
-        <span style="font-size:.88rem;color:#fff;font-weight:600">（<?= count($result) ?>件）</span>
+        🔍 マッチング結果
+        <?php if (!empty($google_results)): ?>
+          <span style="font-size:.82rem;color:#fff;font-weight:600">（<?= count($google_results) ?>件）</span>
+          <span style="font-size:.62rem;color:var(--primary-lt);font-weight:600;margin-left:.3rem"><?= $cache_label ?></span>
+        <?php elseif (GOOGLE_CSE_KEY !== ''): ?>
+          <span style="font-size:.82rem;color:#fff;font-weight:600">（0件）</span>
+        <?php endif; ?>
       </h2>
-      <!-- Sort: hidden inputs + auto-submit -->
-      <form method="GET" action="" id="sort-form">
-        <?php
-        $pass = ['q'=>$q,'role'=>$role,'style'=>$style,'min_rate'=>$min_rate,'pref'=>$pref,'city'=>$city,'station'=>$station];
-        foreach ($pass as $k=>$v) { if ($v !== '' && $v !== 0): ?>
-          <input type="hidden" name="<?= h($k) ?>" value="<?= h((string)$v) ?>">
-        <?php endif; } ?>
-        <?php foreach ($langs_in as $l): ?>
-          <input type="hidden" name="langs[]" value="<?= h($l) ?>">
-        <?php endforeach; ?>
-        <?php foreach ($fws_in as $f): ?>
-          <input type="hidden" name="fws[]" value="<?= h($f) ?>">
-        <?php endforeach; ?>
-        <?php if ($remote_ok): ?><input type="hidden" name="remote_ok" value="1"><?php endif; ?>
-        <select class="sort-sel" name="sort" onchange="this.form.submit()">
-          <option value="new"       <?= sel('new',      $sort_by) ?>>新着順</option>
-          <option value="rate-desc" <?= sel('rate-desc',$sort_by) ?>>月額が高い順</option>
-          <option value="rate-asc"  <?= sel('rate-asc', $sort_by) ?>>月額が低い順</option>
-          <option value="score"     <?= sel('score',    $sort_by) ?>>マッチ度順</option>
-        </select>
-      </form>
+      <?php if (!empty($google_results)): ?>
+        <span style="font-size:.72rem;color:#dde6f5">
+          検索: 「<?= h(mb_strimwidth(urldecode($search_query), 0, 40, '…')) ?>」
+        </span>
+      <?php endif; ?>
     </div>
 
-    <!-- Job Cards -->
-    <?php if (empty($result)): ?>
-      <div class="empty-state">
-        <strong>該当する案件が見つかりませんでした</strong>
-        条件を変えてもう一度お試しください。
+    <?php if (!empty($google_results)): ?>
+      <!-- Google検索結果カード -->
+      <div class="row g-3" id="google-cards">
+        <?php foreach ($google_results as $i => $gr): ?>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card-anken">
+              <!-- ソース表示 -->
+              <div class="d-flex align-items-center justify-content-between mb-2" style="gap:.4rem">
+                <div style="display:flex;align-items:center;gap:.35rem;overflow:hidden">
+                  <span style="font-size:.58rem;font-weight:800;color:var(--primary-lt);letter-spacing:.06em;background:var(--primary-glow);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">Google</span>
+                  <span style="font-size:.65rem;color:#dde6f5;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= h($gr['domain']) ?></span>
+                </div>
+                <span style="font-size:.62rem;color:#dde6f5;flex-shrink:0">#<?= $i + 1 ?></span>
+              </div>
+              <!-- タイトル（クリックで詳細へ） -->
+              <a href="<?= h($gr['url']) ?>" target="_blank" rel="noopener noreferrer" style="text-decoration:none">
+                <div class="card-title mb-2" style="color:#fff;transition:color .15s"
+                     onmouseover="this.style.color='var(--primary-lt)'"
+                     onmouseout="this.style.color='#fff'">
+                  <?= h(mb_strimwidth($gr['title'], 0, 60, '…')) ?>
+                </div>
+              </a>
+              <!-- スニペット -->
+              <div style="font-size:.78rem;color:#dde6f5;line-height:1.65;margin-bottom:.9rem">
+                <?= h(mb_strimwidth($gr['snippet'], 0, 130, '…')) ?>
+              </div>
+              <!-- 詳細・応募ボタン -->
+              <div class="mt-auto">
+                <a href="<?= h($gr['url']) ?>" target="_blank" rel="noopener noreferrer"
+                   class="btn-apply" style="width:100%;justify-content:center">
+                  詳細・応募はこちら
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+      <div style="font-size:.66rem;color:#dde6f5;margin-top:.7rem;text-align:right">
+        Powered by Google Custom Search API · 結果は最大7日間キャッシュ（条件変更で再取得）· 各リンク先サイトで詳細・応募をご確認ください
+      </div>
+
+    <?php elseif (GOOGLE_CSE_KEY === ''): ?>
+      <!-- APIキー未設定の案内 -->
+      <div class="empty-state" style="border-style:dashed;text-align:left;padding:1.2rem 1.4rem">
+        <strong style="font-size:1rem;display:block;margin-bottom:.5rem">🔍 Google検索マッチングを有効にしてください</strong>
+        <p style="font-size:.82rem;line-height:1.8;margin:0">
+          このエリアは <strong>Google Custom Search API</strong> のキーを設定すると、検索条件に合った実際の案件・求人情報をGoogleから取得して一覧表示します。各カードのリンクから詳細ページへ直接移動できます。<br><br>
+          <strong style="color:var(--primary-lt)">設定方法：</strong> index.php 先頭の API設定欄に以下を入力。<br>
+          <code style="color:var(--primary-lt);font-size:.78rem">GOOGLE_CSE_KEY</code> →
+          <a href="https://console.cloud.google.com/" target="_blank" rel="noopener" style="color:var(--primary-lt)">Google Cloud Console</a><br>
+          <code style="color:var(--primary-lt);font-size:.78rem">GOOGLE_CSE_CX</code> →
+          <a href="https://programmablesearchengine.google.com/" target="_blank" rel="noopener" style="color:var(--primary-lt)">Programmable Search Engine</a><br><br>
+          <span style="color:#dde6f5">無料枠：1日100クエリ ／ 結果は7日間キャッシュするのでAPIを節約できます。</span>
+        </p>
       </div>
     <?php else: ?>
+      <div class="empty-state"><strong>検索結果が見つかりませんでした</strong>キーワードや条件を変えてもう一度お試しください。</div>
+    <?php endif; ?>
+
+    <!-- ══ 参考案件（サンプルデータ） ══════════════════════════ -->
+    <?php if (!empty($result)): ?>
+    <div class="mt-4">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+        <h3 style="font-size:.92rem;font-weight:800;color:#dde6f5;margin:0">
+          📋 参考案件（サンプルデータ）
+          <span style="font-size:.78rem;font-weight:600;color:#dde6f5">（<?= count($result) ?>件）</span>
+        </h3>
+        <form method="GET" action="" id="sort-form">
+          <?php
+          $pass = ['q'=>$q,'role'=>$role,'style'=>$style,'min_rate'=>$min_rate,'pref'=>$pref,'city'=>$city,'station'=>$station];
+          foreach ($pass as $k=>$v) { if ($v !== '' && $v !== 0): ?>
+            <input type="hidden" name="<?= h($k) ?>" value="<?= h((string)$v) ?>">
+          <?php endif; } ?>
+          <?php foreach ($langs_in as $l): ?><input type="hidden" name="langs[]" value="<?= h($l) ?>"><?php endforeach; ?>
+          <?php foreach ($fws_in   as $f): ?><input type="hidden" name="fws[]"   value="<?= h($f) ?>"><?php endforeach; ?>
+          <?php if ($remote_ok): ?><input type="hidden" name="remote_ok" value="1"><?php endif; ?>
+          <select class="sort-sel" name="sort" onchange="this.form.submit()">
+            <option value="new"       <?= sel('new',      $sort_by) ?>>新着順</option>
+            <option value="rate-desc" <?= sel('rate-desc',$sort_by) ?>>月額が高い順</option>
+            <option value="rate-asc"  <?= sel('rate-asc', $sort_by) ?>>月額が低い順</option>
+            <option value="score"     <?= sel('score',    $sort_by) ?>>マッチ度順</option>
+          </select>
+        </form>
+      </div>
       <div class="row g-3">
         <?php foreach ($result as $a): ?>
           <div class="col-12 col-md-6 col-lg-4">
@@ -1036,24 +1109,16 @@ a{color:inherit;text-decoration:none}
                 </div>
                 <span style="font-size:.7rem;color:#dde6f5;flex-shrink:0"><?= posted_label($a['posted']) ?></span>
               </div>
-
               <div class="card-title mb-2"><?= h($a['title']) ?></div>
-
               <div class="card-meta mb-2">
                 <span>📍 <?= h($a['location']) ?></span>
                 <span>⏱ <?= h($a['duration']) ?></span>
                 <span style="color:#dde6f5"><?= h($a['role']) ?></span>
               </div>
-
               <div class="d-flex flex-wrap gap-1 mb-2">
-                <?php foreach ($a['langs'] as $l): ?>
-                  <span class="stag stag-lang"><?= h($l) ?></span>
-                <?php endforeach; ?>
-                <?php foreach ($a['fws'] as $f): ?>
-                  <span class="stag stag-fw"><?= h($f) ?></span>
-                <?php endforeach; ?>
+                <?php foreach ($a['langs'] as $l): ?><span class="stag stag-lang"><?= h($l) ?></span><?php endforeach; ?>
+                <?php foreach ($a['fws']   as $f): ?><span class="stag stag-fw"><?= h($f) ?></span><?php endforeach; ?>
               </div>
-
               <div class="mt-auto">
                 <div class="mb-2">
                   <span class="card-rate">¥<?= $a['rate'] ?><small> 万円/月</small></span>
@@ -1061,9 +1126,7 @@ a{color:inherit;text-decoration:none}
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="site-badge"><?= h($a['site_name']) ?></span>
-                  <a href="<?= h($a['apply_url']) ?>"
-                     target="_blank" rel="noopener noreferrer"
-                     class="btn-apply">
+                  <a href="<?= h($a['apply_url']) ?>" target="_blank" rel="noopener noreferrer" class="btn-apply">
                     このサイトで応募
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   </a>
@@ -1072,57 +1135,6 @@ a{color:inherit;text-decoration:none}
             </div>
           </div>
         <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
-
-    <!-- ══ GOOGLE SEARCH RESULTS ══════════════════════════════ -->
-    <?php if (!empty($google_results)): ?>
-    <div class="mt-4" id="google-results">
-      <div class="ext-section">
-        <div class="ext-title mb-1">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.15em;margin-right:.3rem"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          Google検索マッチング結果
-          <span style="font-size:.62rem;color:#dde6f5;font-weight:500;margin-left:.4rem">
-            「<?= h(urldecode($search_query)) ?>」の最新情報
-            <span style="color:var(--primary-lt)"><?= empty(cache_get('gse_'.md5($search_query), CACHE_TTL_SEARCH - 1)) ? '（最新取得）' : '（キャッシュ中）' ?></span>
-          </span>
-        </div>
-        <p class="ext-sub mb-3">Google検索から取得した実際の案件・求人情報です。タイトルをクリックで詳細ページへ。</p>
-        <div class="row g-2">
-          <?php foreach ($google_results as $gr): ?>
-          <div class="col-12 col-md-6 col-lg-4">
-            <a href="<?= h($gr['url']) ?>" target="_blank" rel="noopener noreferrer" class="ext-card" style="text-decoration:none">
-              <div style="font-size:.6rem;color:var(--primary-lt);font-weight:700;margin-bottom:.25rem;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                <?= h($gr['domain']) ?>
-              </div>
-              <div style="font-size:.85rem;font-weight:800;color:#fff;line-height:1.4;margin-bottom:.35rem">
-                <?= h(mb_strimwidth($gr['title'], 0, 55, '…')) ?>
-              </div>
-              <div style="font-size:.74rem;color:#dde6f5;line-height:1.5">
-                <?= h(mb_strimwidth($gr['snippet'], 0, 100, '…')) ?>
-              </div>
-              <div class="ext-cta mt-2">詳細を見る →</div>
-            </a>
-          </div>
-          <?php endforeach; ?>
-        </div>
-        <div style="font-size:.66rem;color:#dde6f5;margin-top:.8rem">
-          ※ 検索結果は最大7日間キャッシュされます。条件を変えると再取得します。
-          Google Custom Search APIのキーが未設定の場合は表示されません。
-        </div>
-      </div>
-    </div>
-    <?php elseif (GOOGLE_CSE_KEY === ''): ?>
-    <div class="mt-4">
-      <div class="ext-section" style="border-style:dashed">
-        <div class="ext-title mb-2">🔍 Google検索マッチング機能（設定待ち）</div>
-        <p class="ext-sub">
-          <strong style="color:#fff">この枠は Google Custom Search API を設定すると有効になります。</strong><br>
-          設定方法：<code style="color:var(--primary-lt)">GOOGLE_CSE_KEY</code> と <code style="color:var(--primary-lt)">GOOGLE_CSE_CX</code> を
-          index.php の先頭（API設定欄）に入力してください。<br>
-          無料枠：1日100クエリ（超過時 1,000クエリあたり約750円）。
-          結果は<strong style="color:#fff">最大7日間キャッシュ</strong>されるため通常の利用なら無料枠内で収まります。
-        </p>
       </div>
     </div>
     <?php endif; ?>
