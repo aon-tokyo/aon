@@ -437,7 +437,7 @@ function style_badge(string $s): string {
 :root{
   --bg:#0b1220;--bg2:#0f172a;--surface:#111c33;--surface2:#16223d;
   --border:rgba(255,255,255,.08);--border-s:rgba(255,255,255,.16);
-  --text:#e5edf7;--dim:#9aa8c0;--muted:#6b7a93;
+  --text:#fff;--dim:#fff;--muted:#dde6f5;
   --primary:#06b6d4;--primary-lt:#22d3ee;--primary-glow:rgba(6,182,212,.18);
   --accent:#a78bfa;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;
   --r:14px;
@@ -460,8 +460,8 @@ a{color:inherit;text-decoration:none}
 .site-header{position:sticky;top:0;z-index:100;background:rgba(11,18,32,.82);border-bottom:1px solid var(--border);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}
 .brand{display:flex;align-items:center;gap:.6rem;font-weight:900;font-size:1.05rem}
 .brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));display:grid;place-items:center;font-size:1rem;font-weight:900;color:#0b1220;box-shadow:0 6px 18px rgba(6,182,212,.35);flex-shrink:0}
-.nav-a{color:var(--dim);font-weight:600;font-size:.88rem;padding:.42rem .7rem;border-radius:8px;transition:all .15s}
-.nav-a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-a{color:#fff;font-weight:600;font-size:.88rem;padding:.42rem .7rem;border-radius:8px;transition:all .15s}
+.nav-a:hover{color:#fff;background:rgba(255,255,255,.14)}
 .btn-cta{padding:.48rem 1rem;border-radius:9px;border:0;font-weight:700;font-size:.85rem;background:linear-gradient(135deg,var(--primary),var(--accent));color:#0b1220;box-shadow:0 6px 18px rgba(6,182,212,.3);transition:filter .15s;cursor:pointer}
 .btn-cta:hover{filter:brightness(1.1)}
 
@@ -470,25 +470,25 @@ a{color:inherit;text-decoration:none}
 .hero-h1{font-size:clamp(1.7rem,4.5vw,2.9rem);font-weight:900;line-height:1.25;letter-spacing:-.01em;background:linear-gradient(135deg,#fff 0%,#cfe9ff 55%,#a5b4fc 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero-sub{color:var(--dim);font-size:clamp(.88rem,1.5vw,.98rem);max-width:48rem;margin:.75rem auto 0;line-height:1.7}
 .hero-stat-val{font-size:1.35rem;font-weight:900;color:#fff;display:block}
-.hero-stat-lbl{font-size:.75rem;color:var(--muted)}
+.hero-stat-lbl{font-size:.75rem;color:#dde6f5}
 
 /* Search Panel */
 .search-panel{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);padding:1.4rem;box-shadow:0 12px 36px rgba(0,0,0,.38)}
-.f-label{font-size:.72rem;font-weight:700;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.32rem;display:block}
+.f-label{font-size:.72rem;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.32rem;display:block}
 .form-control,.form-select{background:var(--surface2)!important;border:1px solid var(--border-s)!important;color:#fff!important;border-radius:9px!important;font-size:.88rem}
-.form-control::placeholder{color:var(--muted)!important}
+.form-control::placeholder{color:rgba(255,255,255,.45)!important}
 .form-control:focus,.form-select:focus{box-shadow:0 0 0 3px var(--primary-glow)!important;border-color:var(--primary-lt)!important;outline:none}
 .form-select option{background:var(--surface2);color:#fff}
 .form-range{accent-color:var(--primary);cursor:pointer}
 .form-check-input{background:var(--surface2);border-color:var(--border-s)}
 .form-check-input:checked{background-color:var(--primary);border-color:var(--primary)}
-.form-check-label{color:var(--dim);font-size:.88rem}
+.form-check-label{color:#fff;font-size:.88rem}
 
 /* Chips */
 .chip-wrap{display:flex;flex-wrap:wrap;gap:.28rem;max-height:78px;overflow:hidden;transition:max-height .25s ease}
 .chip-wrap.open{max-height:none}
-.chip{display:inline-block;padding:.22rem .58rem;border-radius:9999px;font-size:.74rem;font-weight:700;background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--border);cursor:pointer;transition:all .12s;user-select:none;line-height:1.5}
-.chip:hover{color:#fff;background:rgba(255,255,255,.1)}
+.chip{display:inline-block;padding:.22rem .58rem;border-radius:9999px;font-size:.74rem;font-weight:700;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.22);cursor:pointer;transition:all .12s;user-select:none;line-height:1.5}
+.chip:hover{color:#fff;background:rgba(255,255,255,.18)}
 .chip.on{background:var(--primary-glow);color:var(--primary-lt);border-color:rgba(34,211,238,.45)}
 .chip-cat{background:rgba(167,139,250,.08);color:var(--accent);border-color:rgba(167,139,250,.25);cursor:default;font-size:.68rem}
 .chip-more{font-size:.72rem;color:var(--primary-lt);cursor:pointer;margin-top:.25rem;display:inline-block}
@@ -496,8 +496,8 @@ a{color:inherit;text-decoration:none}
 /* Buttons */
 .btn-search{width:100%;padding:.75rem 1.4rem;border-radius:10px;border:0;font-weight:800;font-size:.95rem;background:linear-gradient(135deg,var(--primary),var(--accent));color:#0b1220;box-shadow:0 8px 24px rgba(6,182,212,.3);transition:filter .15s,transform .1s;cursor:pointer}
 .btn-search:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn-reset{width:100%;display:block;text-align:center;padding:.75rem 1.1rem;border-radius:10px;border:1px solid var(--border-s);background:transparent;color:var(--dim);font-weight:700;font-size:.88rem;transition:all .15s}
-.btn-reset:hover{color:#fff;background:rgba(255,255,255,.06)}
+.btn-reset{width:100%;display:block;text-align:center;padding:.75rem 1.1rem;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-weight:700;font-size:.88rem;transition:all .15s}
+.btn-reset:hover{color:#fff;background:rgba(255,255,255,.1)}
 .sort-sel{background:var(--surface2);border:1px solid var(--border-s);color:#fff;padding:.4rem .75rem;border-radius:8px;font-size:.84rem;font-family:inherit;cursor:pointer}
 
 /* Cards */
@@ -512,23 +512,23 @@ a{color:inherit;text-decoration:none}
 .bdg-onsite{background:rgba(245,158,11,.16);color:#fbbf24}
 .bdg-hybrid{background:rgba(167,139,250,.16);color:#c4b5fd}
 .card-title{font-size:.93rem;font-weight:800;color:#fff;line-height:1.45}
-.card-meta{font-size:.77rem;color:var(--dim);display:flex;flex-wrap:wrap;gap:.25rem .75rem}
+.card-meta{font-size:.77rem;color:#fff;display:flex;flex-wrap:wrap;gap:.25rem .75rem}
 .stag{display:inline-block;font-size:.67rem;font-weight:700;padding:.14rem .48rem;border-radius:5px}
 .stag-lang{background:rgba(6,182,212,.12);color:#67e8f9;border:1px solid rgba(6,182,212,.28)}
 .stag-fw{background:rgba(167,139,250,.12);color:#c4b5fd;border:1px solid rgba(167,139,250,.28)}
 .card-rate{font-size:1.22rem;font-weight:900;color:#fff}
-.card-rate small{font-size:.74rem;color:var(--muted);font-weight:500}
-.card-annual{font-size:.82rem;font-weight:700;color:var(--accent);margin-left:.4rem}
-.site-badge{font-size:.62rem;font-weight:700;color:var(--muted);border:1px solid var(--border);padding:.1rem .42rem;border-radius:5px}
+.card-rate small{font-size:.74rem;color:#dde6f5;font-weight:500}
+.card-annual{font-size:.82rem;font-weight:700;color:#c4b5fd;margin-left:.4rem}
+.site-badge{font-size:.62rem;font-weight:700;color:#dde6f5;border:1px solid rgba(255,255,255,.25);padding:.1rem .42rem;border-radius:5px}
 .btn-apply{display:inline-flex;align-items:center;gap:.28rem;padding:.52rem .88rem;border-radius:8px;font-size:.78rem;font-weight:800;background:var(--primary-glow);color:var(--primary-lt);border:1px solid rgba(34,211,238,.35);transition:all .15s}
 .btn-apply:hover{background:var(--primary);color:#0b1220;border-color:transparent}
-.empty-state{text-align:center;padding:3.5rem 1rem;background:var(--surface);border:1px dashed var(--border-s);border-radius:var(--r);color:var(--dim)}
+.empty-state{text-align:center;padding:3.5rem 1rem;background:var(--surface);border:1px dashed rgba(255,255,255,.25);border-radius:var(--r);color:#fff}
 .empty-state strong{display:block;color:#fff;font-size:1.05rem;margin-bottom:.4rem}
 
 /* External Sites */
 .ext-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem}
 .ext-title{font-size:1.05rem;font-weight:800;color:#fff}
-.ext-sub{font-size:.82rem;color:var(--dim);line-height:1.65}
+.ext-sub{font-size:.82rem;color:#fff;line-height:1.65}
 .ext-card{display:block;height:100%;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:.9rem 1rem;transition:border-color .15s,transform .15s,box-shadow .15s;color:inherit}
 .ext-card:hover{border-color:var(--border-s);transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.3)}
 .ext-card-name{font-size:.92rem;font-weight:800;color:#fff}
@@ -537,13 +537,13 @@ a{color:inherit;text-decoration:none}
 .t-sei{background:rgba(16,185,129,.15);color:#34d399}
 .t-side{background:rgba(245,158,11,.15);color:#fbbf24}
 .t-gen{background:rgba(167,139,250,.15);color:#c4b5fd}
-.ext-desc{font-size:.78rem;color:var(--dim);margin:.28rem 0;line-height:1.55}
+.ext-desc{font-size:.78rem;color:#dde6f5;margin:.28rem 0;line-height:1.55}
 .ext-cta{font-size:.76rem;font-weight:700;color:var(--primary-lt)}
 
 /* Footer */
-.site-footer{border-top:1px solid var(--border);padding:1.6rem 1rem;text-align:center;color:var(--muted);font-size:.76rem;line-height:1.9}
-.site-footer a{color:var(--dim)}
-.site-footer a:hover{color:#fff}
+.site-footer{border-top:1px solid var(--border);padding:1.6rem 1rem;text-align:center;color:#dde6f5;font-size:.76rem;line-height:1.9}
+.site-footer a{color:#fff}
+.site-footer a:hover{color:var(--primary-lt)}
 </style>
 </head>
 <body>
@@ -556,7 +556,7 @@ a{color:inherit;text-decoration:none}
         <span class="brand-icon" aria-hidden="true">案</span>
         <span>
           <span class="d-block" style="font-size:.98rem;line-height:1.1">案件ボード</span>
-          <span class="d-block" style="font-size:.58rem;letter-spacing:.12em;color:var(--muted);font-weight:600">ANKEN BOARD</span>
+          <span class="d-block" style="font-size:.58rem;letter-spacing:.12em;color:#dde6f5;font-weight:600">ANKEN BOARD</span>
         </span>
       </a>
       <nav class="d-flex align-items-center gap-1">
@@ -619,7 +619,7 @@ a{color:inherit;text-decoration:none}
 
       <!-- Row 2: Language chips -->
       <div class="mb-2">
-        <label class="f-label">希望プログラミング言語 <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・選択するとFWが絞り込まれます）</span></label>
+        <label class="f-label">希望プログラミング言語 <span style="color:#dde6f5;font-weight:500;text-transform:none;letter-spacing:0">（複数選択可・選択するとFWが絞り込まれます）</span></label>
         <div class="chip-wrap open" id="lang-chips">
           <?php foreach (LANGS as $lang): ?>
             <span class="chip<?= in_arr($lang,$langs_in)?' on':'' ?>"
@@ -633,12 +633,12 @@ a{color:inherit;text-decoration:none}
       <div class="mb-3" id="fw-section">
         <label class="f-label" id="fw-label">
           希望フレームワーク・ツール
-          <span id="fw-hint" style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">
+          <span id="fw-hint" style="color:#dde6f5;font-weight:500;text-transform:none;letter-spacing:0">
             （言語を選ぶと関連FWが表示されます）
           </span>
         </label>
         <!-- 言語未選択時のプレースホルダー -->
-        <div id="fw-placeholder" style="padding:.55rem .8rem;border-radius:9px;border:1px dashed var(--border-s);color:var(--muted);font-size:.82rem">
+        <div id="fw-placeholder" style="padding:.55rem .8rem;border-radius:9px;border:1px dashed rgba(255,255,255,.3);color:#fff;font-size:.82rem">
           ↑ まず言語を選択すると、関連フレームワーク・ツールが表示されます
         </div>
         <!-- 言語選択後に表示されるFWチップ群 -->
@@ -692,26 +692,39 @@ a{color:inherit;text-decoration:none}
           <label class="f-label" for="rate-slider">希望月額（下限）</label>
           <div class="d-flex align-items-center gap-2 flex-wrap">
             <input type="range" class="form-range flex-grow-1" id="rate-slider"
-                   min="0" max="200" step="5" value="<?= $min_rate ?>"
+                   min="0" max="240" step="5" value="<?= min($min_rate,240) ?>"
                    style="min-width:120px" oninput="syncRate(this.value)">
             <input type="number" class="form-control text-center" id="rate-num" name="min_rate"
-                   min="0" max="200" step="5" value="<?= $min_rate ?>"
-                   style="width:70px;flex-shrink:0" oninput="syncRateFromNum(this.value)">
-            <span style="color:var(--dim);font-size:.82rem;white-space:nowrap">万円/月〜</span>
+                   min="0" max="240" step="5" value="<?= $min_rate ?>"
+                   style="width:80px;flex-shrink:0" oninput="syncRateFromNum(this.value)">
+            <span style="font-size:.82rem;white-space:nowrap">万円/月〜</span>
           </div>
-          <div class="d-flex justify-content-between mt-1" style="font-size:.68rem;color:var(--muted)">
-            <span>0（下限なし）</span><span>100万</span><span>200万</span>
+          <div class="d-flex justify-content-between mt-1" style="font-size:.68rem;color:#dde6f5">
+            <span>0（下限なし）</span><span>60万</span><span>120万</span><span>180万</span><span>240万</span>
           </div>
         </div>
         <div class="col-12 col-md-5">
           <label class="f-label" for="annual-num">希望年収（下限・月額と連動）</label>
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
             <input type="number" class="form-control" id="annual-num"
-                   min="0" max="2400" step="60" value="<?= $min_rate * 12 ?>"
-                   placeholder="0" oninput="syncFromAnnual(this.value)">
-            <span style="color:var(--dim);font-size:.82rem;white-space:nowrap">万円/年〜</span>
+                   min="0" max="999999" step="12" value="<?= $min_rate * 12 ?>"
+                   placeholder="0" oninput="syncFromAnnual(this.value)"
+                   style="flex:1;min-width:100px">
+            <span style="font-size:.82rem;white-space:nowrap">万円/年〜</span>
           </div>
-          <div style="font-size:.68rem;color:var(--muted);margin-top:.3rem">月額 × 12 で自動換算（入力も可）</div>
+          <div style="font-size:.68rem;color:#dde6f5;margin-top:.3rem">月額 × 12 で換算（直接入力も可・数億円まで対応）</div>
+          <!-- 年収プリセット -->
+          <div class="d-flex flex-wrap gap-1 mt-1" id="annual-presets">
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(0)">指定なし</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(500)">500万〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(800)">800万〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(1000)">1,000万〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(1500)">1,500万〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(2000)">2,000万〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(5000)">5,000万〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(10000)">1億〜</button>
+            <button type="button" class="chip" style="font-size:.65rem;padding:.15rem .45rem" onclick="setAnnual(30000)">3億〜</button>
+          </div>
         </div>
       </div>
 
@@ -765,7 +778,7 @@ a{color:inherit;text-decoration:none}
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
       <h2 style="font-size:1.08rem;font-weight:800;color:#fff;margin:0">
         マッチング結果
-        <span style="font-size:.88rem;color:var(--dim);font-weight:600">（<?= count($result) ?>件）</span>
+        <span style="font-size:.88rem;color:#fff;font-weight:600">（<?= count($result) ?>件）</span>
       </h2>
       <!-- Sort: hidden inputs + auto-submit -->
       <form method="GET" action="" id="sort-form">
@@ -807,7 +820,7 @@ a{color:inherit;text-decoration:none}
                   <?= $a['hot'] ? '<span class="bdg bdg-hot">注目</span>' : '' ?>
                   <?= style_badge($a['style']) ?>
                 </div>
-                <span style="font-size:.7rem;color:var(--muted);flex-shrink:0"><?= posted_label($a['posted']) ?></span>
+                <span style="font-size:.7rem;color:#dde6f5;flex-shrink:0"><?= posted_label($a['posted']) ?></span>
               </div>
 
               <div class="card-title mb-2"><?= h($a['title']) ?></div>
@@ -815,7 +828,7 @@ a{color:inherit;text-decoration:none}
               <div class="card-meta mb-2">
                 <span>📍 <?= h($a['location']) ?></span>
                 <span>⏱ <?= h($a['duration']) ?></span>
-                <span style="color:var(--muted)"><?= h($a['role']) ?></span>
+                <span style="color:#dde6f5"><?= h($a['role']) ?></span>
               </div>
 
               <div class="d-flex flex-wrap gap-1 mb-2">
@@ -918,9 +931,33 @@ const LANG_FW_MAP = <?php
 const selectedLangs = new Set(<?php echo json_encode(array_values($langs_in), JSON_UNESCAPED_UNICODE); ?>);
 
 /* ─── 月額 ↔ 年収 連動 ───────────────────────────────────── */
-function syncRate(v)        { document.getElementById('rate-num').value   = v;   document.getElementById('annual-num').value = v*12; }
-function syncRateFromNum(v) { const n=parseInt(v)||0; document.getElementById('rate-slider').value=n; document.getElementById('annual-num').value=n*12; }
-function syncFromAnnual(v)  { const m=Math.round((parseInt(v)||0)/12); document.getElementById('rate-slider').value=m; document.getElementById('rate-num').value=m; }
+function fmtAnnual(yen) {
+  if (yen <= 0) return '';
+  if (yen >= 10000) return '約' + (yen/10000).toFixed(yen%10000===0?0:1) + '億円';
+  return yen + '万円';
+}
+function syncRate(v) {
+  const n = parseInt(v)||0;
+  document.getElementById('rate-num').value   = n;
+  document.getElementById('annual-num').value = n * 12;
+}
+function syncRateFromNum(v) {
+  const n = parseInt(v)||0;
+  document.getElementById('rate-slider').value = Math.min(n, 240);
+  document.getElementById('annual-num').value  = n * 12;
+}
+function syncFromAnnual(v) {
+  const total = parseInt(v)||0;
+  const m = Math.round(total / 12);
+  document.getElementById('rate-slider').value = Math.min(m, 240);
+  document.getElementById('rate-num').value    = m;
+}
+function setAnnual(yen) {
+  document.getElementById('annual-num').value  = yen;
+  const m = Math.round(yen / 12);
+  document.getElementById('rate-slider').value = Math.min(m, 240);
+  document.getElementById('rate-num').value    = m;
+}
 
 /* ─── hidden input 管理（FWチップ用） ───────────────────── */
 function setHiddenChip(group, val, on) {
