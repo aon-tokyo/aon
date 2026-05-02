@@ -178,16 +178,16 @@ define('EXT_SITES', [
      'url'=>'https://freelance.levtech.jp/project/search/?keyword='],
     ['name'=>'ITプロパートナーズ','tag'=>'副業・フリーランス','type'=>'fl',
      'desc'=>'週2〜3日から参画できる副業・フリーランス案件に特化。スタートアップ系が豊富。',
-     'url'=>'https://itpropartners.com/project/?keyword='],
+     'url'=>'https://itpropartners.com/job?free_word='],
     ['name'=>'Midworks','tag'=>'フリーランス','type'=>'fl',
      'desc'=>'フリーランスでも社会保険・各種保障が充実。正社員並みのサポートで安心して働ける。',
-     'url'=>'https://midworks.com/projects/?keyword='],
+     'url'=>'https://mid-works.com/projects?q='],
     ['name'=>'クラウドテック','tag'=>'フリーランス','type'=>'fl',
      'desc'=>'クラウドワークスが運営するITフリーランス向けエージェント。多様な職種・単価帯。',
-     'url'=>'https://crowdtech.jp/projects/search/?word='],
+     'url'=>'https://tech.crowdworks.jp/job_offers/o/1?q='],
     ['name'=>'Findy Freelance','tag'=>'フリーランス','type'=>'fl',
      'desc'=>'GitHubスキルスコアで自動マッチング。エンジニア目線のフリーランス案件サービス。',
-     'url'=>'https://findy-code.io/freelance/projects?keyword='],
+     'url'=>'https://freelance.findy-code.io/works?q='],
     ['name'=>'Offers','tag'=>'副業・複業','type'=>'side',
      'desc'=>'副業・複業×開発案件のマッチング。スタートアップや成長企業の週1〜案件が充実。',
      'url'=>'https://offers.jp/jobs?keyword='],
@@ -199,7 +199,7 @@ define('EXT_SITES', [
      'url'=>'https://www.wantedly.com/projects?query='],
     ['name'=>'Findy（転職）','tag'=>'エンジニア転職','type'=>'sei',
      'desc'=>'スキルスコアでスカウトが届くエンジニア特化の転職サービス。高年収求人多数。',
-     'url'=>'https://findy-code.io/job-offers?search='],
+     'url'=>'https://findy-code.io/companies?q='],
     ['name'=>'Indeed Japan','tag'=>'総合求人','type'=>'gen',
      'desc'=>'国内最大級の求人検索エンジン。正社員・契約社員・フリーランスを幅広く検索可能。',
      'url'=>'https://jp.indeed.com/jobs?q='],
@@ -219,35 +219,35 @@ define('ANKEN', [
      'location'=>'東京・週2出社','duration'=>'6ヶ月','rate'=>78,'posted'=>2,'hot'=>false,
      'langs'=>['TypeScript','JavaScript'],'fws'=>['Vue.js','Nuxt.js'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Vue+Nuxt'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Vue+Nuxt'],
 
     ['id'=>3,'title'=>'SaaS 管理画面リニューアル（Angular 18）',
      'role'=>'フロントエンド','style'=>'onsite','prefecture'=>'神奈川県','city'=>'横浜市','station'=>'横浜',
      'location'=>'横浜・常駐','duration'=>'4ヶ月','rate'=>72,'posted'=>5,'hot'=>false,
      'langs'=>['TypeScript'],'fws'=>['Angular'],
      'site_name'=>'クラウドテック',
-     'apply_url'=>'https://crowdtech.jp/projects/search/?word=Angular+TypeScript'],
+     'apply_url'=>'https://tech.crowdworks.jp/job_offers/o/1?q=Angular+TypeScript'],
 
     ['id'=>4,'title'=>'金融ダッシュボード 新規開発（Svelte / SvelteKit）',
      'role'=>'フロントエンド','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'3ヶ月〜','rate'=>80,'posted'=>1,'hot'=>false,
      'langs'=>['TypeScript','JavaScript'],'fws'=>['Svelte','SvelteKit'],
      'site_name'=>'Findy Freelance',
-     'apply_url'=>'https://findy-code.io/freelance/projects?keyword=Svelte'],
+     'apply_url'=>'https://freelance.findy-code.io/works?q=Svelte'],
 
     ['id'=>5,'title'=>'コンテンツサイト新規構築（Astro / React）',
      'role'=>'フロントエンド','style'=>'remote','prefecture'=>'大阪府','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'2ヶ月','rate'=>65,'posted'=>7,'hot'=>false,
      'langs'=>['TypeScript','JavaScript'],'fws'=>['Astro','React'],
      'site_name'=>'Midworks',
-     'apply_url'=>'https://midworks.com/projects/?keyword=Astro+React'],
+     'apply_url'=>'https://mid-works.com/projects?q=Astro+React'],
 
     ['id'=>6,'title'=>'Rust + WebAssembly 高性能ブラウザアプリ開発',
      'role'=>'フロントエンド','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'4ヶ月','rate'=>102,'posted'=>8,'hot'=>true,
      'langs'=>['Rust','JavaScript'],'fws'=>['React'],
      'site_name'=>'Findy Freelance',
-     'apply_url'=>'https://findy-code.io/freelance/projects?keyword=Rust+WebAssembly'],
+     'apply_url'=>'https://freelance.findy-code.io/works?q=Rust+WebAssembly'],
 
     /* バックエンド */
     ['id'=>7,'title'=>'決済API 設計・開発（Go / Gin）',
@@ -262,28 +262,28 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'長期','rate'=>93,'posted'=>0,'hot'=>false,
      'langs'=>['Go'],'fws'=>['Echo','Docker','Kubernetes'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Go+Echo+マイクロサービス'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Go+Echo+マイクロサービス'],
 
     ['id'=>9,'title'=>'ヘルスケアSaaS API 構築（Python / FastAPI）',
      'role'=>'バックエンド','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'6ヶ月〜','rate'=>88,'posted'=>3,'hot'=>true,
      'langs'=>['Python'],'fws'=>['FastAPI','Docker'],
      'site_name'=>'Midworks',
-     'apply_url'=>'https://midworks.com/projects/?keyword=Python+FastAPI'],
+     'apply_url'=>'https://mid-works.com/projects?q=Python+FastAPI'],
 
     ['id'=>10,'title'=>'Django REST API + PostgreSQL 設計・開発',
      'role'=>'バックエンド','style'=>'remote','prefecture'=>'福岡県','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'3ヶ月','rate'=>77,'posted'=>10,'hot'=>false,
      'langs'=>['Python'],'fws'=>['Django','REST API'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Django+Python+API'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Django+Python+API'],
 
     ['id'=>11,'title'=>'ECバックエンド 機能追加（PHP / Laravel 11）',
      'role'=>'バックエンド','style'=>'hybrid','prefecture'=>'愛知県','city'=>'名古屋市','station'=>'名古屋',
      'location'=>'名古屋・週3出社','duration'=>'6ヶ月','rate'=>68,'posted'=>4,'hot'=>false,
      'langs'=>['PHP'],'fws'=>['Laravel','REST API'],
      'site_name'=>'クラウドテック',
-     'apply_url'=>'https://crowdtech.jp/projects/search/?word=PHP+Laravel'],
+     'apply_url'=>'https://tech.crowdworks.jp/job_offers/o/1?q=PHP+Laravel'],
 
     ['id'=>12,'title'=>'スタートアップ自社PF 開発（Ruby on Rails）',
      'role'=>'バックエンド','style'=>'hybrid','prefecture'=>'東京都','city'=>'渋谷区','station'=>'渋谷',
@@ -304,7 +304,7 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'4ヶ月〜','rate'=>82,'posted'=>2,'hot'=>false,
      'langs'=>['TypeScript'],'fws'=>['NestJS','Fastify','Docker'],
      'site_name'=>'Findy Freelance',
-     'apply_url'=>'https://findy-code.io/freelance/projects?keyword=NestJS+Node.js'],
+     'apply_url'=>'https://freelance.findy-code.io/works?q=NestJS+Node.js'],
 
     ['id'=>15,'title'=>'Elixir / Phoenix リアルタイム通信基盤',
      'role'=>'バックエンド','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
@@ -333,7 +333,7 @@ define('ANKEN', [
      'location'=>'大宮・常駐','duration'=>'3ヶ月','rate'=>70,'posted'=>14,'hot'=>false,
      'langs'=>['JavaScript','PHP'],'fws'=>['Vue.js','Laravel'],
      'site_name'=>'クラウドテック',
-     'apply_url'=>'https://crowdtech.jp/projects/search/?word=Vue+Laravel+フルスタック'],
+     'apply_url'=>'https://tech.crowdworks.jp/job_offers/o/1?q=Vue+Laravel+フルスタック'],
 
     /* モバイル */
     ['id'=>19,'title'=>'iOS ショッピングアプリ（Swift / SwiftUI）',
@@ -341,28 +341,28 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'4ヶ月','rate'=>88,'posted'=>2,'hot'=>false,
      'langs'=>['Swift'],'fws'=>['SwiftUI'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Swift+SwiftUI+iOS'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Swift+SwiftUI+iOS'],
 
     ['id'=>20,'title'=>'Android アプリ刷新（Kotlin / Jetpack Compose）',
      'role'=>'モバイル','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'5ヶ月','rate'=>82,'posted'=>5,'hot'=>true,
      'langs'=>['Kotlin'],'fws'=>['Jetpack Compose'],
      'site_name'=>'クラウドテック',
-     'apply_url'=>'https://crowdtech.jp/projects/search/?word=Kotlin+Jetpack+Compose+Android'],
+     'apply_url'=>'https://tech.crowdworks.jp/job_offers/o/1?q=Kotlin+Jetpack+Compose+Android'],
 
     ['id'=>21,'title'=>'クロスプラットフォームアプリ（Flutter / Dart）',
      'role'=>'モバイル','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
      'location'=>'フルリモート','duration'=>'6ヶ月','rate'=>78,'posted'=>1,'hot'=>false,
      'langs'=>['Dart'],'fws'=>['Flutter','Expo'],
      'site_name'=>'Midworks',
-     'apply_url'=>'https://midworks.com/projects/?keyword=Flutter+Dart'],
+     'apply_url'=>'https://mid-works.com/projects?q=Flutter+Dart'],
 
     ['id'=>22,'title'=>'医療アプリ React Native 開発（iOS/Android 両対応）',
      'role'=>'モバイル','style'=>'hybrid','prefecture'=>'東京都','city'=>'新宿区','station'=>'新宿',
      'location'=>'新宿・週2出社','duration'=>'長期','rate'=>83,'posted'=>9,'hot'=>false,
      'langs'=>['TypeScript'],'fws'=>['React Native','Expo'],
      'site_name'=>'Findy Freelance',
-     'apply_url'=>'https://findy-code.io/freelance/projects?keyword=React+Native+モバイル'],
+     'apply_url'=>'https://freelance.findy-code.io/works?q=React+Native+モバイル'],
 
     /* インフラ / SRE */
     ['id'=>23,'title'=>'AWS クラウド移行 SRE（Terraform / Kubernetes）',
@@ -377,14 +377,14 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'4ヶ月','rate'=>98,'posted'=>4,'hot'=>false,
      'langs'=>['Python','Go'],'fws'=>['Kubernetes','Docker','Ansible'],
      'site_name'=>'Midworks',
-     'apply_url'=>'https://midworks.com/projects/?keyword=MLOps+Kubernetes+Python'],
+     'apply_url'=>'https://mid-works.com/projects?q=MLOps+Kubernetes+Python'],
 
     ['id'=>25,'title'=>'大手通信 インフラ設計・DevOps 推進',
      'role'=>'インフラ／SRE','style'=>'onsite','prefecture'=>'東京都','city'=>'港区','station'=>'品川',
      'location'=>'品川・常駐','duration'=>'長期','rate'=>95,'posted'=>7,'hot'=>false,
      'langs'=>['Python'],'fws'=>['Ansible','Terraform','Docker'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=DevOps+インフラ+Terraform'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=DevOps+インフラ+Terraform'],
 
     /* データ / AI・ML */
     ['id'=>26,'title'=>'生成AI チャットボット開発（LangChain / FastAPI）',
@@ -399,7 +399,7 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'6ヶ月','rate'=>92,'posted'=>3,'hot'=>false,
      'langs'=>['Python','R'],'fws'=>['dbt','Snowflake'],
      'site_name'=>'Findy Freelance',
-     'apply_url'=>'https://findy-code.io/freelance/projects?keyword=dbt+Snowflake+データエンジニア'],
+     'apply_url'=>'https://freelance.findy-code.io/works?q=dbt+Snowflake+データエンジニア'],
 
     ['id'=>28,'title'=>'推薦システム ML エンジニア（Python / PyTorch）',
      'role'=>'データ／AI・ML','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
@@ -575,45 +575,128 @@ function cache_set(string $key, array $data): void {
 /* ═══════════════════════════════════════════════════════════
    Google Custom Search API 呼び出し
    - APIキー未設定時は空配列を返す
+   - 複数ページ（GOOGLE_CSE_MAX_RESULTS まで）＋フォールバック検索でヒット率を上げる
+   - lr=lang_ja は除外（英語サイトばかりになり 0 件になりやすいため）
    - 結果はキャッシュに保存（TTL: 7日）
    - クロールなし：ユーザーがページを開いた時のみ実行
 ═══════════════════════════════════════════════════════════ */
-function google_search(string $query, int $num = 6): array {
+define('GOOGLE_CSE_MAX_RESULTS', 10);
+
+/**
+ * Google CSE が返す古い誤ドメインを公式URLへ差し替える。
+ * midworks.com は転売ドメインになり HugeDomains の出品ページや別サイトへ誘導されることがある。
+ */
+function normalize_google_cse_item(array $it): array {
+    $url = $it['url'] ?? '';
+    if ($url === '') {
+        return $it;
+    }
+    $url = preg_replace('#^https?://(www\.)?midworks\.com#i', 'https://mid-works.com', $url);
+    $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+    if ($host !== '' && strpos($host, 'hugedomains.com') !== false) {
+        $qstr = (string) parse_url($url, PHP_URL_QUERY);
+        parse_str($qstr, $qp);
+        $d = $qp['d'] ?? '';
+        if (is_string($d) && preg_match('/(^|\.)midworks\.com$/i', $d)) {
+            $url = 'https://mid-works.com/projects';
+        }
+    }
+    $it['url'] = $url;
+    $it['domain'] = parse_url($url, PHP_URL_HOST) ?: '';
+    return $it;
+}
+
+/** CSE 1ページ（num は 1〜10） */
+function google_search_fetch_page(string $query, int $start1Based, int $num): array {
     if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
-    $ckey = 'gse_' . md5($query);
-    $cached = cache_get($ckey, CACHE_TTL_SEARCH);
-    if ($cached !== null) return $cached;
+    $num = max(1, min(10, $num));
+    $start1Based = max(1, min(91, $start1Based));
 
     $url = 'https://www.googleapis.com/customsearch/v1?' . http_build_query([
         'key'   => GOOGLE_CSE_KEY,
         'cx'    => GOOGLE_CSE_CX,
         'q'     => $query,
         'num'   => $num,
-        'lr'    => 'lang_ja',
+        'start' => $start1Based,
         'gl'    => 'jp',
     ]);
-    $ctx = stream_context_create(['http' => ['timeout' => 5, 'ignore_errors' => true]]);
+    $ctx = stream_context_create(['http' => ['timeout' => 8, 'ignore_errors' => true]]);
     $raw = @file_get_contents($url, false, $ctx);
     if (!$raw) return [];
     $data = json_decode($raw, true);
-    if (empty($data['items'])) return [];
+    if (!empty($data['error']) || empty($data['items'])) return [];
 
-    $items = array_map(fn($it) => [
-        'title'   => $it['title']   ?? '',
-        'snippet' => $it['snippet'] ?? '',
-        'url'     => $it['link']    ?? '',
-        'domain'  => parse_url($it['link'] ?? '', PHP_URL_HOST) ?: '',
-    ], array_slice($data['items'], 0, $num));
+    return array_map(function ($it) {
+        $row = [
+            'title'   => $it['title']   ?? '',
+            'snippet' => $it['snippet'] ?? '',
+            'url'     => $it['link']    ?? '',
+            'domain'  => parse_url($it['link'] ?? '', PHP_URL_HOST) ?: '',
+        ];
+        return normalize_google_cse_item($row);
+    }, $data['items']);
+}
 
-    cache_set($ckey, $items);
+/** 1つのクエリで複数ページを取得してマージ（URL重複除去） */
+function google_search_collect_query(string $query, int $target_total, array &$seen, array &$merged): void {
+    $target_total = max(1, min(GOOGLE_CSE_MAX_RESULTS, $target_total));
+    $max_start = 1 + 10 * max(0, (int) ceil($target_total / 10) - 1);
+    $max_start = min(91, $max_start);
+    $start = 1;
+    while (count($merged) < $target_total && $start <= $max_start) {
+        $need = min(10, $target_total - count($merged));
+        $page = google_search_fetch_page($query, $start, $need);
+        if ($page === []) break;
+        foreach ($page as $it) {
+            $u = $it['url'] ?? '';
+            if ($u === '' || isset($seen[$u])) continue;
+            $seen[$u] = true;
+            $merged[] = $it;
+            if (count($merged) >= $target_total) return;
+        }
+        if (count($page) < $need) break;
+        $start += 10;
+    }
+}
 
-    /* ストック（全検索結果を蓄積して後でAI分析に使う） */
-    $stock = cache_get('search_stock', 86400 * 365) ?? [];
-    $stock[] = ['q' => $query, 'ts' => date('Y-m-d'), 'items' => $items];
-    if (count($stock) > 200) $stock = array_slice($stock, -200);
-    cache_set('search_stock', $stock);
+/**
+ * @param string $primary_query メイン検索語句
+ * @param array  $fallback_queries 0件のとき試す別クエリ（短い語など）
+ * @param int    $target_total     最大件数（既定 GOOGLE_CSE_MAX_RESULTS・API上限30）
+ */
+function google_search(string $primary_query, array $fallback_queries = [], int $target_total = GOOGLE_CSE_MAX_RESULTS): array {
+    if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
 
-    return $items;
+    $fb = array_values(array_unique(array_filter($fallback_queries, fn($x) => is_string($x) && $x !== '')));
+    $ckey = 'gse_v5_' . md5($primary_query . "\0" . implode("\0", $fb));
+    $cached = cache_get($ckey, CACHE_TTL_SEARCH);
+    if ($cached !== null) return $cached;
+
+    $target_total = max(1, min(GOOGLE_CSE_MAX_RESULTS, $target_total));
+    $seen = [];
+    $merged = [];
+
+    google_search_collect_query($primary_query, $target_total, $seen, $merged);
+
+    /* メインが0件／不足のとき、フォールバックを順にマージ（1つで打ち切らず埋める） */
+    if (count($merged) < $target_total && $fb !== []) {
+        foreach ($fb as $q) {
+            if (count($merged) >= $target_total) {
+                break;
+            }
+            google_search_collect_query($q, $target_total, $seen, $merged);
+        }
+    }
+
+    if ($merged !== []) {
+        cache_set($ckey, $merged);
+        $stock = cache_get('search_stock', 86400 * 365) ?? [];
+        $stock[] = ['q' => $primary_query, 'ts' => date('Y-m-d'), 'items' => $merged];
+        if (count($stock) > 200) $stock = array_slice($stock, -200);
+        cache_set('search_stock', $stock);
+    }
+
+    return $merged;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -717,7 +800,7 @@ EOT;
    実行：Google検索 & AIトレンド取得
 ═══════════════════════════════════════════════════════════ */
 
-/* 検索クエリ生成（言語・FW・キーワード・勤務地を合成） */
+/* 検索クエリ生成（言語・FWを先頭に — 100文字切り詰めで技術名が落ちないようにする） */
 $pref_label_for_search = '';
 foreach (LOCATION_GROUPS as $g) {
     if ($g['value'] === $pref && $pref !== '') {
@@ -725,19 +808,83 @@ foreach (LOCATION_GROUPS as $g) {
         break;
     }
 }
-$search_query_parts = array_filter(array_merge(
-    $q !== '' ? [$q] : [],
+$tail_kw = 'フリーランス 案件 求人 エンジニア';
+$head_query_parts = array_values(array_filter(array_merge(
     $langs_in,
     $fws_in,
+    $q !== '' ? [$q] : [],
     $pref_label_for_search !== '' ? [$pref_label_for_search] : [],
-    ['フリーランス 案件 求人 エンジニア'],
-));
-$search_query = mb_substr(implode(' ', $search_query_parts), 0, 100);
-if (count($search_query_parts) === 1) {
+)));
+if ($head_query_parts === []) {
     $search_query = 'ITエンジニア フリーランス 案件 求人 2026';
+} else {
+    $full_join = implode(' ', array_merge($head_query_parts, [$tail_kw]));
+    if (mb_strlen($full_join) <= 100) {
+        $search_query = $full_join;
+    } else {
+        $tail = ' ' . $tail_kw;
+        $budget = max(24, 100 - mb_strlen($tail));
+        $head_join = implode(' ', $head_query_parts);
+        if (mb_strlen($head_join) <= $budget) {
+            $search_query = $head_join . $tail;
+        } else {
+            $search_query = rtrim(mb_substr($head_join, 0, $budget)) . $tail;
+        }
+        if (mb_strlen($search_query) > 100) {
+            $search_query = mb_substr($search_query, 0, 100);
+        }
+    }
 }
 
-$google_results = google_search($search_query);
+/* メインで0件のとき短い語で再試行（CSEの対象サイト・言語差で0件になりやすいのを緩和） */
+$google_fallback_queries = [];
+$core = array_values(array_filter(array_merge($langs_in, $fws_in)));
+if ($core !== []) {
+    $google_fallback_queries[] = mb_substr(implode(' ', array_merge($core, ['求人', 'エンジニア', '案件'])), 0, 100);
+    $google_fallback_queries[] = mb_substr(implode(' ', array_merge($core, ['フリーランス'])), 0, 100);
+    $google_fallback_queries[] = mb_substr(implode(' ', $core) . ' 採用 エンジニア', 0, 100);
+    $google_fallback_queries[] = mb_substr(implode(' ', $core) . ' 求人', 0, 100);
+    if ($min_rate > 0) {
+        $google_fallback_queries[] = mb_substr(implode(' ', $core) . " 単価{$min_rate}万円 求人", 0, 100);
+    }
+}
+if ($pref_label_for_search !== '') {
+    $google_fallback_queries[] = mb_substr($pref_label_for_search . ' IT 求人 エンジニア フリーランス', 0, 100);
+}
+$google_fallback_queries[] = 'IT エンジニア 求人 案件 2026';
+$google_fallback_queries = array_values(array_unique(array_filter($google_fallback_queries, fn($x) => $x !== '' && $x !== $search_query)));
+
+$google_results = google_search($search_query, $google_fallback_queries, GOOGLE_CSE_MAX_RESULTS);
+
+/* Google CSE が0件でも（検索エンジン設定・API・キャッシュ等で）案件探索につながるよう外部求人サイトへの検索リンクを補完 */
+function build_ext_site_search_cards(array $langs_in, array $fws_in, string $q, string $role): array {
+    $kw_parts = array_filter(array_merge(
+        $q !== '' ? [$q] : [],
+        $langs_in,
+        $fws_in,
+        $role !== '' ? [$role] : [],
+    ));
+    $kw_sfx = urlencode(mb_substr(implode(' ', $kw_parts), 0, 100));
+    $label = implode(' ', array_merge($langs_in, $fws_in));
+    if ($label === '') {
+        $label = '条件';
+    }
+    $out = [];
+    foreach (EXT_SITES as $site) {
+        $out[] = [
+            'title'       => $site['name'] . ' で「' . $label . '」を検索',
+            'snippet'     => $site['desc'],
+            'url'         => $site['url'] . $kw_sfx,
+            'domain'      => parse_url($site['url'], PHP_URL_HOST) ?: '',
+            'is_fallback' => true,
+        ];
+    }
+    return array_slice($out, 0, min(GOOGLE_CSE_MAX_RESULTS, count($out)));
+}
+
+if ($google_results === [] && GOOGLE_CSE_KEY !== '') {
+    $google_results = build_ext_site_search_cards($langs_in, $fws_in, $q, $role);
+}
 $ai_trends      = ai_trend_analysis();
 
 /* AIのランク順に言語リストを並べ替え（ページ表示に使う） */
@@ -1160,7 +1307,7 @@ a{color:inherit;text-decoration:none}
 
     <!-- ══ GOOGLE検索マッチング結果（メイン） ══════════════════ -->
     <?php
-    $cp = cache_path('gse_'.md5($search_query));
+    $cp = cache_path('gse_v4_' . md5($search_query . "\0" . implode("\0", $google_fallback_queries)));
     $is_cached = !empty($google_results) && $cp !== '' && file_exists($cp);
     $cache_label = $is_cached ? '（キャッシュ中・最大7日）' : '（最新取得）';
     ?>
@@ -1186,12 +1333,17 @@ a{color:inherit;text-decoration:none}
       <!-- Google検索結果カード -->
       <div class="row g-3" id="google-cards">
         <?php foreach ($google_results as $i => $gr): ?>
+          <?php $gr_fb = !empty($gr['is_fallback']); ?>
           <div class="col-12 col-md-6 col-lg-4">
             <div class="card-anken">
               <!-- ソース表示 -->
               <div class="d-flex align-items-center justify-content-between mb-2" style="gap:.4rem">
                 <div style="display:flex;align-items:center;gap:.35rem;overflow:hidden">
+                  <?php if ($gr_fb): ?>
+                  <span style="font-size:.58rem;font-weight:800;color:#c4b5fd;letter-spacing:.06em;background:rgba(167,139,250,.15);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">求人サイト</span>
+                  <?php else: ?>
                   <span style="font-size:.58rem;font-weight:800;color:var(--primary-lt);letter-spacing:.06em;background:var(--primary-glow);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">Google</span>
+                  <?php endif; ?>
                   <span style="font-size:.65rem;color:#dde6f5;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= h($gr['domain']) ?></span>
                 </div>
                 <span style="font-size:.62rem;color:#dde6f5;flex-shrink:0">#<?= $i + 1 ?></span>
@@ -1221,7 +1373,11 @@ a{color:inherit;text-decoration:none}
         <?php endforeach; ?>
       </div>
       <div style="font-size:.66rem;color:#dde6f5;margin-top:.7rem;text-align:right">
-        Powered by Google Custom Search API · 結果は最大7日間キャッシュ（条件変更で再取得）· 各リンク先サイトで詳細・応募をご確認ください
+        <?php if (!empty($google_results[0]['is_fallback'])): ?>
+          Google検索にヒットがなかったため、条件に合わせた<strong style="color:#fff">外部求人・案件サイトの検索結果ページ</strong>へリンクしています。詳細・応募は各サイトでご確認ください。
+        <?php else: ?>
+          Powered by Google Custom Search API · 結果は最大7日間キャッシュ（条件変更で再取得）· 各リンク先サイトで詳細・応募をご確認ください
+        <?php endif; ?>
       </div>
 
     <?php elseif (GOOGLE_CSE_KEY === ''): ?>

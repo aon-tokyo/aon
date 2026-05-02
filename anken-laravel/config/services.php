@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    /*
+    | Programmable Search Engine（純粋PHP版の GOOGLE_CSE_KEY / GOOGLE_CSE_CX と同一）
+    */
+    'google' => [
+        'cse_key' => env('GOOGLE_CSE_KEY'),
+        'cse_cx' => env('GOOGLE_CSE_CX'),
+    ],
+
 ];

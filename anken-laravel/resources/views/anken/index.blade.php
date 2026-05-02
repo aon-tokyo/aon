@@ -323,10 +323,78 @@ a{color:inherit;text-decoration:none}
 <main class="py-3" id="results">
   <div class="container-xl px-3">
 
+    {{-- Google Custom Search（純粋PHP版と同じマッチング結果） --}}
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
       <h2 style="font-size:1.08rem;font-weight:800;color:#fff;margin:0">
-        マッチング結果 <span style="font-size:.88rem;color:var(--dim);font-weight:600">（{{ $anken->count() }}件）</span>
+        🔍 マッチング結果
+        @if(count($google_results) > 0)
+          <span style="font-size:.82rem;color:#fff;font-weight:600">（{{ count($google_results) }}件）</span>
+        @elseif($google_cse_configured)
+          <span style="font-size:.82rem;color:#fff;font-weight:600">（0件）</span>
+        @endif
       </h2>
+      @if(count($google_results) > 0)
+        <span style="font-size:.72rem;color:#dde6f5">検索: 「{{ \Illuminate\Support\Str::limit($search_query, 40) }}」</span>
+      @endif
+    </div>
+
+    @if(count($google_results) > 0)
+      <div class="row g-3 mb-4">
+        @foreach($google_results as $i => $gr)
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card-anken">
+              <div class="d-flex align-items-center justify-content-between mb-2" style="gap:.4rem">
+                <div style="display:flex;align-items:center;gap:.35rem;overflow:hidden">
+                  @if(!empty($gr['is_fallback']))
+                  <span style="font-size:.58rem;font-weight:800;color:#c4b5fd;letter-spacing:.06em;background:rgba(167,139,250,.15);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">求人サイト</span>
+                  @else
+                  <span style="font-size:.58rem;font-weight:800;color:var(--primary-lt);letter-spacing:.06em;background:var(--primary-glow);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">Google</span>
+                  @endif
+                  <span style="font-size:.65rem;color:#dde6f5;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $gr['domain'] }}</span>
+                </div>
+                <span style="font-size:.62rem;color:#dde6f5;flex-shrink:0">#{{ $i + 1 }}</span>
+              </div>
+              <a href="{{ $gr['url'] }}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">
+                <div class="card-title mb-2" style="color:#fff">{{ \Illuminate\Support\Str::limit($gr['title'], 60) }}</div>
+              </a>
+              <div style="font-size:.78rem;color:#dde6f5;line-height:1.65;margin-bottom:.9rem">
+                {{ \Illuminate\Support\Str::limit($gr['snippet'], 130) }}
+              </div>
+              <div class="mt-auto">
+                <a href="{{ $gr['url'] }}" target="_blank" rel="noopener noreferrer" class="btn-apply" style="width:100%;justify-content:center">
+                  詳細・応募はこちら
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+      <div style="font-size:.66rem;color:#dde6f5;margin-top:.7rem;text-align:right;margin-bottom:1.5rem">
+        @if(!empty($google_results[0]['is_fallback']))
+          Google検索にヒットがなかったため、条件に合わせた<strong style="color:#fff">外部求人・案件サイトの検索結果ページ</strong>へリンクしています。詳細・応募は各サイトでご確認ください。
+        @else
+          Powered by Google Custom Search API · 結果は最大7日間キャッシュ · 各リンク先で詳細・応募をご確認ください
+        @endif
+      </div>
+    @elseif(!$google_cse_configured)
+      <div class="empty-state" style="border-style:dashed;text-align:left;padding:1.2rem 1.4rem;margin-bottom:1.5rem">
+        <strong style="font-size:1rem;display:block;margin-bottom:.5rem">🔍 Google検索マッチングを有効にしてください</strong>
+        <p style="font-size:.82rem;line-height:1.8;margin:0">
+          <code style="color:var(--primary-lt);font-size:.78rem">GOOGLE_CSE_KEY</code> と
+          <code style="color:var(--primary-lt);font-size:.78rem">GOOGLE_CSE_CX</code> を .env に設定すると、実際の案件・求人ページを一覧表示します（純粋PHP版と同じAPI）。
+        </p>
+      </div>
+    @else
+      <div class="empty-state" style="margin-bottom:1.5rem"><strong>検索結果が見つかりませんでした</strong>キーワードや条件を変えてもう一度お試しください。</div>
+    @endif
+
+    {{-- 参考案件（サンプルデータ） --}}
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+      <h3 style="font-size:.92rem;font-weight:800;color:#dde6f5;margin:0">
+        📋 参考案件（サンプルデータ）
+        <span style="font-size:.78rem;font-weight:600;color:#dde6f5">（{{ $anken->count() }}件）</span>
+      </h3>
       <form method="GET" action="{{ route('anken.search') }}" id="sort-form">
         {{-- 現在の検索条件を hidden で保持 --}}
         @if($input['q'])<input type="hidden" name="q" value="{{ $input['q'] }}">@endif
@@ -348,7 +416,6 @@ a{color:inherit;text-decoration:none}
       </form>
     </div>
 
-    {{-- Job cards --}}
     @if($anken->isEmpty())
       <div class="empty-state">
         <strong>該当する案件が見つかりませんでした</strong>
