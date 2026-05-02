@@ -17,37 +17,57 @@ define('LANGS', [
 define('FRAMEWORKS', [
     'フロントエンド' => [
         'React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit',
-        'Astro','Remix','Solid.js','HTMX',
+        'Astro','Remix','Solid.js','HTMX','Qwik','Lit','Preact',
+        'TanStack Query','TanStack Router',
     ],
     'バックエンド' => [
-        'Express','Fastify','NestJS','Django','FastAPI','Flask',
-        'Ruby on Rails','Laravel','Spring Boot','ASP.NET Core','Gin','Echo','Phoenix',
+        /* JS / TS */
+        'Express','Fastify','NestJS','Hono','tRPC',
+        /* Python */
+        'Django','FastAPI','Flask','Streamlit','Celery',
+        /* PHP */
+        'Laravel','Symfony','CakePHP','CodeIgniter','Lumen',
+        /* Ruby */
+        'Ruby on Rails',
+        /* Java / JVM */
+        'Spring Boot','Micronaut','Quarkus','Play Framework','Akka',
+        'ASP.NET Core','Blazor',
+        /* Go */
+        'Gin','Echo','Fiber','Chi',
+        /* Rust */
+        'Axum','Actix Web','Rocket',
+        /* Elixir */
+        'Phoenix',
     ],
     'モバイル' => [
         'React Native','Flutter','SwiftUI','Jetpack Compose','Expo',
+        'Capacitor','Ionic',
     ],
     'インフラ／ツール' => [
-        'Docker','Kubernetes','Terraform','Ansible','AWS CDK',
-        'GraphQL','REST API','dbt','Snowflake','LangChain',
+        'Docker','Kubernetes','Terraform','Ansible','AWS CDK','Crossplane',
+        'Podman','Nix',
+        'GraphQL','REST API','OpenAPI','gRPC',
+        'OpenTelemetry','Prometheus','Grafana',
+        'dbt','Snowflake','LangChain','Apache Kafka','Redis',
     ],
 ]);
 
 /* 言語 → 関連フレームワーク・ツールのマッピング
    言語チップ選択時にこのリストのFWだけを表示する */
 define('LANG_FW_MAP', [
-    'JavaScript'  => ['React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit','Astro','Remix','Solid.js','HTMX','Express','Fastify','NestJS','React Native','Expo','GraphQL','REST API'],
-    'TypeScript'  => ['React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit','Astro','Remix','Solid.js','HTMX','Express','Fastify','NestJS','React Native','Expo','GraphQL','REST API'],
-    'Python'      => ['Django','FastAPI','Flask','REST API','GraphQL','Docker','Kubernetes','Ansible','dbt','Snowflake','LangChain'],
-    'Go'          => ['Gin','Echo','REST API','GraphQL','Docker','Kubernetes'],
-    'PHP'         => ['Laravel','REST API','GraphQL','Docker'],
-    'Ruby'        => ['Ruby on Rails','REST API','GraphQL','Docker'],
-    'Java'        => ['Spring Boot','REST API','GraphQL','Docker','Kubernetes'],
-    'Kotlin'      => ['Spring Boot','Jetpack Compose','REST API','Docker'],
-    'Swift'       => ['SwiftUI','REST API'],
-    'Rust'        => ['REST API','GraphQL','Docker'],
-    'C#'          => ['ASP.NET Core','REST API','Docker'],
-    'C++'         => ['REST API','Docker'],
-    'Scala'       => ['REST API','Docker','Kubernetes','Snowflake'],
+    'JavaScript'  => ['React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit','Astro','Remix','Solid.js','HTMX','Qwik','Lit','Preact','TanStack Query','TanStack Router','Express','Fastify','NestJS','Hono','tRPC','React Native','Expo','Capacitor','Ionic','GraphQL','REST API','OpenAPI'],
+    'TypeScript'  => ['React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit','Astro','Remix','Solid.js','HTMX','Qwik','TanStack Query','TanStack Router','Express','Fastify','NestJS','Hono','tRPC','React Native','Expo','Capacitor','Ionic','GraphQL','REST API','OpenAPI'],
+    'Python'      => ['Django','FastAPI','Flask','Streamlit','Celery','REST API','GraphQL','OpenAPI','Docker','Kubernetes','Ansible','dbt','Snowflake','LangChain','Apache Kafka','Redis'],
+    'Go'          => ['Gin','Echo','Fiber','Chi','REST API','GraphQL','gRPC','OpenAPI','Docker','Kubernetes'],
+    'PHP'         => ['Laravel','Symfony','CakePHP','CodeIgniter','Lumen','REST API','GraphQL','OpenAPI','Docker'],
+    'Ruby'        => ['Ruby on Rails','REST API','GraphQL','OpenAPI','Docker'],
+    'Java'        => ['Spring Boot','Micronaut','Quarkus','Play Framework','REST API','GraphQL','gRPC','OpenAPI','Docker','Kubernetes'],
+    'Kotlin'      => ['Spring Boot','Jetpack Compose','REST API','GraphQL','Docker'],
+    'Swift'       => ['SwiftUI','REST API','GraphQL'],
+    'Rust'        => ['Axum','Actix Web','Rocket','REST API','GraphQL','gRPC','OpenAPI','Docker','Kubernetes'],
+    'C#'          => ['ASP.NET Core','Blazor','REST API','GraphQL','gRPC','OpenAPI','Docker'],
+    'C++'         => ['REST API','gRPC','OpenAPI','Docker'],
+    'Scala'       => ['Play Framework','Akka','REST API','Docker','Kubernetes','Snowflake'],
     'R'           => ['dbt','Snowflake'],
     'Dart'        => ['Flutter','Expo'],
     'Elixir'      => ['Phoenix','REST API','GraphQL'],

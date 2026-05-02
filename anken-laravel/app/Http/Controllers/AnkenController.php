@@ -20,18 +20,30 @@ class AnkenController extends Controller
     public const FRAMEWORKS = [
         'フロントエンド' => [
             'React','Next.js','Vue.js','Nuxt.js','Angular','Svelte','SvelteKit',
-            'Astro','Remix','Solid.js','HTMX',
+            'Astro','Remix','Solid.js','HTMX','Qwik','Lit','Preact',
+            'TanStack Query','TanStack Router',
         ],
         'バックエンド' => [
-            'Express','Fastify','NestJS','Django','FastAPI','Flask',
-            'Ruby on Rails','Laravel','Spring Boot','ASP.NET Core','Gin','Echo','Phoenix',
+            'Express','Fastify','NestJS','Hono','tRPC',
+            'Django','FastAPI','Flask','Streamlit','Celery',
+            'Laravel','Symfony','CakePHP','CodeIgniter','Lumen',
+            'Ruby on Rails',
+            'Spring Boot','Micronaut','Quarkus','Play Framework','Akka',
+            'ASP.NET Core','Blazor',
+            'Gin','Echo','Fiber','Chi',
+            'Axum','Actix Web','Rocket',
+            'Phoenix',
         ],
         'モバイル' => [
             'React Native','Flutter','SwiftUI','Jetpack Compose','Expo',
+            'Capacitor','Ionic',
         ],
         'インフラ／ツール' => [
-            'Docker','Kubernetes','Terraform','Ansible','AWS CDK',
-            'GraphQL','REST API','dbt','Snowflake','LangChain',
+            'Docker','Kubernetes','Terraform','Ansible','AWS CDK','Crossplane',
+            'Podman','Nix',
+            'GraphQL','REST API','OpenAPI','gRPC',
+            'OpenTelemetry','Prometheus','Grafana',
+            'dbt','Snowflake','LangChain','Apache Kafka','Redis',
         ],
     ];
 
