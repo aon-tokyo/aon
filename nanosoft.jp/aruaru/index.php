@@ -582,6 +582,30 @@ function cache_set(string $key, array $data): void {
 ═══════════════════════════════════════════════════════════ */
 define('GOOGLE_CSE_MAX_RESULTS', 10);
 
+/**
+ * Google CSE が返す古い誤ドメインを公式URLへ差し替える。
+ * midworks.com は転売ドメインになり HugeDomains の出品ページや別サイトへ誘導されることがある。
+ */
+function normalize_google_cse_item(array $it): array {
+    $url = $it['url'] ?? '';
+    if ($url === '') {
+        return $it;
+    }
+    $url = preg_replace('#^https?://(www\.)?midworks\.com#i', 'https://mid-works.com', $url);
+    $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+    if ($host !== '' && strpos($host, 'hugedomains.com') !== false) {
+        $qstr = (string) parse_url($url, PHP_URL_QUERY);
+        parse_str($qstr, $qp);
+        $d = $qp['d'] ?? '';
+        if (is_string($d) && preg_match('/(^|\.)midworks\.com$/i', $d)) {
+            $url = 'https://mid-works.com/projects';
+        }
+    }
+    $it['url'] = $url;
+    $it['domain'] = parse_url($url, PHP_URL_HOST) ?: '';
+    return $it;
+}
+
 /** CSE 1ページ（num は 1〜10） */
 function google_search_fetch_page(string $query, int $start1Based, int $num): array {
     if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
@@ -602,12 +626,15 @@ function google_search_fetch_page(string $query, int $start1Based, int $num): ar
     $data = json_decode($raw, true);
     if (!empty($data['error']) || empty($data['items'])) return [];
 
-    return array_map(fn($it) => [
-        'title'   => $it['title']   ?? '',
-        'snippet' => $it['snippet'] ?? '',
-        'url'     => $it['link']    ?? '',
-        'domain'  => parse_url($it['link'] ?? '', PHP_URL_HOST) ?: '',
-    ], $data['items']);
+    return array_map(function ($it) {
+        $row = [
+            'title'   => $it['title']   ?? '',
+            'snippet' => $it['snippet'] ?? '',
+            'url'     => $it['link']    ?? '',
+            'domain'  => parse_url($it['link'] ?? '', PHP_URL_HOST) ?: '',
+        ];
+        return normalize_google_cse_item($row);
+    }, $data['items']);
 }
 
 /** 1つのクエリで複数ページを取得してマージ（URL重複除去） */
@@ -641,7 +668,7 @@ function google_search(string $primary_query, array $fallback_queries = [], int 
     if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
 
     $fb = array_values(array_unique(array_filter($fallback_queries, fn($x) => is_string($x) && $x !== '')));
-    $ckey = 'gse_v4_' . md5($primary_query . "\0" . implode("\0", $fb));
+    $ckey = 'gse_v5_' . md5($primary_query . "\0" . implode("\0", $fb));
     $cached = cache_get($ckey, CACHE_TTL_SEARCH);
     if ($cached !== null) return $cached;
 

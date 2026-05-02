@@ -22,7 +22,7 @@ class GoogleCustomSearchService
         }
 
         $fb = array_values(array_unique(array_filter($fallbackQueries, fn ($x) => is_string($x) && $x !== '')));
-        $cacheKey = 'gse_v4_'.md5($primaryQuery."\0".implode("\0", $fb));
+        $cacheKey = 'gse_v5_'.md5($primaryQuery."\0".implode("\0", $fb));
 
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey, []);
@@ -117,6 +117,18 @@ class GoogleCustomSearchService
 
         return array_map(function ($it) {
             $link = $it['link'] ?? '';
+            if ($link !== '') {
+                $link = preg_replace('#^https?://(www\.)?midworks\.com#i', 'https://mid-works.com', $link);
+                $host = strtolower((string) parse_url($link, PHP_URL_HOST));
+                if ($host !== '' && strpos($host, 'hugedomains.com') !== false) {
+                    $qstr = (string) parse_url($link, PHP_URL_QUERY);
+                    parse_str($qstr, $qp);
+                    $d = $qp['d'] ?? '';
+                    if (is_string($d) && preg_match('/(^|\.)midworks\.com$/i', $d)) {
+                        $link = 'https://mid-works.com/projects';
+                    }
+                }
+            }
 
             return [
                 'title' => $it['title'] ?? '',
