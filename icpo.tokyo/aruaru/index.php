@@ -178,7 +178,7 @@ define('EXT_SITES', [
      'url'=>'https://freelance.levtech.jp/project/search/?keyword='],
     ['name'=>'ITプロパートナーズ','tag'=>'副業・フリーランス','type'=>'fl',
      'desc'=>'週2〜3日から参画できる副業・フリーランス案件に特化。スタートアップ系が豊富。',
-     'url'=>'https://itpropartners.com/project/?keyword='],
+     'url'=>'https://itpropartners.com/job?free_word='],
     ['name'=>'Midworks','tag'=>'フリーランス','type'=>'fl',
      'desc'=>'フリーランスでも社会保険・各種保障が充実。正社員並みのサポートで安心して働ける。',
      'url'=>'https://midworks.com/projects/?keyword='],
@@ -219,7 +219,7 @@ define('ANKEN', [
      'location'=>'東京・週2出社','duration'=>'6ヶ月','rate'=>78,'posted'=>2,'hot'=>false,
      'langs'=>['TypeScript','JavaScript'],'fws'=>['Vue.js','Nuxt.js'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Vue+Nuxt'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Vue+Nuxt'],
 
     ['id'=>3,'title'=>'SaaS 管理画面リニューアル（Angular 18）',
      'role'=>'フロントエンド','style'=>'onsite','prefecture'=>'神奈川県','city'=>'横浜市','station'=>'横浜',
@@ -262,7 +262,7 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'長期','rate'=>93,'posted'=>0,'hot'=>false,
      'langs'=>['Go'],'fws'=>['Echo','Docker','Kubernetes'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Go+Echo+マイクロサービス'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Go+Echo+マイクロサービス'],
 
     ['id'=>9,'title'=>'ヘルスケアSaaS API 構築（Python / FastAPI）',
      'role'=>'バックエンド','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
@@ -276,7 +276,7 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'3ヶ月','rate'=>77,'posted'=>10,'hot'=>false,
      'langs'=>['Python'],'fws'=>['Django','REST API'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Django+Python+API'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Django+Python+API'],
 
     ['id'=>11,'title'=>'ECバックエンド 機能追加（PHP / Laravel 11）',
      'role'=>'バックエンド','style'=>'hybrid','prefecture'=>'愛知県','city'=>'名古屋市','station'=>'名古屋',
@@ -341,7 +341,7 @@ define('ANKEN', [
      'location'=>'フルリモート','duration'=>'4ヶ月','rate'=>88,'posted'=>2,'hot'=>false,
      'langs'=>['Swift'],'fws'=>['SwiftUI'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=Swift+SwiftUI+iOS'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=Swift+SwiftUI+iOS'],
 
     ['id'=>20,'title'=>'Android アプリ刷新（Kotlin / Jetpack Compose）',
      'role'=>'モバイル','style'=>'remote','prefecture'=>'東京都','city'=>'','station'=>'',
@@ -384,7 +384,7 @@ define('ANKEN', [
      'location'=>'品川・常駐','duration'=>'長期','rate'=>95,'posted'=>7,'hot'=>false,
      'langs'=>['Python'],'fws'=>['Ansible','Terraform','Docker'],
      'site_name'=>'ITプロパートナーズ',
-     'apply_url'=>'https://itpropartners.com/project/?keyword=DevOps+インフラ+Terraform'],
+     'apply_url'=>'https://itpropartners.com/job?free_word=DevOps+インフラ+Terraform'],
 
     /* データ / AI・ML */
     ['id'=>26,'title'=>'生成AI チャットボット開発（LangChain / FastAPI）',
