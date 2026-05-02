@@ -575,45 +575,96 @@ function cache_set(string $key, array $data): void {
 /* ═══════════════════════════════════════════════════════════
    Google Custom Search API 呼び出し
    - APIキー未設定時は空配列を返す
+   - 複数ページ（最大3ページ・計30件）＋フォールバック検索でヒット率を上げる
+   - lr=lang_ja は除外（英語サイトばかりになり 0 件になりやすいため）
    - 結果はキャッシュに保存（TTL: 7日）
    - クロールなし：ユーザーがページを開いた時のみ実行
 ═══════════════════════════════════════════════════════════ */
-function google_search(string $query, int $num = 6): array {
+define('GOOGLE_CSE_MAX_RESULTS', 30);
+
+/** CSE 1ページ（num は 1〜10） */
+function google_search_fetch_page(string $query, int $start1Based, int $num): array {
     if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
-    $ckey = 'gse_' . md5($query);
-    $cached = cache_get($ckey, CACHE_TTL_SEARCH);
-    if ($cached !== null) return $cached;
+    $num = max(1, min(10, $num));
+    $start1Based = max(1, min(91, $start1Based));
 
     $url = 'https://www.googleapis.com/customsearch/v1?' . http_build_query([
         'key'   => GOOGLE_CSE_KEY,
         'cx'    => GOOGLE_CSE_CX,
         'q'     => $query,
         'num'   => $num,
-        'lr'    => 'lang_ja',
+        'start' => $start1Based,
         'gl'    => 'jp',
     ]);
-    $ctx = stream_context_create(['http' => ['timeout' => 5, 'ignore_errors' => true]]);
+    $ctx = stream_context_create(['http' => ['timeout' => 8, 'ignore_errors' => true]]);
     $raw = @file_get_contents($url, false, $ctx);
     if (!$raw) return [];
     $data = json_decode($raw, true);
-    if (empty($data['items'])) return [];
+    if (!empty($data['error']) || empty($data['items'])) return [];
 
-    $items = array_map(fn($it) => [
+    return array_map(fn($it) => [
         'title'   => $it['title']   ?? '',
         'snippet' => $it['snippet'] ?? '',
         'url'     => $it['link']    ?? '',
         'domain'  => parse_url($it['link'] ?? '', PHP_URL_HOST) ?: '',
-    ], array_slice($data['items'], 0, $num));
+    ], $data['items']);
+}
 
-    cache_set($ckey, $items);
+/** 1つのクエリで複数ページを取得してマージ（URL重複除去） */
+function google_search_collect_query(string $query, int $target_total, array &$seen, array &$merged): void {
+    $target_total = max(1, min(30, $target_total));
+    $start = 1;
+    while (count($merged) < $target_total && $start <= 91) {
+        $need = min(10, $target_total - count($merged));
+        $page = google_search_fetch_page($query, $start, $need);
+        if ($page === []) break;
+        foreach ($page as $it) {
+            $u = $it['url'] ?? '';
+            if ($u === '' || isset($seen[$u])) continue;
+            $seen[$u] = true;
+            $merged[] = $it;
+            if (count($merged) >= $target_total) return;
+        }
+        if (count($page) < $need) break;
+        $start += 10;
+    }
+}
 
-    /* ストック（全検索結果を蓄積して後でAI分析に使う） */
-    $stock = cache_get('search_stock', 86400 * 365) ?? [];
-    $stock[] = ['q' => $query, 'ts' => date('Y-m-d'), 'items' => $items];
-    if (count($stock) > 200) $stock = array_slice($stock, -200);
-    cache_set('search_stock', $stock);
+/**
+ * @param string $primary_query メイン検索語句
+ * @param array  $fallback_queries 0件のとき試す別クエリ（短い語など）
+ * @param int    $target_total     最大件数（既定30・API上限）
+ */
+function google_search(string $primary_query, array $fallback_queries = [], int $target_total = 30): array {
+    if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
 
-    return $items;
+    $fb = array_values(array_unique(array_filter($fallback_queries, fn($x) => is_string($x) && $x !== '')));
+    $ckey = 'gse_v2_' . md5($primary_query . "\0" . implode("\0", $fb));
+    $cached = cache_get($ckey, CACHE_TTL_SEARCH);
+    if ($cached !== null) return $cached;
+
+    $target_total = max(1, min(30, $target_total));
+    $seen = [];
+    $merged = [];
+
+    google_search_collect_query($primary_query, $target_total, $seen, $merged);
+
+    if ($merged === []) {
+        foreach ($fb as $q) {
+            google_search_collect_query($q, $target_total, $seen, $merged);
+            if ($merged !== []) break;
+        }
+    }
+
+    if ($merged !== []) {
+        cache_set($ckey, $merged);
+        $stock = cache_get('search_stock', 86400 * 365) ?? [];
+        $stock[] = ['q' => $primary_query, 'ts' => date('Y-m-d'), 'items' => $merged];
+        if (count($stock) > 200) $stock = array_slice($stock, -200);
+        cache_set('search_stock', $stock);
+    }
+
+    return $merged;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -737,7 +788,21 @@ if (count($search_query_parts) === 1) {
     $search_query = 'ITエンジニア フリーランス 案件 求人 2026';
 }
 
-$google_results = google_search($search_query);
+/* メインで0件のとき短い語で再試行（CSEの対象サイト・言語差で0件になりやすいのを緩和） */
+$google_fallback_queries = [];
+$core = array_values(array_filter(array_merge($langs_in, $fws_in)));
+if ($core !== []) {
+    $google_fallback_queries[] = mb_substr(implode(' ', array_merge($core, ['求人', 'エンジニア', '案件'])), 0, 100);
+    $google_fallback_queries[] = mb_substr(implode(' ', array_merge($core, ['フリーランス'])), 0, 100);
+    $google_fallback_queries[] = mb_substr(implode(' ', $core) . ' 採用 エンジニア', 0, 100);
+}
+if ($pref_label_for_search !== '') {
+    $google_fallback_queries[] = mb_substr($pref_label_for_search . ' IT 求人 エンジニア フリーランス', 0, 100);
+}
+$google_fallback_queries[] = 'IT エンジニア 求人 案件 2026';
+$google_fallback_queries = array_values(array_unique(array_filter($google_fallback_queries, fn($x) => $x !== '' && $x !== $search_query)));
+
+$google_results = google_search($search_query, $google_fallback_queries, GOOGLE_CSE_MAX_RESULTS);
 $ai_trends      = ai_trend_analysis();
 
 /* AIのランク順に言語リストを並べ替え（ページ表示に使う） */
@@ -1160,7 +1225,7 @@ a{color:inherit;text-decoration:none}
 
     <!-- ══ GOOGLE検索マッチング結果（メイン） ══════════════════ -->
     <?php
-    $cp = cache_path('gse_'.md5($search_query));
+    $cp = cache_path('gse_v2_' . md5($search_query . "\0" . implode("\0", $google_fallback_queries)));
     $is_cached = !empty($google_results) && $cp !== '' && file_exists($cp);
     $cache_label = $is_cached ? '（キャッシュ中・最大7日）' : '（最新取得）';
     ?>
