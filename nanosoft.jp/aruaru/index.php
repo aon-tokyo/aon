@@ -575,12 +575,12 @@ function cache_set(string $key, array $data): void {
 /* ═══════════════════════════════════════════════════════════
    Google Custom Search API 呼び出し
    - APIキー未設定時は空配列を返す
-   - 複数ページ（最大3ページ・計30件）＋フォールバック検索でヒット率を上げる
+   - 複数ページ（GOOGLE_CSE_MAX_RESULTS まで）＋フォールバック検索でヒット率を上げる
    - lr=lang_ja は除外（英語サイトばかりになり 0 件になりやすいため）
    - 結果はキャッシュに保存（TTL: 7日）
    - クロールなし：ユーザーがページを開いた時のみ実行
 ═══════════════════════════════════════════════════════════ */
-define('GOOGLE_CSE_MAX_RESULTS', 30);
+define('GOOGLE_CSE_MAX_RESULTS', 10);
 
 /** CSE 1ページ（num は 1〜10） */
 function google_search_fetch_page(string $query, int $start1Based, int $num): array {
@@ -612,9 +612,11 @@ function google_search_fetch_page(string $query, int $start1Based, int $num): ar
 
 /** 1つのクエリで複数ページを取得してマージ（URL重複除去） */
 function google_search_collect_query(string $query, int $target_total, array &$seen, array &$merged): void {
-    $target_total = max(1, min(30, $target_total));
+    $target_total = max(1, min(GOOGLE_CSE_MAX_RESULTS, $target_total));
+    $max_start = 1 + 10 * max(0, (int) ceil($target_total / 10) - 1);
+    $max_start = min(91, $max_start);
     $start = 1;
-    while (count($merged) < $target_total && $start <= 91) {
+    while (count($merged) < $target_total && $start <= $max_start) {
         $need = min(10, $target_total - count($merged));
         $page = google_search_fetch_page($query, $start, $need);
         if ($page === []) break;
@@ -633,9 +635,9 @@ function google_search_collect_query(string $query, int $target_total, array &$s
 /**
  * @param string $primary_query メイン検索語句
  * @param array  $fallback_queries 0件のとき試す別クエリ（短い語など）
- * @param int    $target_total     最大件数（既定30・API上限）
+ * @param int    $target_total     最大件数（既定 GOOGLE_CSE_MAX_RESULTS・API上限30）
  */
-function google_search(string $primary_query, array $fallback_queries = [], int $target_total = 30): array {
+function google_search(string $primary_query, array $fallback_queries = [], int $target_total = GOOGLE_CSE_MAX_RESULTS): array {
     if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
 
     $fb = array_values(array_unique(array_filter($fallback_queries, fn($x) => is_string($x) && $x !== '')));
@@ -643,7 +645,7 @@ function google_search(string $primary_query, array $fallback_queries = [], int 
     $cached = cache_get($ckey, CACHE_TTL_SEARCH);
     if ($cached !== null) return $cached;
 
-    $target_total = max(1, min(30, $target_total));
+    $target_total = max(1, min(GOOGLE_CSE_MAX_RESULTS, $target_total));
     $seen = [];
     $merged = [];
 

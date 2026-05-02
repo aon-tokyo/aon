@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Http;
  */
 class GoogleCustomSearchService
 {
-    public const MAX_RESULTS = 30;
+    /** Google CSE API 節約のため件数・ページングを抑える（純粋PHP版 GOOGLE_CSE_MAX_RESULTS と一致） */
+    public const MAX_RESULTS = 10;
 
     public function search(string $primaryQuery, array $fallbackQueries = [], int $targetTotal = self::MAX_RESULTS): array
     {
@@ -27,7 +28,8 @@ class GoogleCustomSearchService
             return Cache::get($cacheKey, []);
         }
 
-        $targetTotal = max(1, min(30, $targetTotal));
+        $cap = self::MAX_RESULTS;
+        $targetTotal = max(1, min($cap, $targetTotal));
         $seen = [];
         $merged = [];
 
@@ -56,7 +58,10 @@ class GoogleCustomSearchService
     private function collectQuery(string $query, int $targetTotal, array &$seen, array &$merged, string $key, string $cx): void
     {
         $start = 1;
-        while (count($merged) < $targetTotal && $start <= 91) {
+        $maxStart = 1 + 10 * max(0, (int) ceil($targetTotal / 10) - 1);
+        $maxStart = min(91, $maxStart);
+
+        while (count($merged) < $targetTotal && $start <= $maxStart) {
             $need = min(10, $targetTotal - count($merged));
             $page = $this->fetchPage($query, $start, $need, $key, $cx);
             if ($page === []) {
