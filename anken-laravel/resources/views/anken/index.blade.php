@@ -345,7 +345,11 @@ a{color:inherit;text-decoration:none}
             <div class="card-anken">
               <div class="d-flex align-items-center justify-content-between mb-2" style="gap:.4rem">
                 <div style="display:flex;align-items:center;gap:.35rem;overflow:hidden">
+                  @if(!empty($gr['is_fallback']))
+                  <span style="font-size:.58rem;font-weight:800;color:#c4b5fd;letter-spacing:.06em;background:rgba(167,139,250,.15);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">求人サイト</span>
+                  @else
                   <span style="font-size:.58rem;font-weight:800;color:var(--primary-lt);letter-spacing:.06em;background:var(--primary-glow);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">Google</span>
+                  @endif
                   <span style="font-size:.65rem;color:#dde6f5;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $gr['domain'] }}</span>
                 </div>
                 <span style="font-size:.62rem;color:#dde6f5;flex-shrink:0">#{{ $i + 1 }}</span>
@@ -367,7 +371,11 @@ a{color:inherit;text-decoration:none}
         @endforeach
       </div>
       <div style="font-size:.66rem;color:#dde6f5;margin-top:.7rem;text-align:right;margin-bottom:1.5rem">
-        Powered by Google Custom Search API · 結果は最大7日間キャッシュ · 各リンク先で詳細・応募をご確認ください
+        @if(!empty($google_results[0]['is_fallback']))
+          Google検索にヒットがなかったため、条件に合わせた<strong style="color:#fff">外部求人・案件サイトの検索結果ページ</strong>へリンクしています。詳細・応募は各サイトでご確認ください。
+        @else
+          Powered by Google Custom Search API · 結果は最大7日間キャッシュ · 各リンク先で詳細・応募をご確認ください
+        @endif
       </div>
     @elseif(!$google_cse_configured)
       <div class="empty-state" style="border-style:dashed;text-align:left;padding:1.2rem 1.4rem;margin-bottom:1.5rem">

@@ -22,7 +22,7 @@ class GoogleCustomSearchService
         }
 
         $fb = array_values(array_unique(array_filter($fallbackQueries, fn ($x) => is_string($x) && $x !== '')));
-        $cacheKey = 'gse_v2_'.md5($primaryQuery."\0".implode("\0", $fb));
+        $cacheKey = 'gse_v4_'.md5($primaryQuery."\0".implode("\0", $fb));
 
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey, []);
@@ -35,12 +35,12 @@ class GoogleCustomSearchService
 
         $this->collectQuery($primaryQuery, $targetTotal, $seen, $merged, $key, $cx);
 
-        if ($merged === []) {
+        if (count($merged) < $targetTotal && $fb !== []) {
             foreach ($fb as $q) {
-                $this->collectQuery($q, $targetTotal, $seen, $merged, $key, $cx);
-                if ($merged !== []) {
+                if (count($merged) >= $targetTotal) {
                     break;
                 }
+                $this->collectQuery($q, $targetTotal, $seen, $merged, $key, $cx);
             }
         }
 

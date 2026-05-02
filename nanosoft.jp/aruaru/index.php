@@ -641,7 +641,7 @@ function google_search(string $primary_query, array $fallback_queries = [], int 
     if (GOOGLE_CSE_KEY === '' || GOOGLE_CSE_CX === '') return [];
 
     $fb = array_values(array_unique(array_filter($fallback_queries, fn($x) => is_string($x) && $x !== '')));
-    $ckey = 'gse_v2_' . md5($primary_query . "\0" . implode("\0", $fb));
+    $ckey = 'gse_v4_' . md5($primary_query . "\0" . implode("\0", $fb));
     $cached = cache_get($ckey, CACHE_TTL_SEARCH);
     if ($cached !== null) return $cached;
 
@@ -651,10 +651,13 @@ function google_search(string $primary_query, array $fallback_queries = [], int 
 
     google_search_collect_query($primary_query, $target_total, $seen, $merged);
 
-    if ($merged === []) {
+    /* メインが0件／不足のとき、フォールバックを順にマージ（1つで打ち切らず埋める） */
+    if (count($merged) < $target_total && $fb !== []) {
         foreach ($fb as $q) {
+            if (count($merged) >= $target_total) {
+                break;
+            }
             google_search_collect_query($q, $target_total, $seen, $merged);
-            if ($merged !== []) break;
         }
     }
 
@@ -770,7 +773,7 @@ EOT;
    実行：Google検索 & AIトレンド取得
 ═══════════════════════════════════════════════════════════ */
 
-/* 検索クエリ生成（言語・FW・キーワード・勤務地を合成） */
+/* 検索クエリ生成（言語・FWを先頭に — 100文字切り詰めで技術名が落ちないようにする） */
 $pref_label_for_search = '';
 foreach (LOCATION_GROUPS as $g) {
     if ($g['value'] === $pref && $pref !== '') {
@@ -778,16 +781,32 @@ foreach (LOCATION_GROUPS as $g) {
         break;
     }
 }
-$search_query_parts = array_filter(array_merge(
-    $q !== '' ? [$q] : [],
+$tail_kw = 'フリーランス 案件 求人 エンジニア';
+$head_query_parts = array_values(array_filter(array_merge(
     $langs_in,
     $fws_in,
+    $q !== '' ? [$q] : [],
     $pref_label_for_search !== '' ? [$pref_label_for_search] : [],
-    ['フリーランス 案件 求人 エンジニア'],
-));
-$search_query = mb_substr(implode(' ', $search_query_parts), 0, 100);
-if (count($search_query_parts) === 1) {
+)));
+if ($head_query_parts === []) {
     $search_query = 'ITエンジニア フリーランス 案件 求人 2026';
+} else {
+    $full_join = implode(' ', array_merge($head_query_parts, [$tail_kw]));
+    if (mb_strlen($full_join) <= 100) {
+        $search_query = $full_join;
+    } else {
+        $tail = ' ' . $tail_kw;
+        $budget = max(24, 100 - mb_strlen($tail));
+        $head_join = implode(' ', $head_query_parts);
+        if (mb_strlen($head_join) <= $budget) {
+            $search_query = $head_join . $tail;
+        } else {
+            $search_query = rtrim(mb_substr($head_join, 0, $budget)) . $tail;
+        }
+        if (mb_strlen($search_query) > 100) {
+            $search_query = mb_substr($search_query, 0, 100);
+        }
+    }
 }
 
 /* メインで0件のとき短い語で再試行（CSEの対象サイト・言語差で0件になりやすいのを緩和） */
@@ -797,6 +816,10 @@ if ($core !== []) {
     $google_fallback_queries[] = mb_substr(implode(' ', array_merge($core, ['求人', 'エンジニア', '案件'])), 0, 100);
     $google_fallback_queries[] = mb_substr(implode(' ', array_merge($core, ['フリーランス'])), 0, 100);
     $google_fallback_queries[] = mb_substr(implode(' ', $core) . ' 採用 エンジニア', 0, 100);
+    $google_fallback_queries[] = mb_substr(implode(' ', $core) . ' 求人', 0, 100);
+    if ($min_rate > 0) {
+        $google_fallback_queries[] = mb_substr(implode(' ', $core) . " 単価{$min_rate}万円 求人", 0, 100);
+    }
 }
 if ($pref_label_for_search !== '') {
     $google_fallback_queries[] = mb_substr($pref_label_for_search . ' IT 求人 エンジニア フリーランス', 0, 100);
@@ -805,6 +828,36 @@ $google_fallback_queries[] = 'IT エンジニア 求人 案件 2026';
 $google_fallback_queries = array_values(array_unique(array_filter($google_fallback_queries, fn($x) => $x !== '' && $x !== $search_query)));
 
 $google_results = google_search($search_query, $google_fallback_queries, GOOGLE_CSE_MAX_RESULTS);
+
+/* Google CSE が0件でも（検索エンジン設定・API・キャッシュ等で）案件探索につながるよう外部求人サイトへの検索リンクを補完 */
+function build_ext_site_search_cards(array $langs_in, array $fws_in, string $q, string $role): array {
+    $kw_parts = array_filter(array_merge(
+        $q !== '' ? [$q] : [],
+        $langs_in,
+        $fws_in,
+        $role !== '' ? [$role] : [],
+    ));
+    $kw_sfx = urlencode(mb_substr(implode(' ', $kw_parts), 0, 100));
+    $label = implode(' ', array_merge($langs_in, $fws_in));
+    if ($label === '') {
+        $label = '条件';
+    }
+    $out = [];
+    foreach (EXT_SITES as $site) {
+        $out[] = [
+            'title'       => $site['name'] . ' で「' . $label . '」を検索',
+            'snippet'     => $site['desc'],
+            'url'         => $site['url'] . $kw_sfx,
+            'domain'      => parse_url($site['url'], PHP_URL_HOST) ?: '',
+            'is_fallback' => true,
+        ];
+    }
+    return array_slice($out, 0, min(GOOGLE_CSE_MAX_RESULTS, count($out)));
+}
+
+if ($google_results === [] && GOOGLE_CSE_KEY !== '') {
+    $google_results = build_ext_site_search_cards($langs_in, $fws_in, $q, $role);
+}
 $ai_trends      = ai_trend_analysis();
 
 /* AIのランク順に言語リストを並べ替え（ページ表示に使う） */
@@ -1227,7 +1280,7 @@ a{color:inherit;text-decoration:none}
 
     <!-- ══ GOOGLE検索マッチング結果（メイン） ══════════════════ -->
     <?php
-    $cp = cache_path('gse_v2_' . md5($search_query . "\0" . implode("\0", $google_fallback_queries)));
+    $cp = cache_path('gse_v4_' . md5($search_query . "\0" . implode("\0", $google_fallback_queries)));
     $is_cached = !empty($google_results) && $cp !== '' && file_exists($cp);
     $cache_label = $is_cached ? '（キャッシュ中・最大7日）' : '（最新取得）';
     ?>
@@ -1253,12 +1306,17 @@ a{color:inherit;text-decoration:none}
       <!-- Google検索結果カード -->
       <div class="row g-3" id="google-cards">
         <?php foreach ($google_results as $i => $gr): ?>
+          <?php $gr_fb = !empty($gr['is_fallback']); ?>
           <div class="col-12 col-md-6 col-lg-4">
             <div class="card-anken">
               <!-- ソース表示 -->
               <div class="d-flex align-items-center justify-content-between mb-2" style="gap:.4rem">
                 <div style="display:flex;align-items:center;gap:.35rem;overflow:hidden">
+                  <?php if ($gr_fb): ?>
+                  <span style="font-size:.58rem;font-weight:800;color:#c4b5fd;letter-spacing:.06em;background:rgba(167,139,250,.15);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">求人サイト</span>
+                  <?php else: ?>
                   <span style="font-size:.58rem;font-weight:800;color:var(--primary-lt);letter-spacing:.06em;background:var(--primary-glow);padding:.1rem .42rem;border-radius:4px;flex-shrink:0">Google</span>
+                  <?php endif; ?>
                   <span style="font-size:.65rem;color:#dde6f5;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= h($gr['domain']) ?></span>
                 </div>
                 <span style="font-size:.62rem;color:#dde6f5;flex-shrink:0">#<?= $i + 1 ?></span>
@@ -1288,7 +1346,11 @@ a{color:inherit;text-decoration:none}
         <?php endforeach; ?>
       </div>
       <div style="font-size:.66rem;color:#dde6f5;margin-top:.7rem;text-align:right">
-        Powered by Google Custom Search API · 結果は最大7日間キャッシュ（条件変更で再取得）· 各リンク先サイトで詳細・応募をご確認ください
+        <?php if (!empty($google_results[0]['is_fallback'])): ?>
+          Google検索にヒットがなかったため、条件に合わせた<strong style="color:#fff">外部求人・案件サイトの検索結果ページ</strong>へリンクしています。詳細・応募は各サイトでご確認ください。
+        <?php else: ?>
+          Powered by Google Custom Search API · 結果は最大7日間キャッシュ（条件変更で再取得）· 各リンク先サイトで詳細・応募をご確認ください
+        <?php endif; ?>
       </div>
 
     <?php elseif (GOOGLE_CSE_KEY === ''): ?>

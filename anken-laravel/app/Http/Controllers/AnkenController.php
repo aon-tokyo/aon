@@ -428,16 +428,32 @@ class AnkenController extends Controller
         ));
         $kw = urlencode(mb_substr(implode(' ', $kwParts), 0, 100));
 
-        $searchQueryParts = array_filter(array_merge(
-            $q !== '' ? [$q] : [],
+        $tailKw = 'フリーランス 案件 求人 エンジニア';
+        $headParts = array_values(array_filter(array_merge(
             $langs,
             $fws,
+            $q !== '' ? [$q] : [],
             $pref !== '' ? [$pref] : [],
-            ['フリーランス 案件 求人 エンジニア'],
-        ));
-        $searchQuery = mb_substr(implode(' ', $searchQueryParts), 0, 100);
-        if (count($searchQueryParts) === 1) {
+        )));
+        if ($headParts === []) {
             $searchQuery = 'ITエンジニア フリーランス 案件 求人 2026';
+        } else {
+            $fullJoin = implode(' ', array_merge($headParts, [$tailKw]));
+            if (mb_strlen($fullJoin) <= 100) {
+                $searchQuery = $fullJoin;
+            } else {
+                $tail = ' '.$tailKw;
+                $budget = max(24, 100 - mb_strlen($tail));
+                $headJoin = implode(' ', $headParts);
+                if (mb_strlen($headJoin) <= $budget) {
+                    $searchQuery = $headJoin.$tail;
+                } else {
+                    $searchQuery = rtrim(mb_substr($headJoin, 0, $budget)).$tail;
+                }
+                if (mb_strlen($searchQuery) > 100) {
+                    $searchQuery = mb_substr($searchQuery, 0, 100);
+                }
+            }
         }
 
         $googleFallback = [];
@@ -446,6 +462,10 @@ class AnkenController extends Controller
             $googleFallback[] = mb_substr(implode(' ', array_merge($core, ['求人', 'エンジニア', '案件'])), 0, 100);
             $googleFallback[] = mb_substr(implode(' ', array_merge($core, ['フリーランス'])), 0, 100);
             $googleFallback[] = mb_substr(implode(' ', $core).' 採用 エンジニア', 0, 100);
+            $googleFallback[] = mb_substr(implode(' ', $core).' 求人', 0, 100);
+            if ($minRate > 0) {
+                $googleFallback[] = mb_substr(implode(' ', $core)." 単価{$minRate}万円 求人", 0, 100);
+            }
         }
         if ($pref !== '') {
             $googleFallback[] = mb_substr($pref.' IT 求人 エンジニア フリーランス', 0, 100);
@@ -464,6 +484,10 @@ class AnkenController extends Controller
         $googleResults = $googleConfigured
             ? $this->googleCse->search($searchQuery, $googleFallback, GoogleCustomSearchService::MAX_RESULTS)
             : [];
+
+        if ($googleResults === [] && $googleConfigured) {
+            $googleResults = $this->buildExtSiteFallbackCards($langs, $fws, $q, $role);
+        }
 
         return view('anken.index', [
             'anken' => $list->values(),
@@ -497,6 +521,38 @@ class AnkenController extends Controller
     /* ─────────────────────────────────────────────────────────────
        マッチングスコア算出（高いほど関連度が高い）
     ───────────────────────────────────────────────────────────── */
+    /**
+     * Google CSE が0件のとき、外部求人サイトの検索URLをカード表示（純粋PHP版と同等）
+     *
+     * @return array<int, array{title: string, snippet: string, url: string, domain: string, is_fallback: bool}>
+     */
+    private function buildExtSiteFallbackCards(array $langs, array $fws, string $q, string $role): array
+    {
+        $kwParts = array_filter(array_merge(
+            $q !== '' ? [$q] : [],
+            $langs,
+            $fws,
+            $role !== '' ? [$role] : [],
+        ));
+        $kwSfx = urlencode(mb_substr(implode(' ', $kwParts), 0, 100));
+        $label = implode(' ', array_merge($langs, $fws));
+        if ($label === '') {
+            $label = '条件';
+        }
+        $out = [];
+        foreach (self::EXT_SITES as $site) {
+            $out[] = [
+                'title' => $site['name'].' で「'.$label.'」を検索',
+                'snippet' => $site['desc'],
+                'url' => $site['url'].$kwSfx,
+                'domain' => parse_url($site['url'], PHP_URL_HOST) ?: '',
+                'is_fallback' => true,
+            ];
+        }
+
+        return array_slice($out, 0, min(GoogleCustomSearchService::MAX_RESULTS, count($out)));
+    }
+
     private function score(array $a, array $langs, array $fws): int
     {
         $sc = 0;
