@@ -1,0 +1,11 @@
+__DOMAIN__ {
+    encode zstd gzip
+
+    # Poem app runs locally on systemd service.
+    reverse_proxy 127.0.0.1:3000
+
+    log {
+        output file /var/log/caddy/__DOMAIN__.log
+        format console
+    }
+}
